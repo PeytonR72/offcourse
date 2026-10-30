@@ -1,34 +1,20 @@
-import { createDaily, nextDaily, type DailyExpedition } from "./daily";
+import { createDaily, type DailyExpedition } from "./daily";
 import { selectDailyDemo, type DemoCatalog } from "./questions";
-import { createRun, transitionRun, type PersonalAnswer } from "./run";
+import { createRun } from "./run";
+import { recordRun, restoreRun, type RunRecord } from "./run-record";
 
-type DailyRecord = Omit<DailyExpedition, "run"> & {
-  schemaVersion: 1;
-  predictions: { answer: PersonalAnswer; percentage: number }[];
-  draft: { answer: PersonalAnswer | null; percentage: number | null } | null;
-};
+type DailyRecord = Omit<DailyExpedition, "run"> &
+  RunRecord & {
+    schemaVersion: 1;
+  };
 
 function encode(daily: DailyExpedition): string {
-  const round = daily.run.round;
-  const locks = daily.run.completedRounds.map(({ lock }) => lock);
-  if (round.phase === "locked" || round.phase === "flight")
-    locks.push(round.lock);
-  if (round.phase === "reveal") locks.push(round.result.lock);
   const record: DailyRecord = {
     schemaVersion: 1,
     dateKey: daily.dateKey,
     catalogVersion: daily.catalogVersion,
     questions: daily.questions,
-    predictions: locks.map(({ answer, guessPercentage }) => ({
-      answer,
-      percentage: guessPercentage,
-    })),
-    draft:
-      round.phase === "answering"
-        ? { answer: null, percentage: null }
-        : round.phase === "aiming"
-          ? { answer: round.answer, percentage: round.guessPercentage }
-          : null,
+    ...recordRun(daily.run),
   };
   return JSON.stringify(record);
 }
@@ -60,47 +46,16 @@ function decode(raw: string, at: Date): DailyExpedition {
       selection.questions.find((entry) => entry.question.id === question.id)!
     )
   );
-  let daily: DailyExpedition = Object.freeze({
+  const daily: DailyExpedition = Object.freeze({
     dateKey: record.dateKey,
     catalogVersion: record.catalogVersion,
     questions,
-    run: createRun(`daily:${record.dateKey}`, "daily"),
+    run: restoreRun(
+      createRun(`daily:${record.dateKey}`, "daily"),
+      questions,
+      record
+    ),
   });
-  for (const prediction of record.predictions) {
-    daily = nextDaily(daily);
-    let run = transitionRun(daily.run, {
-      type: "choose_answer",
-      answer: prediction.answer,
-    });
-    run = transitionRun(run, {
-      type: "aim",
-      percentage: prediction.percentage,
-    });
-    run = transitionRun(run, { type: "lock" });
-    run = transitionRun(run, { type: "launch" });
-    run = transitionRun(run, {
-      type: "reveal",
-      distribution: questions[run.completedRounds.length].distribution,
-    });
-    run = transitionRun(run, { type: "resolve" });
-    daily = Object.freeze({ ...daily, run });
-  }
-  if (record.draft !== null) {
-    daily = nextDaily(daily);
-    if (record.draft.answer !== null) {
-      let run = transitionRun(daily.run, {
-        type: "choose_answer",
-        answer: record.draft.answer,
-      });
-      if (record.draft.percentage !== null)
-        run = transitionRun(run, {
-          type: "aim",
-          percentage: record.draft.percentage,
-        });
-      daily = Object.freeze({ ...daily, run });
-    } else if (record.draft.percentage !== null)
-      throw new Error("Invalid daily draft");
-  }
   if (daily.run.round.phase === "idle")
     throw new Error("Invalid daily progress");
   return daily;

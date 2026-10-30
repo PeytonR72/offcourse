@@ -28,6 +28,12 @@ export default function Home() {
       >
         Play Daily Expedition · 5 rounds
       </Link>
+      <Link
+        href="/endless"
+        className="primary-button mt-3 flex items-center justify-center"
+      >
+        Play Endless Voyage · one miss ends the run
+      </Link>
     </main>
   );
 }

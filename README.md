@@ -2,8 +2,8 @@
 
 Guess what humanity thinks to steer a tiny rocket through space.
 
-The prototype includes open practice flights and a five-round Daily Expedition
-at `/daily`, with an animated rocket and accessible controls. Percentages are
+The prototype includes open practice flights, a five-round Daily Expedition
+at `/daily`, and Endless Voyage at `/endless`, with an animated rocket and accessible controls. Percentages are
 simulated and clearly labeled **Illustrative results**.
 
 The official plan is [docs/OFFCOURSE_SPEC.md](docs/OFFCOURSE_SPEC.md). The 18
@@ -186,10 +186,33 @@ on an open page. Stale tabs cannot overwrite newer progress.
 Daily participation is best effort per browser. Clearing storage resets it;
 records do not sync across devices. If storage is unavailable or corrupted, daily
 play stops with a recovery message and a link to practice. This remains a demo,
-with no genuine crowd data or public ranked score. Sharing and endless records
-remain in their assigned tickets.
+with no genuine crowd data or public ranked score. Sharing remains in T14.
 
 T08 checks cover 0/500 ly boundaries, five misses, deterministic questions, frozen
 reload recovery, replay blocking, UTC rollover, and storage failures. Desktop and
 mobile browser screenshots are retained under `docs/evidence/t08/`; see the
 [T08 evidence](.scratch/offcourse/issues/T08-daily-expedition-end-to-end.md).
+
+## Endless Voyage (T09)
+
+Open `/endless` or use the Endless Voyage link below practice. Predict within
+10 percentage points (inclusive) to keep exploring. The first error over 10
+ends the run and earns zero distance for that round. Current streak and distance
+appear alongside browser bests, with best streak emphasized. Restart begins a
+fresh run and preserves both independent best records.
+
+`src/domain/endless.ts` pins a randomized order of eligible demo snapshots using
+the existing selector, with injected randomness. There is no round limit or
+repeat within a run; reaching the end of the available pool completes the voyage
+without a loss. `endless-repository.ts` saves frozen questions, locked predictions,
+current input, and bests together in a versioned browser record. Reload replays
+validated inputs through the domain rules and credits a saved lock once. Stale
+tabs cannot overwrite newer progress. Unavailable or corrupt storage stops play
+with a recovery message and a practice link.
+
+Records are local to this browser and clearing storage resets them. Percentages
+remain visibly simulated; no public ranked score or genuine crowd data is claimed.
+T09 checks cover 10/11 boundaries, first-miss termination, all 40 unique questions,
+explicit pool completion, restart, saved bests, reload, and storage failures.
+Desktop/mobile evidence is retained in `docs/evidence/t09/`; see the
+[T09 evidence](.scratch/offcourse/issues/T09-endless-voyage-end-to-end.md).

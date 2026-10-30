@@ -6,6 +6,7 @@ import { demoCatalog } from "../../data/demo-questions";
 import { nextDaily, type DailyExpedition } from "../../domain/daily";
 import { createDailyRepository } from "../../domain/daily-repository";
 import { RoundPlayer, type Playback } from "../round-player";
+import { ProgressNotice } from "../progress-notice";
 import { RocketWorld } from "../../world/rocket-world";
 
 type Repository = ReturnType<typeof createDailyRepository>;
@@ -50,7 +51,10 @@ export function Daily() {
       document.removeEventListener("visibilitychange", load);
     };
   }, []);
-  if (error) return <StorageNotice />;
+  if (error)
+    return (
+      <ProgressNotice message="Daily progress could not be saved or restored. Daily play needs available browser storage." />
+    );
   if (!loaded)
     return (
       <p role="status" className="mt-8">
@@ -58,27 +62,6 @@ export function Daily() {
       </p>
     );
   return <DailyGame key={loaded.daily.dateKey} {...loaded} />;
-}
-
-function StorageNotice({ message }: { message?: string }) {
-  return (
-    <div
-      role="alert"
-      className="mt-8 space-y-3 rounded-2xl border border-[#6d8399] p-5"
-    >
-      <p>
-        {message ??
-          "Daily progress could not be saved or restored. Daily play needs available browser storage."}
-      </p>
-      <p>
-        Reload to resume safely, or{" "}
-        <Link href="/" className="underline">
-          play practice
-        </Link>
-        .
-      </p>
-    </div>
-  );
 }
 
 function DailyGame({ daily, repository }: Loaded) {
@@ -112,7 +95,7 @@ function DailyGame({ daily, repository }: Loaded) {
   useEffect(() => {
     if (complete) summaryHeading.current?.focus();
   }, [complete]);
-  if (error) return <StorageNotice message={error} />;
+  if (error) return <ProgressNotice message={error} />;
   const reset = new Date(Date.parse(`${daily.dateKey}T00:00:00Z`) + 86400000);
   return (
     <>
