@@ -161,7 +161,8 @@ The actual target stays hidden until reveal at 1.2 seconds; playback settles by
 1.8 seconds. Skip becomes available after reveal. Reduced motion resolves to a
 static trajectory/result, including when the preference changes during flight.
 Both paths retain the same locked prediction, distribution and once-only score.
-Browser suspension catches up using elapsed time without replaying scoring.
+Hidden tabs pause playback until the player explicitly resumes, without replaying
+scoring. Reloading a saved Daily or Endless lock settles that prediction once.
 
 Tests cover all three outcomes, skip stability, reduced motion, keyboard flow,
 renderer reuse, and the WebGL fallback on desktop and mobile. Retained motion
@@ -221,3 +222,23 @@ T09 checks cover 10/11 boundaries, first-miss termination, all 40 unique questio
 explicit pool completion, restart, saved bests, reload, and storage failures.
 Desktop/mobile evidence is retained in `docs/evidence/t09/`; see the
 [T09 evidence](.scratch/offcourse/issues/T09-endless-voyage-end-to-end.md).
+
+## Mobile and desktop controls (T13)
+
+Choose YES or NO, then drag the large prediction slider. With a keyboard, Tab
+through preferences and controls, use arrow keys for 1% steps, Home/End for
+0%/100%, and Enter or Space to activate buttons. The percentage always means YES.
+
+Pause holds the current answer, prediction, and flight progress, and silences
+feedback. Switching away from the tab pauses automatically; Resume returns focus
+to the question or locked prediction. Daily and Endless drafts survive reload;
+saved locks resolve once against the same frozen results. Practice is temporary.
+Loading and storage-recovery messages remain readable, with a full-size practice
+button when saved modes cannot continue.
+
+The layout includes safe-area padding and a shorter world view on phone
+landscape screens. The UX browser matrix covers 360px, iPhone-sized 393px, 768px
+tablet, 1440px desktop, and 844×390 landscape layouts across all three modes,
+alongside touch dragging, keyboard focus, pause/resume, loading, error recovery,
+and saved input. These are Chromium emulations; physical-device and other-engine
+profiling remain part of launch QA.

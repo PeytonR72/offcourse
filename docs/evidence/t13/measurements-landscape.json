@@ -1,0 +1,157 @@
+[
+  {
+    "route": "/",
+    "sizes": [
+      {
+        "label": "Sound off",
+        "width": 94.21875,
+        "height": 44
+      },
+      {
+        "label": "Reduce motion on",
+        "width": 155.859375,
+        "height": 44
+      },
+      {
+        "label": "Haptics off",
+        "width": 101.296875,
+        "height": 44
+      },
+      {
+        "label": "YES",
+        "width": 305,
+        "height": 48
+      },
+      {
+        "label": "NO",
+        "width": 305,
+        "height": 48
+      },
+      {
+        "label": "prediction",
+        "width": 622,
+        "height": 48
+      },
+      {
+        "label": "Lock prediction",
+        "width": 622,
+        "height": 48
+      },
+      {
+        "label": "Pause",
+        "width": 622,
+        "height": 44
+      },
+      {
+        "label": "Play Daily Expedition · 5 rounds",
+        "width": 688,
+        "height": 48
+      },
+      {
+        "label": "Play Endless Voyage · one miss ends the run",
+        "width": 688,
+        "height": 48
+      }
+    ]
+  },
+  {
+    "route": "/daily",
+    "sizes": [
+      {
+        "label": "Sound off",
+        "width": 94.21875,
+        "height": 44
+      },
+      {
+        "label": "Reduce motion on",
+        "width": 155.859375,
+        "height": 44
+      },
+      {
+        "label": "Haptics off",
+        "width": 101.296875,
+        "height": 44
+      },
+      {
+        "label": "Offcourse · Practice",
+        "width": 141.09375,
+        "height": 48
+      },
+      {
+        "label": "YES",
+        "width": 305,
+        "height": 48
+      },
+      {
+        "label": "NO",
+        "width": 305,
+        "height": 48
+      },
+      {
+        "label": "prediction",
+        "width": 622,
+        "height": 48.00006103515625
+      },
+      {
+        "label": "Lock prediction",
+        "width": 622,
+        "height": 48
+      },
+      {
+        "label": "Pause",
+        "width": 622,
+        "height": 44
+      }
+    ]
+  },
+  {
+    "route": "/endless",
+    "sizes": [
+      {
+        "label": "Sound off",
+        "width": 94.21875,
+        "height": 44
+      },
+      {
+        "label": "Reduce motion on",
+        "width": 155.859375,
+        "height": 44
+      },
+      {
+        "label": "Haptics off",
+        "width": 101.296875,
+        "height": 44
+      },
+      {
+        "label": "Offcourse · Practice",
+        "width": 141.09375,
+        "height": 48
+      },
+      {
+        "label": "YES",
+        "width": 305,
+        "height": 48
+      },
+      {
+        "label": "NO",
+        "width": 305,
+        "height": 48
+      },
+      {
+        "label": "prediction",
+        "width": 622,
+        "height": 48
+      },
+      {
+        "label": "Lock prediction",
+        "width": 622,
+        "height": 48
+      },
+      {
+        "label": "Pause",
+        "width": 622,
+        "height": 44
+      }
+    ]
+  }
+]

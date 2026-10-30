@@ -24,7 +24,15 @@ const loadRenderer: RendererLoader = async () => {
   return createPixiRenderer();
 };
 
-export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
+export function RocketWorld({
+  run,
+  elapsed,
+  paused = false,
+}: {
+  run: Run;
+  elapsed?: number;
+  paused?: boolean;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const fallbackRocket = useRef<SVGGElement>(null);
   const { reducedMotion } = useExperience();
@@ -60,9 +68,18 @@ export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
       reducedMotion,
     });
   }, [round, elapsed, universe, reducedMotion]);
-  const idle = round.phase === "answering" || round.phase === "aiming";
+  const idle =
+    !paused && (round.phase === "answering" || round.phase === "aiming");
   useEffect(() => {
-    if (!idle || reducedMotion) return;
+    if (!idle || reducedMotion) {
+      // Idle frames write directly to the SVG ref. Restore the static pose even
+      // when React's unchanged transform prop would skip updating the attribute.
+      fallbackRocket.current?.setAttribute(
+        "transform",
+        transform(flightFrame(readState()))
+      );
+      return;
+    }
     let frame = 0;
     let last = 0;
     const started = performance.now();
@@ -106,7 +123,7 @@ export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
       role="img"
       aria-label={`${universe.region.name}. ${label}`}
     >
-      <div className="relative aspect-[5/2]" aria-hidden="true">
+      <div className="world-viewport relative aspect-[5/2]" aria-hidden="true">
         <svg
           viewBox="0 0 640 256"
           className="absolute inset-0 size-full"

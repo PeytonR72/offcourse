@@ -10,6 +10,8 @@
 body {
   margin: 0;
   min-width: 320px;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
 }
 
 ::selection {
@@ -30,6 +32,69 @@ input {
   color: #101927;
   font-weight: bold;
   cursor: pointer;
+}
+
+.secondary-button {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid #6d8399;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+input[type="range"] {
+  appearance: none;
+  height: 48px;
+  background: transparent;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #6d8399;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  margin-top: -12px;
+  border: 3px solid #101927;
+  border-radius: 50%;
+  background: #f5c879;
+}
+
+input[type="range"]::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  background: #6d8399;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: 3px solid #101927;
+  border-radius: 50%;
+  background: #f5c879;
+}
+
+input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  main {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .world-viewport {
+    height: 144px;
+    aspect-ratio: auto;
+  }
 }
 
 button:disabled {

@@ -109,18 +109,15 @@ test("pointer aim and rapid lock produce one result", async ({
   if (isMobile) await no.tap();
   else await no.click();
   const slider = page.getByRole("slider");
+  await slider.fill("0");
   await slider.scrollIntoViewIfNeeded();
   const box = await slider.boundingBox();
   if (!box) throw new Error("Slider is missing");
   if (isMobile)
-    await page.touchscreen.tap(
-      box.x + box.width * 0.75,
-      box.y + box.height / 2
-    );
-  else await page.mouse.click(box.x + box.width * 0.75, box.y + box.height / 2);
+    await page.touchscreen.tap(box.x + box.width / 2, box.y + box.height / 2);
+  else await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
   const value = Number(await slider.inputValue());
-  expect(value).toBeGreaterThanOrEqual(73);
-  expect(value).toBeLessThanOrEqual(77);
+  expect(value).toBe(50);
   await page.screenshot({
     path: testInfo.outputPath("aim.png"),
     fullPage: true,

@@ -41,6 +41,7 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
       resolution: Math.min(window.devicePixelRatio || 1, 2),
       autoStart: false,
       sharedTicker: false,
+      accessibilityOptions: { activateOnTab: false },
       eventFeatures: {
         move: false,
         globalMove: false,
@@ -48,6 +49,10 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         wheel: false,
       },
     });
+    // Gameplay uses DOM controls and the figure's text alternative. Pixi's
+    // offscreen mobile activation button would add an empty keyboard stop.
+    const accessibilityHook = app.renderer.accessibility?.hookDiv;
+    if (accessibilityHook) accessibilityHook.hidden = true;
     const world = new Container();
     app.stage.addChild(world);
     const sky = world.addChild(new Graphics());
@@ -86,7 +91,13 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
       render(state, width, height) {
         if (app.screen.width !== width || app.screen.height !== height)
           app.renderer.resize(width, height);
-        world.scale.set(width / WIDTH, height / HEIGHT);
+        // Match SVG's centered contain layout, including short landscape views.
+        const scale = Math.min(width / WIDTH, height / HEIGHT);
+        world.scale.set(scale);
+        world.position.set(
+          (width - WIDTH * scale) / 2,
+          (height - HEIGHT * scale) / 2
+        );
         const { endY, targetY } = trajectoryGeometry(state);
         const frame = flightFrame(state);
         const universe = state.universe ?? defaultUniverse;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { QuestionSnapshot } from "../domain/questions";
 import { transitionRun, type PersonalAnswer, type Run } from "../domain/run";
 import { RocketWorld } from "../world/rocket-world";
@@ -61,19 +61,45 @@ export function RoundPlayer({
   const setRun = (change: (current: Run) => Run) =>
     update((current) => ({ run: change(current.run) }));
   const heading = useRef<HTMLHeadingElement>(null);
+  const [paused, setPaused] = useState(false);
+  const resumeButton = useRef<HTMLButtonElement>(null);
+  const flightElapsed = useRef(0);
+  const wasPaused = useRef(false);
   const round = run.round;
   const flying =
     round.phase === "locked" ||
     round.phase === "flight" ||
     round.phase === "reveal";
+  const canPause = round.phase !== "resolved" && round.phase !== "idle";
   useEffect(() => () => stopFeedback(), [stopFeedback]);
   useEffect(() => {
-    if (!flying) return;
-    const started = performance.now();
+    const hidden = () => {
+      if (document.hidden && canPause) {
+        stopFeedback();
+        setPaused(true);
+      }
+    };
+    document.addEventListener("visibilitychange", hidden);
+    return () => document.removeEventListener("visibilitychange", hidden);
+  }, [stopFeedback, canPause]);
+  useEffect(() => {
+    if (paused) resumeButton.current?.focus();
+    else if (wasPaused.current) heading.current?.focus();
+    wasPaused.current = paused;
+  }, [paused]);
+  useEffect(() => {
+    if (!flying) {
+      flightElapsed.current = 0;
+      return;
+    }
+    if (paused) return;
+    const started = performance.now() - flightElapsed.current;
     const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     let frame = 0;
     const tick = () => {
+      if (document.hidden) return;
       const elapsed = performance.now() - started;
+      flightElapsed.current = elapsed;
       update((current) =>
         updateFlight(
           current,
@@ -97,7 +123,7 @@ export function RoundPlayer({
       cancelAnimationFrame(frame);
       media?.removeEventListener("change", changed);
     };
-  }, [flying, update, questions, reducedMotion]);
+  }, [flying, update, questions, reducedMotion, paused]);
   const outcome = toSceneState(round).outcome;
   useEffect(() => {
     if (outcome) reveal(outcome);
@@ -109,6 +135,44 @@ export function RoundPlayer({
     )
       heading.current?.focus();
   }, [round.phase, run.completedRounds.length]);
+  const pauseControl = (
+    <button
+      className="secondary-button mt-3 w-full"
+      onClick={() => {
+        stopFeedback();
+        setPaused(true);
+      }}
+    >
+      Pause
+    </button>
+  );
+  if (paused && canPause)
+    return (
+      <motion.section
+        initial={false}
+        animate={{ y: 0, scale: 1 }}
+        transition={cardSpring}
+        className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
+        aria-labelledby="pause-title"
+      >
+        <RocketWorld run={run} elapsed={elapsed} paused />
+        <h2 id="pause-title" className="text-2xl font-bold">
+          Flight paused
+        </h2>
+        <p className="mt-3">
+          Your answer and prediction are held. Resume when you’re ready.
+        </p>
+        <button
+          ref={resumeButton}
+          className="primary-button mt-6 w-full"
+          onClick={() => {
+            setPaused(false);
+          }}
+        >
+          Resume
+        </button>
+      </motion.section>
+    );
   if (round.phase === "resolved") {
     const { lock, distribution, score } = round.result;
     return (
@@ -172,7 +236,12 @@ export function RoundPlayer({
         aria-labelledby="flight-title"
       >
         <RocketWorld run={run} elapsed={elapsed} />
-        <h2 id="flight-title" className="text-2xl font-bold">
+        <h2
+          id="flight-title"
+          ref={heading}
+          tabIndex={-1}
+          className="text-2xl font-bold"
+        >
           Prediction locked
         </h2>
         <p className="mt-3">{lock.question.prompt}</p>
@@ -205,6 +274,7 @@ export function RoundPlayer({
         >
           Skip flight
         </button>
+        {pauseControl}
       </motion.section>
     );
   }
@@ -259,7 +329,8 @@ export function RoundPlayer({
         What percentage of players chose YES?
       </label>
       <p id="aim-help" className="mt-2 text-sm text-[#b4c2d1]">
-        Always predict YES, even if your own answer is NO.
+        Always predict YES, even if your own answer is NO. Drag to aim, or use
+        arrow keys for 1% steps. Home: 0%. End: 100%.
       </p>
       <output
         htmlFor="prediction"
@@ -312,6 +383,7 @@ export function RoundPlayer({
       >
         Lock prediction
       </button>
+      {pauseControl}
     </motion.section>
   );
 }
