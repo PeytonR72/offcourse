@@ -51,7 +51,12 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
   generated Next.js types and Husky's fail-fast hook launcher.
 - Spec review: **0 findings**. T01 is fulfilled, including the harness, CI,
   precommit checks, and commands; no later-ticket implementation was introduced.
-- Implementation commit: `T01: establish Next.js repository and test harness`
-  (the commit containing this ticket's evidence). Normal push targets `origin/main`.
+- Implementation commit: `e00e22e` — `T01: establish Next.js repository and test harness`,
+  pushed normally to `origin/main` after the live precommit hook passed staged
+  formatting, lint, typecheck, and tests.
+- [Initial GitHub Actions run](https://github.com/PeytonR72/offcourse/actions/runs/40984801272)
+  passed all checks on Ubuntu, including production mobile/desktop browser tests.
+  Its deprecated action-runtime warning prompted a small follow-up using current
+  `actions/checkout`, `actions/setup-node`, and `actions/upload-artifact` v7 releases.
 - Automatic Vercel deployment pause remains intact. No deployment requested.
 - Next unlocked ticket: **T02 — Domain types and rules**; awaits explicit authorization.
