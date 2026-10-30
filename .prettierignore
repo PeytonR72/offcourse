@@ -1,0 +1,13 @@
+node_modules/
+.next/
+dist/
+out/
+coverage/
+playwright-report/
+test-results/
+next-env.d.ts
+.agents/
+.scratch/
+docs/OFFCOURSE_SPEC.md
+docs/agents/
+AGENTS.md

@@ -8,3 +8,7 @@ dist/
 playwright-report/
 test-results/
 coverage/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
