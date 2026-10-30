@@ -24,4 +24,4 @@ GitHub hosts the private repository; local Markdown is the issue tracker. See `d
 
 The existing PixiJS/Vite starter predates the product specification. T01 is responsible for migrating to Next.js and establishing the full test harness; no game ticket is complete yet.
 
-The Vercel connection requires workspace authorization before the project can be created. Complete the intended `offcourse` project setup in the user's existing Hobby workspace after access is approved; use Next.js configuration, private source visibility, and paused automatic deployments.
+The `offcourse` Vercel project is linked to the private GitHub repository in the user's existing workspace. Next.js and Node 22 are configured, and automatic deployments are paused. See `docs/agents/vercel.md` for the verified project identity, local link, and deployment controls.
