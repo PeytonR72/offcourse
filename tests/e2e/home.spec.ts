@@ -101,6 +101,7 @@ test("pointer aim and rapid lock produce one result", async ({
   if (isMobile) await no.tap();
   else await no.click();
   const slider = page.getByRole("slider");
+  await slider.scrollIntoViewIfNeeded();
   const box = await slider.boundingBox();
   if (!box) throw new Error("Slider is missing");
   if (isMobile)
@@ -116,6 +117,9 @@ test("pointer aim and rapid lock produce one result", async ({
     path: testInfo.outputPath("aim.png"),
     fullPage: true,
   });
+  await page
+    .getByRole("button", { name: "Lock prediction" })
+    .scrollIntoViewIfNeeded();
   const lockBox = await page
     .getByRole("button", { name: "Lock prediction" })
     .boundingBox();

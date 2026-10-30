@@ -9,6 +9,7 @@ import {
   type PersonalAnswer,
   type Run,
 } from "../domain/run";
+import { RocketWorld } from "../world/rocket-world";
 
 function nextQuestion(run: Run) {
   return selectEndlessDemo(
@@ -51,6 +52,7 @@ export function Practice() {
         className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
         aria-labelledby="result-title"
       >
+        <RocketWorld round={round} />
         <h2
           id="result-title"
           ref={heading}
@@ -76,13 +78,15 @@ export function Practice() {
         ) : (
           <button
             className="primary-button mt-6 w-full"
-            onClick={() =>
+            onClick={(event) => {
+              // A rapid second click on Lock can land here after the layout changes.
+              if (event.detail > 1) return;
               setRun((current) =>
                 current.round.phase === "resolved"
                   ? startNext(current)
                   : current
-              )
-            }
+              );
+            }}
           >
             Continue
           </button>
@@ -106,6 +110,7 @@ export function Practice() {
       aria-labelledby="question"
       className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
     >
+      <RocketWorld round={round} />
       <p className="text-sm text-[#b4c2d1]">Practice flight</p>
       <h2
         id="question"

@@ -1,0 +1,65 @@
+import { expect, test } from "@playwright/test";
+
+test("rocket scene persists through aim, reveal and continue", async ({
+  page,
+}, testInfo) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  const scene = page.getByTestId("rocket-world");
+  await expect(scene).toHaveAttribute("data-renderer", "ready");
+  const original = await scene.locator("canvas").elementHandle();
+  await expect(scene).toHaveAttribute("data-phase", "answering");
+  await page.getByRole("radio", { name: "NO", exact: true }).check();
+  await page.getByRole("slider").fill("75");
+  await expect(scene).toHaveAttribute("data-phase", "aiming");
+  await expect(scene).toHaveAttribute("aria-label", /75% YES.*hidden/);
+  await scene.screenshot({ path: testInfo.outputPath("world-aim.png") });
+  await expect(scene.locator("canvas")).toHaveScreenshot("world-aim.png", {
+    maxDiffPixelRatio: 0.01,
+  });
+  await page.getByRole("button", { name: "Lock prediction" }).click();
+  await expect(scene).toHaveAttribute("data-phase", "resolved");
+  await expect(scene).toHaveAttribute("aria-label", /Actual YES/);
+  await scene.screenshot({ path: testInfo.outputPath("world-reveal.png") });
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(scene).toHaveAttribute("data-phase", "answering");
+  await expect(scene.locator("canvas")).toHaveCount(1);
+  expect(await original?.evaluate((canvas) => canvas.isConnected)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test("practice remains playable when WebGL cannot initialize", async ({
+  page,
+}, testInfo) => {
+  await page.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (
+      this: HTMLCanvasElement,
+      type,
+      ...args
+    ) {
+      if (String(type).includes("webgl")) return null;
+      return Reflect.apply(getContext, this, [type, ...args]);
+    } as typeof getContext;
+  });
+  await page.goto("/");
+  const scene = page.getByTestId("rocket-world");
+  await expect(scene).toHaveAttribute("data-renderer", "unavailable");
+  await expect(scene.locator("canvas")).toHaveCount(0);
+  await expect(page.getByText(/Static view/)).toBeVisible();
+  await page.getByRole("radio", { name: "YES", exact: true }).check();
+  await page.getByRole("slider").fill("60");
+  await page.getByRole("button", { name: "Lock prediction" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Your prediction: 60% YES"
+  );
+  await page.screenshot({
+    path: testInfo.outputPath("world-fallback.png"),
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(
+    page.getByRole("button", { name: "Lock prediction" })
+  ).toBeDisabled();
+});

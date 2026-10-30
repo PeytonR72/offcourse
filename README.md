@@ -138,3 +138,18 @@ immutable selected snapshots. Invalid or ambiguous content is excluded.
 See [the demo content notes](docs/demo-content.md) for the editorial pass,
 caller contract, filtering rules, deterministic algorithm, and versioning.
 Gameplay UI integration begins in T05.
+
+## Rocket rendering (T06)
+
+Practice now includes a PixiJS 8 rocket, starfield, destination and deterministic
+prediction path. `src/world/scene-state.ts` adapts the authoritative round state
+without revealing a target before reveal. `mount-scene.ts` owns asynchronous GPU
+initialization, updates, resizing and cleanup. Pixi loads only from a client
+effect; a static SVG view and the DOM controls remain usable if WebGL fails.
+Flight animation is reserved for T07.
+
+The scene renders on state/size changes, caps DPR at 2, and uses nearest filtering
+for its original pixel rocket. Browser tests compare canvas screenshots, keep one
+canvas across rounds, and play through forced GPU failure. Screenshot baselines
+exclude text and allow 1% differing pixels across GPU rasterizers. See the
+[T06 evidence](.scratch/offcourse/issues/T06-rocket-rendering-vertical-slice.md).
