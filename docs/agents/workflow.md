@@ -16,12 +16,12 @@ The user explicitly authorized automatic commits and pushes of completed tickets
 
 After each ticket, report what works, commands and results, visual evidence where relevant, commit/push status, and the next unlocked ticket. Stop after the requested ticket.
 
-Ask before adding unplanned features, live data sources, or paid services. Vercel project linking is authorized; a public production launch remains gated by the specification and explicit release approval. Keep automatic deployments paused during the initial setup.
+Ask before adding unplanned features, live data sources, or paid services. The user authorized automatic Vercel deployments from GitHub pushes for phone testing. Keep prototype and simulated-data disclosures visible. A genuine-crowd public launch remains gated by the specification and explicit release approval.
 
 ## Repository setup
 
 GitHub hosts the private repository; local Markdown is the issue tracker. See `docs/agents/issue-tracker.md`.
 
-The existing PixiJS/Vite starter predates the product specification. T01 is responsible for migrating to Next.js and establishing the full test harness; no game ticket is complete yet.
+The app uses Next.js following the T01 migration. Refer to the local tickets and their evidence for implementation status.
 
-The `offcourse` Vercel project is linked to the private GitHub repository in the user's existing workspace. Next.js and Node 22 are configured, and automatic deployments are paused. See `docs/agents/vercel.md` for the verified project identity, local link, and deployment controls.
+The `offcourse` Vercel project is linked to the private GitHub repository in the user's existing workspace. Next.js and Node 22 are configured, and automatic deployments are enabled for phone testing. See `docs/agents/vercel.md` for the verified project identity, local link, and deployment controls.
