@@ -1,4 +1,5 @@
 import { Practice } from "./practice";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -21,6 +22,12 @@ export default function Home() {
         </p>
       </div>
       <Practice />
+      <Link
+        href="/daily"
+        className="primary-button mt-6 flex items-center justify-center"
+      >
+        Play Daily Expedition · 5 rounds
+      </Link>
     </main>
   );
 }

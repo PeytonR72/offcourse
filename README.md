@@ -2,14 +2,14 @@
 
 Guess what humanity thinks to steer a tiny rocket through space.
 
-T01 establishes the Next.js App Router, strict TypeScript, Tailwind CSS, and test
-harness. The home page is a prototype shell; gameplay starts in later tickets.
-Prototype results will be simulated and clearly labeled **Illustrative results**.
+The prototype includes open practice flights and a five-round Daily Expedition
+at `/daily`, with an animated rocket and accessible controls. Percentages are
+simulated and clearly labeled **Illustrative results**.
 
 The official plan is [docs/OFFCOURSE_SPEC.md](docs/OFFCOURSE_SPEC.md). The 18
 tickets live in [.scratch/offcourse/issues/](.scratch/offcourse/issues/).
 Follow [the workflow](docs/agents/workflow.md); each ticket needs explicit user
-authorization. Automatic Vercel deployments remain paused.
+authorization. GitHub pushes automatically deploy to Vercel for phone testing.
 
 ## Setup and local development
 
@@ -168,3 +168,28 @@ renderer reuse, and the WebGL fallback on desktop and mobile. Retained motion
 recordings: [desktop](docs/evidence/t07/desktop-motion.webm) and
 [mobile](docs/evidence/t07/mobile-motion.webm). See the
 [T07 evidence](.scratch/offcourse/issues/T07-flight-and-reveal-animation-system.md).
+
+## Daily Expedition (T08)
+
+Open `/daily` or use the Daily Expedition link below practice. Each UTC day has
+the same five frozen demo questions for everyone on the current catalog version.
+All five rounds continue after misses, with progress, cumulative distance up to
+500 ly, and a per-round results summary. The next reset appears in local time.
+
+`src/domain/daily.ts` owns five-round progression; `daily-repository.ts` accepts
+injected browser storage, catalog, and clock. A versioned, dated record pins the
+manifest, locked predictions, and current input. Reload reconstructs scores using
+the domain rules and settles a locked round once. Completed attempts reopen their
+summary; there is no same-day replay. Midnight UTC unlocks a new attempt, including
+on an open page. Stale tabs cannot overwrite newer progress.
+
+Daily participation is best effort per browser. Clearing storage resets it;
+records do not sync across devices. If storage is unavailable or corrupted, daily
+play stops with a recovery message and a link to practice. This remains a demo,
+with no genuine crowd data or public ranked score. Sharing and endless records
+remain in their assigned tickets.
+
+T08 checks cover 0/500 ly boundaries, five misses, deterministic questions, frozen
+reload recovery, replay blocking, UTC rollover, and storage failures. Desktop and
+mobile browser screenshots are retained under `docs/evidence/t08/`; see the
+[T08 evidence](.scratch/offcourse/issues/T08-daily-expedition-end-to-end.md).
