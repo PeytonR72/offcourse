@@ -82,7 +82,7 @@ is built and served by Next.js. Pixi world rendering belongs to T06.
 T01 verification and retained screenshots are recorded in
 [its ticket](.scratch/offcourse/issues/T01-repository-and-test-harness.md).
 
-## Domain rules (T02)
+## Domain rules (T02–T03)
 
 `src/domain/content.ts` defines readonly questions and versioned distributions,
 with validators that throw for invalid content fields and numeric metadata.
@@ -107,7 +107,19 @@ matching snapshot; resolve appends one immutable result to `completedRounds`.
 Out-of-order events and reused round IDs throw. State snapshots are frozen and
 transitions leave their inputs unchanged; callers must retain the returned run.
 
+`src/domain/scoring.ts` exposes `scoreRound(mode, guessPercentage, actualPercentage)`.
+It returns absolute percentage-point `error`, inclusive ±10 `survived`, and
+integer `distance` in light-years. Distance is `max(0, 100 - 5 * error)`, rounded
+per round. An endless miss earns zero; a daily miss still earns formula distance.
+Survival uses the unrounded error, including fractional crowd percentages.
+
+Reveal attaches the frozen score to the result; `resolve` credits its distance
+to `totalDistance` exactly once. Runs start with zero distance and `active`
+status. An endless miss changes status to `lost` on resolution and rejects all
+further events. Daily misses allow the next round. The five-round daily session
+completion, endless streak/records, and pool exhaustion belong to T08/T09.
+
 This module has no browser, clock, randomness, storage, or rendering dependency.
-Scoring and mode completion belong to T03 and later tickets; scheduling and
-eligibility filtering belong to the content tickets. Reload persistence and
-server idempotency will build on these rules in their respective tickets.
+Scheduling and eligibility filtering belong to the content tickets. Reload
+persistence and server idempotency will build on these rules in their respective
+tickets.

@@ -4,8 +4,9 @@ import {
   type Distribution,
   type Question,
 } from "./content";
+import { scoreRound, type RoundScore, type RunMode } from "./scoring";
 
-export type RunMode = "daily" | "endless";
+export type { RunMode } from "./scoring";
 export type PersonalAnswer = "yes" | "no";
 
 type RoundContext = Readonly<{
@@ -20,10 +21,11 @@ export type LockedAnswer = RoundContext &
     guessPercentage: number;
   }>;
 
-/** The one resolution record that scoring can consume in T03. */
+/** The immutable result credited once on resolution. */
 export type ResolvedRound = Readonly<{
   lock: LockedAnswer;
   distribution: Distribution;
+  score: RoundScore;
 }>;
 
 export type RoundState =
@@ -43,6 +45,8 @@ export type Run = Readonly<{
   mode: RunMode;
   round: RoundState;
   completedRounds: readonly ResolvedRound[];
+  totalDistance: number;
+  status: "active" | "lost";
 }>;
 
 export type RunEvent =
@@ -61,10 +65,15 @@ export function createRun(id: string, mode: RunMode): Run {
     mode,
     round: Object.freeze({ phase: "idle" }),
     completedRounds: Object.freeze([]),
+    totalDistance: 0,
+    status: "active",
   });
 }
 
 export function transitionRun(run: Run, event: RunEvent): Run {
+  if (run.status === "lost") {
+    throw new Error("Cannot advance a lost run");
+  }
   const round = run.round;
   switch (event.type) {
     case "start_round": {
@@ -145,6 +154,11 @@ export function transitionRun(run: Run, event: RunEvent): Run {
         result: Object.freeze({
           lock: round.lock,
           distribution: Object.freeze({ ...event.distribution }),
+          score: scoreRound(
+            run.mode,
+            round.lock.guessPercentage,
+            event.distribution.yesPercentage
+          ),
         }),
       });
     case "resolve":
@@ -152,6 +166,11 @@ export function transitionRun(run: Run, event: RunEvent): Run {
       return withRound(
         {
           ...run,
+          totalDistance: run.totalDistance + round.result.score.distance,
+          status:
+            run.mode === "endless" && !round.result.score.survived
+              ? "lost"
+              : "active",
           completedRounds: Object.freeze([
             ...run.completedRounds,
             round.result,
