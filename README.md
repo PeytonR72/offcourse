@@ -123,3 +123,18 @@ This module has no browser, clock, randomness, storage, or rendering dependency.
 Scheduling and eligibility filtering belong to the content tickets. Reload
 persistence and server idempotency will build on these rules in their respective
 tickets.
+
+## Demo content (T04)
+
+`src/data/demo-questions.ts` exports a frozen versioned catalog of 40 original
+questions with simulated, zero-vote distributions. `src/domain/questions.ts`
+exports pure `selectDailyDemo(catalog, at)` and
+`selectEndlessDemo(catalog, seenQuestionIds, random)` functions. Daily selection
+is stable for the UTC date/version and returns exactly five distinct questions
+or explicit unavailability. Endless selection excludes seen IDs and explicitly
+reports pool exhaustion. Outputs carry the **Illustrative results** label and
+immutable selected snapshots. Invalid or ambiguous content is excluded.
+
+See [the demo content notes](docs/demo-content.md) for the editorial pass,
+caller contract, filtering rules, deterministic algorithm, and versioning.
+Gameplay UI integration begins in T05.
