@@ -58,6 +58,7 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
     const defaultUniverse = createUniverse("offcourse", 0);
     const trajectory = world.addChild(new Graphics());
     const destination = world.addChild(new Graphics());
+    const sparks = world.addChild(new Graphics());
     source = new ImageSource({
       resource: sheet.resource,
       scaleMode: "nearest",
@@ -140,6 +141,12 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         exhaust.visible = appearance.thruster !== null;
         if (appearance.thruster)
           exhaust.texture = textures[appearance.thruster];
+        exhaust.scale.set(frame.flame || 1, 1);
+        sparks.clear();
+        for (const spark of frame.particles)
+          sparks
+            .circle(spark.x, spark.y, spark.radius)
+            .fill({ color: 0xf5c879, alpha: spark.alpha });
         trajectory.clear();
         trajectory
           .moveTo(86, 166)

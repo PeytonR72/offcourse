@@ -30,6 +30,16 @@ export function flightFrame(state: SceneState) {
     scaleY = 1,
     alpha = 1,
     flame = 0;
+  if (
+    !state.reducedMotion &&
+    (state.phase === "answering" || state.phase === "aiming")
+  ) {
+    const breath = Math.sin((state.motionTime ?? 0) / 650);
+    y += breath * 3;
+    rotation += breath * 0.015;
+    scaleX += breath * 0.015;
+    scaleY -= breath * 0.015;
+  }
   if (state.phase === "locked") {
     stage = "anticipation";
     const squash = Math.sin(
@@ -47,6 +57,15 @@ export function flightFrame(state: SceneState) {
           ? "flight"
           : "approach";
     flame = stage === "ignition" ? 1.5 : 1;
+    if (!state.reducedMotion) {
+      flame *= 0.94 + Math.sin(elapsed / 37) * 0.1;
+      const stretch = Math.sin(
+        clamp((elapsed - timing.ignition) / (timing.flight - timing.ignition)) *
+          Math.PI
+      );
+      scaleX += stretch * 0.1;
+      scaleY -= stretch * 0.08;
+    }
     const t =
       clamp((elapsed - timing.flight) / (timing.reveal - timing.flight)) *
       revealPosition;
@@ -78,6 +97,11 @@ export function flightFrame(state: SceneState) {
       x = startX + (504 - startX) * settling;
       y = startY + (targetY - startY) * settling;
       if (state.outcome === "perfect") y -= Math.sin(progress * Math.PI) * 12;
+      if (!state.reducedMotion) {
+        const squash = Math.sin(progress * Math.PI * 2) * (1 - progress) * 0.08;
+        scaleX = 1 + squash;
+        scaleY = 1 - squash;
+      }
       rotation =
         state.outcome === "survive"
           ? Math.sin(progress * Math.PI * 4) * (1 - progress) * 0.25
@@ -85,5 +109,19 @@ export function flightFrame(state: SceneState) {
     }
     if (progress === 1) stage = "settled";
   }
-  return { stage, x, y, rotation, scaleX, scaleY, alpha, flame };
+  const particles =
+    !state.reducedMotion && flame > 0
+      ? Array.from({ length: 7 }, (_, index) => {
+          const age = ((state.elapsed ?? 0) / 450 + index / 7) % 1;
+          const trail = 27 + age * 32;
+          const spread = Math.sin(index * 2.4) * age * 7;
+          return {
+            x: x - Math.cos(rotation) * trail - Math.sin(rotation) * spread,
+            y: y - Math.sin(rotation) * trail + Math.cos(rotation) * spread,
+            radius: 1.5 - age * 0.8,
+            alpha: (1 - age) * 0.55,
+          };
+        })
+      : [];
+  return { stage, x, y, rotation, scaleX, scaleY, alpha, flame, particles };
 }

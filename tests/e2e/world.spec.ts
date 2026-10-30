@@ -4,6 +4,7 @@ test("rocket scene persists through aim, reveal and continue", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
+  await page.emulateMedia({ reducedMotion: "reduce" });
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   const scene = page.getByTestId("rocket-world");
@@ -18,6 +19,7 @@ test("rocket scene persists through aim, reveal and continue", async ({
   await expect(scene.locator("canvas")).toHaveScreenshot("world-aim.png", {
     maxDiffPixelRatio: 0.01,
   });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.getByRole("button", { name: "Lock prediction" }).click();
   await expect(scene).toHaveAttribute("data-phase", "resolved");
   await expect(scene).toHaveAttribute("aria-label", /Actual YES/);

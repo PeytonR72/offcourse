@@ -1,0 +1,26 @@
+{
+  "viewport": {
+    "width": 393,
+    "height": 851
+  },
+  "browserEmulation": true,
+  "errors": [],
+  "noOverflow": true,
+  "controls": [
+    {
+      "text": "Sound on",
+      "width": 94.515625,
+      "height": 44
+    },
+    {
+      "text": "Reduce motion on",
+      "width": 155.859375,
+      "height": 44
+    },
+    {
+      "text": "Haptics off",
+      "width": 101.296875,
+      "height": 44
+    }
+  ]
+}

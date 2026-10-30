@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
+import { ExperienceProvider } from "./experience";
 
 export const metadata: Metadata = {
   title: "Offcourse",
@@ -15,7 +16,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ExperienceProvider>{children}</ExperienceProvider>
+      </body>
     </html>
   );
 }

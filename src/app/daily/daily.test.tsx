@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { Daily } from "./daily";
 
@@ -24,9 +24,11 @@ test("daily play shows progress, finishes all five misses and blocks replay afte
       fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     }
   }
-  expect(
-    await screen.findByRole("heading", { name: "Daily complete" })
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("heading", { name: "Daily complete" })
+    ).toHaveFocus()
+  );
   expect(screen.getByText(/5 of 5 destinations explored/)).toBeVisible();
   expect(screen.getByText(/Already played/)).toBeVisible();
   expect(

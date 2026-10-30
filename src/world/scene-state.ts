@@ -8,6 +8,8 @@ export type SceneState = Readonly<{
   targetOffset: number | null;
   outcome: "perfect" | "survive" | "miss" | null;
   elapsed?: number;
+  motionTime?: number;
+  reducedMotion?: boolean;
   universe?: Universe;
 }>;
 

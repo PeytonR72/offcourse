@@ -41,3 +41,26 @@ button:disabled {
   outline: 3px solid #7bdeea;
   outline-offset: 4px;
 }
+
+.experience-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 16px 20px 0;
+}
+
+.experience-controls button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #6d8399;
+  border-radius: 999px;
+  color: #c4d1dd;
+  cursor: pointer;
+}
+
+.experience-controls button[aria-pressed="true"] {
+  color: #f5c879;
+  border-color: #f5c879;
+}

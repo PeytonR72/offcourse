@@ -5,6 +5,16 @@ import type { QuestionSnapshot } from "../domain/questions";
 import { transitionRun, type PersonalAnswer, type Run } from "../domain/run";
 import { RocketWorld } from "../world/rocket-world";
 import { advanceFlight, flightTiming } from "../world/flight";
+import { useExperience } from "./experience";
+import { motion } from "motion/react";
+import { toSceneState } from "../world/scene-state";
+
+const cardSpring = {
+  type: "spring",
+  stiffness: 360,
+  damping: 26,
+  mass: 0.6,
+} as const;
 
 export type Playback = { run: Run; elapsed?: number };
 
@@ -47,6 +57,7 @@ export function RoundPlayer({
   completionText?: string;
 }) {
   const { run, elapsed } = playback;
+  const { reducedMotion, launch, reveal, stopFeedback } = useExperience();
   const setRun = (change: (current: Run) => Run) =>
     update((current) => ({ run: change(current.run) }));
   const heading = useRef<HTMLHeadingElement>(null);
@@ -55,6 +66,7 @@ export function RoundPlayer({
     round.phase === "locked" ||
     round.phase === "flight" ||
     round.phase === "reveal";
+  useEffect(() => () => stopFeedback(), [stopFeedback]);
   useEffect(() => {
     if (!flying) return;
     const started = performance.now();
@@ -66,11 +78,11 @@ export function RoundPlayer({
         updateFlight(
           current,
           elapsed,
-          media?.matches ? "reduced" : undefined,
+          reducedMotion || media?.matches ? "reduced" : undefined,
           questions
         )
       );
-      if (elapsed < flightTiming.settled && !media?.matches)
+      if (elapsed < flightTiming.settled && !reducedMotion && !media?.matches)
         frame = requestAnimationFrame(tick);
     };
     const changed = () => {
@@ -85,7 +97,11 @@ export function RoundPlayer({
       cancelAnimationFrame(frame);
       media?.removeEventListener("change", changed);
     };
-  }, [flying, update, questions]);
+  }, [flying, update, questions, reducedMotion]);
+  const outcome = toSceneState(round).outcome;
+  useEffect(() => {
+    if (outcome) reveal(outcome);
+  }, [outcome, reveal]);
   useEffect(() => {
     if (
       run.completedRounds.length > 0 &&
@@ -96,7 +112,10 @@ export function RoundPlayer({
   if (round.phase === "resolved") {
     const { lock, distribution, score } = round.result;
     return (
-      <section
+      <motion.section
+        initial={false}
+        animate={{ y: 0, scale: 1 }}
+        transition={cardSpring}
         className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
         aria-labelledby="result-title"
       >
@@ -133,7 +152,7 @@ export function RoundPlayer({
             Continue
           </button>
         )}
-      </section>
+      </motion.section>
     );
   }
   if (round.phase === "idle")
@@ -145,7 +164,10 @@ export function RoundPlayer({
   ) {
     const lock = "lock" in round ? round.lock : round.result.lock;
     return (
-      <section
+      <motion.section
+        initial={false}
+        animate={{ y: -2, scale: 0.997 }}
+        transition={cardSpring}
         className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
         aria-labelledby="flight-title"
       >
@@ -183,7 +205,7 @@ export function RoundPlayer({
         >
           Skip flight
         </button>
-      </section>
+      </motion.section>
     );
   }
   if (round.phase !== "answering" && round.phase !== "aiming") return null;
@@ -196,7 +218,10 @@ export function RoundPlayer({
         : chosen;
     });
   return (
-    <section
+    <motion.section
+      initial={false}
+      animate={{ y: round.phase === "aiming" ? -2 : 0, scale: 1 }}
+      transition={cardSpring}
       aria-labelledby="question"
       className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
     >
@@ -271,7 +296,10 @@ export function RoundPlayer({
       <button
         disabled={round.phase !== "aiming"}
         className="primary-button mt-6 w-full"
-        onClick={() =>
+        onClick={() => {
+          if (round.phase !== "aiming" || round.guessPercentage === null)
+            return;
+          launch();
           setRun((current) => {
             if (
               current.round.phase !== "aiming" ||
@@ -279,11 +307,11 @@ export function RoundPlayer({
             )
               return current;
             return transitionRun(current, { type: "lock" });
-          })
-        }
+          });
+        }}
       >
         Lock prediction
       </button>
-    </section>
+    </motion.section>
   );
 }

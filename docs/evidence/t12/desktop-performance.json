@@ -1,0 +1,10 @@
+{
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "cpuThrottle": 4,
+  "frames": 103,
+  "medianGapMs": 16.700000000000045,
+  "p95GapMs": 33.40000000000009
+}

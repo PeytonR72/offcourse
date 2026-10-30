@@ -18,6 +18,43 @@ function locked(guess = distribution.yesPercentage) {
   return transitionRun(run, { type: "lock" });
 }
 
+test("idle polish stays small, stops for reduced motion, and leaves settled results still", () => {
+  const idle = {
+    phase: "answering",
+    predictionOffset: 0,
+    targetOffset: null,
+    outcome: null,
+  } as const;
+  const first = flightFrame({ ...idle, motionTime: 0 });
+  const bob = flightFrame({ ...idle, motionTime: 600 });
+  expect(bob.y).not.toBe(first.y);
+  expect(Math.abs(bob.y - first.y)).toBeLessThanOrEqual(4);
+  expect(flightFrame({ ...idle, motionTime: 600, reducedMotion: true }).y).toBe(
+    first.y
+  );
+  const final = toSceneState(advanceFlight(locked(), distribution, 1800).round);
+  expect(flightFrame({ ...final, motionTime: 600 })).toEqual(
+    flightFrame(final)
+  );
+});
+
+test("engine polish adds bounded sparks and flicker without affecting trajectory or scoring", () => {
+  const initial = locked();
+  const flying = toSceneState(
+    advanceFlight(initial, distribution, 700).round,
+    700
+  );
+  const frame = flightFrame(flying);
+  expect(frame.particles.length).toBeGreaterThan(0);
+  expect(frame.particles.length).toBeLessThanOrEqual(8);
+  expect(frame.flame).not.toBe(flightFrame({ ...flying, elapsed: 720 }).flame);
+  expect(flightFrame({ ...flying, reducedMotion: true }).particles).toEqual([]);
+  expect(flightFrame({ ...flying, reducedMotion: true }).x).toBe(frame.x);
+  const resolved = advanceFlight(initial, distribution, 1800);
+  expect(flightFrame(toSceneState(resolved.round)).particles).toEqual([]);
+  expect(resolved.totalDistance).toBe(100);
+});
+
 test("flight holds the immutable prediction and hides results until approach finishes", () => {
   const initial = locked();
   let run = advanceFlight(initial, distribution, 100);

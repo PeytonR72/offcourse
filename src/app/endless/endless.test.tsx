@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "vitest";
 import { demoCatalog } from "../../data/demo-questions";
 import { Endless } from "./endless";
@@ -32,9 +32,9 @@ test("survives 10, ends at 11, and restarts with browser bests intact", async ()
   expect(screen.getByText("Current streak: 1")).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   await predict(11);
-  expect(
-    await screen.findByRole("heading", { name: "Voyage ended" })
-  ).toHaveFocus();
+  await waitFor(() =>
+    expect(screen.getByRole("heading", { name: "Voyage ended" })).toHaveFocus()
+  );
   expect(
     screen.queryByRole("button", { name: "Continue" })
   ).not.toBeInTheDocument();

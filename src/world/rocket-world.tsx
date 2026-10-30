@@ -14,6 +14,10 @@ import { rocketTokens } from "./rocket-art";
 import { RocketSprite } from "./rocket-sprite";
 import { createUniverse, cssColor, universeContext } from "./universe";
 import { UniverseView } from "./universe-view";
+import { useExperience } from "../app/experience";
+
+const transform = (frame: ReturnType<typeof flightFrame>) =>
+  `translate(${frame.x} ${frame.y}) rotate(${(frame.rotation * 180) / Math.PI}) scale(${frame.scaleX * rocketTokens.scale} ${frame.scaleY * rocketTokens.scale}) translate(-32 -20)`;
 
 const loadRenderer: RendererLoader = async () => {
   const { createPixiRenderer } = await import("./pixi-renderer");
@@ -22,6 +26,8 @@ const loadRenderer: RendererLoader = async () => {
 
 export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
   const host = useRef<HTMLDivElement>(null);
+  const fallbackRocket = useRef<SVGGElement>(null);
+  const { reducedMotion } = useExperience();
   const scene = useRef<ReturnType<typeof mountScene> | null>(null);
   const [status, setStatus] = useState<SceneStatus>("loading");
   const { round } = run;
@@ -30,6 +36,7 @@ export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
   const readState = useEffectEvent(() => ({
     ...toSceneState(round, elapsed),
     universe,
+    reducedMotion,
   }));
 
   useEffect(() => {
@@ -47,10 +54,35 @@ export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
     };
   }, []);
   useEffect(() => {
-    scene.current?.update({ ...toSceneState(round, elapsed), universe });
-  }, [round, elapsed, universe]);
+    scene.current?.update({
+      ...toSceneState(round, elapsed),
+      universe,
+      reducedMotion,
+    });
+  }, [round, elapsed, universe, reducedMotion]);
+  const idle = round.phase === "answering" || round.phase === "aiming";
+  useEffect(() => {
+    if (!idle || reducedMotion) return;
+    let frame = 0;
+    let last = 0;
+    const started = performance.now();
+    const tick = (now: number) => {
+      if (!document.hidden && now - last >= 32) {
+        last = now;
+        const state = { ...readState(), motionTime: now - started };
+        scene.current?.update(state);
+        fallbackRocket.current?.setAttribute(
+          "transform",
+          transform(flightFrame(state))
+        );
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [idle, reducedMotion]);
 
-  const state = toSceneState(round, elapsed);
+  const state = { ...toSceneState(round, elapsed), reducedMotion };
   const frame = flightFrame(state);
   const appearance = rocketAppearance(state);
   const prediction = Math.round((state.predictionOffset + 1) * 50);
@@ -70,6 +102,7 @@ export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
       data-outcome={state.outcome ?? "hidden"}
       data-expression={appearance.expression}
       data-region={universe.region.id}
+      data-reduced-motion={reducedMotion}
       role="img"
       aria-label={`${universe.region.name}. ${label}`}
     >
@@ -123,10 +156,23 @@ export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
             />
           )}
           <g
-            transform={`translate(${frame.x} ${frame.y}) rotate(${(frame.rotation * 180) / Math.PI}) scale(${frame.scaleX * rocketTokens.scale} ${frame.scaleY * rocketTokens.scale}) translate(-32 -20)`}
+            ref={fallbackRocket}
+            transform={transform(frame)}
             opacity={frame.alpha}
           >
-            <RocketSprite {...appearance} />
+            <RocketSprite {...appearance} flameScale={frame.flame || 1} />
+          </g>
+          <g data-testid="engine-sparks">
+            {frame.particles.map((spark, index) => (
+              <circle
+                key={index}
+                cx={spark.x}
+                cy={spark.y}
+                r={spark.radius}
+                opacity={spark.alpha}
+                fill="#f5c879"
+              />
+            ))}
           </g>
           {state.outcome === "perfect" && (
             <circle

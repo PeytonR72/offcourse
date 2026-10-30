@@ -9,6 +9,8 @@ for (const missingAsset of [false, true]) {
     if (missingAsset)
       await page.route("**/art/rocket-v1.svg", (route) => route.abort());
     const errors: string[] = [];
+    // Compare the art at rest; idle breathing is covered by the motion seam.
+    await page.emulateMedia({ reducedMotion: "reduce" });
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/");
     const scene = page.getByTestId("rocket-world");

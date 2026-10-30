@@ -41,6 +41,14 @@ test("practice can be played with keyboard controls", async ({
   const lock = page.getByRole("button", { name: "Lock prediction" });
   await expect(lock).toBeDisabled();
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
+  const preferences = page
+    .getByRole("group", { name: "Flight preferences" })
+    .getByRole("button");
+  await expect(preferences.first()).toBeEnabled();
+  for (let index = 0; index < (await preferences.count()); index++) {
+    await page.keyboard.press("Tab");
+    await expect(preferences.nth(index)).toBeFocused();
+  }
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("radio", { name: "YES", exact: true })
