@@ -1,47 +1,35 @@
-import { Application, Container, Graphics, Sprite } from "pixi.js";
+import {
+  Application,
+  Container,
+  Graphics,
+  ImageSource,
+  Rectangle,
+  Sprite,
+  Texture,
+} from "pixi.js";
 import type { SceneRenderer } from "./mount-scene";
 import { flightFrame, trajectoryGeometry } from "./flight-frame";
+import { rocketFrames, rocketTokens, type RocketFrameKey } from "./rocket-art";
+import { loadRocketSheet, rocketAppearance } from "./rocket-sprites";
 
 const WIDTH = 640;
 const HEIGHT = 256;
 
-/** A small original code-drawn placeholder; expression sprite sheets belong to T10. */
-function drawRocket() {
-  const pixels = [
-    "        rr          ",
-    "      rrrr          ",
-    "    cccccccccc      ",
-    "  ccccccccccccc     ",
-    "ttccccccbbbcccccc   ",
-    "hhcccccbdddbcccccc  ",
-    "ttcccccbdddbccccccc ",
-    "hhccccccbbbccccccc  ",
-    "ttccccccccccccccc   ",
-    "  ccccccccccccc     ",
-    "    cccccccccc      ",
-    "      rrrr          ",
-    "        rr          ",
-  ];
-  const colors: Record<string, number> = {
-    r: 0xeb8d7a,
-    c: 0xf8efd9,
-    b: 0x57b9ca,
-    d: 0x193b50,
-    h: 0xf5c879,
-    t: 0xe9a360,
-  };
-  const graphic = new Graphics();
-  pixels.forEach((row, y) => {
-    [...row].forEach((pixel, x) => {
-      if (colors[pixel]) graphic.rect(x * 2, y * 2, 2, 2).fill(colors[pixel]);
-    });
-  });
-  return graphic;
-}
-
 export async function createPixiRenderer(): Promise<SceneRenderer> {
   const app = new Application();
+  let source: ImageSource | undefined;
+  const textures = {} as Record<RocketFrameKey, Texture>;
+  const releaseArt = () => {
+    Object.values(textures).forEach((texture) => texture.destroy(false));
+    source?.destroy();
+  };
   try {
+    const sheet = await loadRocketSheet(async (url) => {
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      return image;
+    });
     await app.init({
       width: WIDTH,
       height: HEIGHT,
@@ -73,17 +61,24 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
     world.addChild(stars);
     const trajectory = world.addChild(new Graphics());
     const destination = world.addChild(new Graphics());
-    const exhaust = world.addChild(new Graphics());
-    const drawing = drawRocket();
-    const texture = app.renderer.generateTexture({
-      target: drawing,
-      resolution: 1,
+    source = new ImageSource({
+      resource: sheet.resource,
+      scaleMode: "nearest",
     });
-    texture.source.scaleMode = "nearest";
-    drawing.destroy();
-    const rocket = world.addChild(new Sprite(texture));
-    rocket.anchor.set(0.5);
+    for (const key of Object.keys(rocketFrames) as RocketFrameKey[]) {
+      const { x, y, width, height } = rocketFrames[key];
+      textures[key] = new Texture({
+        source,
+        frame: new Rectangle(x, y, width, height),
+      });
+    }
+    const rocket = world.addChild(new Container());
+    const exhaust = rocket.addChild(new Sprite(textures["thrust-0"]));
+    const body = rocket.addChild(new Sprite(textures.idle));
+    exhaust.anchor.set(0.5);
+    body.anchor.set(0.5);
     const canvas = app.canvas;
+    canvas.dataset.rocketArt = sheet.mode;
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.display = "block";
@@ -96,6 +91,11 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         world.scale.set(width / WIDTH, height / HEIGHT);
         const { endY, targetY } = trajectoryGeometry(state);
         const frame = flightFrame(state);
+        const appearance = rocketAppearance(state);
+        body.texture = textures[appearance.expression];
+        exhaust.visible = appearance.thruster !== null;
+        if (appearance.thruster)
+          exhaust.texture = textures[appearance.thruster];
         trajectory.clear();
         trajectory
           .moveTo(86, 166)
@@ -122,32 +122,23 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
             .stroke({ color: 0xf5c879, width: 2 });
         rocket.position.set(frame.x, frame.y);
         rocket.rotation = frame.rotation;
-        rocket.scale.set(frame.scaleX, frame.scaleY);
+        rocket.scale.set(
+          frame.scaleX * rocketTokens.scale,
+          frame.scaleY * rocketTokens.scale
+        );
         rocket.alpha = frame.alpha;
-        exhaust.clear();
-        if (frame.flame > 0) {
-          exhaust
-            .moveTo(-18, -5)
-            .lineTo(-18 - 18 * frame.flame, 0)
-            .lineTo(-18, 5)
-            .closePath()
-            .fill(0xf5c879);
-        }
-        exhaust.position.copyFrom(rocket.position);
-        exhaust.rotation = frame.rotation;
         app.render();
       },
       destroy() {
-        app.destroy(
-          { removeView: true },
-          { children: true, texture: true, textureSource: true, context: true }
-        );
+        app.destroy({ removeView: true }, { children: true, context: true });
+        releaseArt();
       },
     };
   } catch (error) {
     // init() may reject before a renderer exists, when Application.destroy is unsafe.
     if (app.renderer) app.destroy({ removeView: true }, { children: true });
     else app.stage.destroy({ children: true });
+    releaseArt();
     throw error;
   }
 }

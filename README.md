@@ -169,6 +169,11 @@ recordings: [desktop](docs/evidence/t07/desktop-motion.webm) and
 [mobile](docs/evidence/t07/mobile-motion.webm). See the
 [T07 evidence](.scratch/offcourse/issues/T07-flight-and-reveal-animation-system.md).
 
+T10 adds original expression sprites (idle, anticipation, happy, scared, tumble)
+and four thruster frames. Pixi and the SVG fallback share the same pixel art;
+missing assets recover with embedded art. See [the art source and regeneration
+guide](docs/rocket-art.md) and [frame review](docs/evidence/t10/frames.png).
+
 ## Daily Expedition (T08)
 
 Open `/daily` or use the Daily Expedition link below practice. Each UTC day has

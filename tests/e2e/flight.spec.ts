@@ -17,6 +17,9 @@ for (const { guess, outcome, distance } of [
     await page.getByRole("slider").fill(String(guess));
     await page.getByRole("button", { name: "Lock prediction" }).click();
     await expect(scene).toHaveAttribute("data-stage", "anticipation");
+    await expect(scene).toHaveAttribute("data-expression", "anticipation");
+    if (outcome === "perfect")
+      await scene.screenshot({ path: testInfo.outputPath("anticipation.png") });
     await expect(
       page.getByRole("button", { name: "Skip flight" })
     ).toBeDisabled();
@@ -29,17 +32,30 @@ for (const { guess, outcome, distance } of [
     });
     await page.clock.runFor(400);
     await expect(scene).toHaveAttribute("data-stage", "approach");
+    await expect(scene).toHaveAttribute("data-expression", "idle");
     await expect(scene).toHaveAttribute("data-outcome", "hidden");
     await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
     await page.clock.runFor(200);
     await expect(scene).toHaveAttribute("data-phase", "reveal");
     await expect(scene).toHaveAttribute("data-outcome", outcome);
+    await expect(scene).toHaveAttribute(
+      "data-expression",
+      outcome === "perfect"
+        ? "happy"
+        : outcome === "survive"
+          ? "scared"
+          : "tumble"
+    );
     await expect(page.getByRole("status")).toContainText("Actual YES: 44%");
     await scene.screenshot({
       path: testInfo.outputPath(`${outcome}-reveal.png`),
     });
     await page.getByRole("button", { name: "Skip flight" }).click();
     await expect(scene).toHaveAttribute("data-stage", "settled");
+    await expect(scene).toHaveAttribute(
+      "data-expression",
+      outcome === "miss" ? "tumble" : "happy"
+    );
     await expect(page.getByRole("status")).toContainText(
       `Distance: ${distance} ly`
     );

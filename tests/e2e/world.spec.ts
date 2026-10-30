@@ -32,6 +32,7 @@ test("rocket scene persists through aim, reveal and continue", async ({
 test("practice remains playable when WebGL cannot initialize", async ({
   page,
 }, testInfo) => {
+  await page.route("**/art/rocket-v1.svg", (route) => route.abort());
   await page.addInitScript(() => {
     const getContext = HTMLCanvasElement.prototype.getContext;
     HTMLCanvasElement.prototype.getContext = function (
@@ -46,6 +47,10 @@ test("practice remains playable when WebGL cannot initialize", async ({
   await page.goto("/");
   const scene = page.getByTestId("rocket-world");
   await expect(scene).toHaveAttribute("data-renderer", "unavailable");
+  await expect(scene.locator('[data-rocket-body="idle"]')).toBeVisible();
+  await scene.screenshot({
+    path: testInfo.outputPath("world-fallback-idle.png"),
+  });
   await expect(scene.locator("canvas")).toHaveCount(0);
   await expect(page.getByText(/Static view/)).toBeVisible();
   await page.getByRole("radio", { name: "YES", exact: true }).check();

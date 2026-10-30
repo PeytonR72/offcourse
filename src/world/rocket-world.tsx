@@ -9,6 +9,9 @@ import {
 } from "./mount-scene";
 import { toSceneState } from "./scene-state";
 import { flightFrame, trajectoryGeometry } from "./flight-frame";
+import { rocketAppearance } from "./rocket-sprites";
+import { rocketTokens } from "./rocket-art";
+import { RocketSprite } from "./rocket-sprite";
 
 const loadRenderer: RendererLoader = async () => {
   const { createPixiRenderer } = await import("./pixi-renderer");
@@ -47,6 +50,7 @@ export function RocketWorld({
 
   const state = toSceneState(round, elapsed);
   const frame = flightFrame(state);
+  const appearance = rocketAppearance(state);
   const prediction = Math.round((state.predictionOffset + 1) * 50);
   const label =
     state.targetOffset === null
@@ -62,6 +66,7 @@ export function RocketWorld({
       data-phase={state.phase}
       data-stage={frame.stage}
       data-outcome={state.outcome ?? "hidden"}
+      data-expression={appearance.expression}
       role="img"
       aria-label={label}
     >
@@ -100,22 +105,10 @@ export function RocketWorld({
             />
           )}
           <g
-            transform={`translate(${frame.x} ${frame.y}) rotate(${(frame.rotation * 180) / Math.PI}) scale(${frame.scaleX} ${frame.scaleY}) translate(-24 -16)`}
+            transform={`translate(${frame.x} ${frame.y}) rotate(${(frame.rotation * 180) / Math.PI}) scale(${frame.scaleX * rocketTokens.scale} ${frame.scaleY * rocketTokens.scale}) translate(-32 -20)`}
             opacity={frame.alpha}
           >
-            {frame.flame > 0 && (
-              <path
-                d={`M6 10 L${-10 * frame.flame} 16 L6 22Z`}
-                fill="#f5c879"
-              />
-            )}
-            <path
-              d="M6 6h12V0h8v6h16v4h8v12h-8v4H26v6h-8v-6H6z"
-              fill="#f8efd9"
-            />
-            <path d="M18 0h8v6h-8z M18 26h8v6h-8z" fill="#eb8d7a" />
-            <path d="M0 12h6v8H0z" fill="#f5c879" />
-            <circle cx="32" cy="16" r="6" fill="#57b9ca" />
+            <RocketSprite {...appearance} />
           </g>
           {state.outcome === "perfect" && (
             <circle
