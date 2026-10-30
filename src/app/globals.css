@@ -16,3 +16,28 @@ body {
   color: #101927;
   background: #f5c879;
 }
+
+button,
+input {
+  font: inherit;
+}
+
+.primary-button {
+  min-height: 48px;
+  border-radius: 8px;
+  padding: 12px 20px;
+  background: #f5c879;
+  color: #101927;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 3px solid #7bdeea;
+  outline-offset: 4px;
+}

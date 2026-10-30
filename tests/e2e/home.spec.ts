@@ -32,3 +32,106 @@ test("home page introduces Offcourse and clearly identifies the prototype", asyn
     fullPage: true,
   });
 });
+
+test("practice can be played with keyboard controls", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
+  const question = await page.getByRole("heading", { level: 2 }).textContent();
+  const lock = page.getByRole("button", { name: "Lock prediction" });
+  await expect(lock).toBeDisabled();
+  await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
+  await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("radio", { name: "YES", exact: true })
+  ).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(
+    page.getByRole("radio", { name: "NO", exact: true })
+  ).toBeChecked();
+  await page.keyboard.press("Tab");
+  const slider = page.getByRole("slider");
+  await expect(slider).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(slider).toHaveValue("0");
+  await page.keyboard.press("End");
+  await expect(slider).toHaveValue("100");
+  await page.keyboard.press("ArrowLeft");
+  await expect(slider).toHaveValue("99");
+  await page.keyboard.press("Tab");
+  await expect(lock).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("heading", { name: "Round result" })
+  ).toBeFocused();
+  await expect(page.getByRole("status")).toContainText(
+    "Your prediction: 99% YES"
+  );
+  await expect(page.getByRole("status")).toContainText("Actual YES:");
+  await expect(lock).toHaveCount(0);
+  await page.screenshot({
+    path: testInfo.outputPath("result.png"),
+    fullPage: true,
+  });
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Continue" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("heading", { level: 2 })).not.toHaveText(
+    question!
+  );
+  await expect(page.getByRole("heading", { level: 2 })).toBeFocused();
+  await expect(lock).toBeDisabled();
+  await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
+  await page.keyboard.press("Tab");
+  const yes = page.getByRole("radio", { name: "YES", exact: true });
+  await expect(yes).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(yes).toBeChecked();
+  await expect(yes).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(slider).toBeFocused();
+});
+
+test("pointer aim and rapid lock produce one result", async ({
+  page,
+  isMobile,
+}, testInfo) => {
+  await page.goto("/");
+  const no = page.getByRole("radio", { name: "NO", exact: true });
+  if (isMobile) await no.tap();
+  else await no.click();
+  const slider = page.getByRole("slider");
+  const box = await slider.boundingBox();
+  if (!box) throw new Error("Slider is missing");
+  if (isMobile)
+    await page.touchscreen.tap(
+      box.x + box.width * 0.75,
+      box.y + box.height / 2
+    );
+  else await page.mouse.click(box.x + box.width * 0.75, box.y + box.height / 2);
+  const value = Number(await slider.inputValue());
+  expect(value).toBeGreaterThanOrEqual(73);
+  expect(value).toBeLessThanOrEqual(77);
+  await page.screenshot({
+    path: testInfo.outputPath("aim.png"),
+    fullPage: true,
+  });
+  const lockBox = await page
+    .getByRole("button", { name: "Lock prediction" })
+    .boundingBox();
+  if (!lockBox) throw new Error("Lock button is missing");
+  await page.mouse.dblclick(
+    lockBox.x + lockBox.width / 2,
+    lockBox.y + lockBox.height / 2
+  );
+  await expect(page.getByRole("heading", { name: "Round result" })).toHaveCount(
+    1
+  );
+  await expect(page.getByRole("status")).toContainText(
+    `Your prediction: ${value}% YES`
+  );
+  await page.getByRole("button", { name: "Continue" }).click();
+  await expect(
+    page.getByRole("button", { name: "Lock prediction" })
+  ).toBeDisabled();
+});

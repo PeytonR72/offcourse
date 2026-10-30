@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
 import Home from "./page";
 
@@ -13,4 +13,51 @@ test("introduces the prototype with an honest results disclosure", () => {
     screen.getByText("Illustrative results", { exact: true })
   ).toBeVisible();
   expect(screen.getByText(/simulated, not real crowd votes/i)).toBeVisible();
+});
+
+test("locks once, reveals numeric feedback and continues with fresh input", () => {
+  render(<Home />);
+  const question = screen.getByRole("heading", { level: 2 }).textContent;
+  fireEvent.click(screen.getByRole("radio", { name: "YES" }));
+  fireEvent.change(screen.getByRole("slider"), { target: { value: "100" } });
+  const lock = screen.getByRole("button", { name: "Lock prediction" });
+  fireEvent.click(lock);
+  expect(screen.getByRole("heading", { name: "Round result" })).toBeVisible();
+  expect(screen.getByText(/Your prediction: 100% YES/)).toBeVisible();
+  expect(screen.getByText(/Actual YES: \d+%/)).toBeVisible();
+  expect(screen.getByText(/Error: \d+ percentage points/)).toBeVisible();
+  expect(screen.getByText(/Distance: \d+ ly/)).toBeVisible();
+  fireEvent.click(lock);
+  expect(screen.getAllByRole("heading", { name: "Round result" })).toHaveLength(
+    1
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+  expect(screen.getByRole("heading", { level: 2 }).textContent).not.toBe(
+    question
+  );
+  expect(
+    screen.getByRole("button", { name: "Lock prediction" })
+  ).toBeDisabled();
+  expect(screen.queryByText(/Actual YES/)).not.toBeInTheDocument();
+  expect(screen.getByRole("radio", { name: "YES" })).not.toBeChecked();
+});
+
+test("chooses a personal answer and aims on the YES axis without revealing results", () => {
+  render(<Home />);
+  const lock = screen.getByRole("button", { name: "Lock prediction" });
+  expect(lock).toBeDisabled();
+  expect(
+    screen.queryByRole("heading", { name: "Round result" })
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("radio", { name: "NO" }));
+  const slider = screen.getByRole("slider", {
+    name: "What percentage of players chose YES?",
+  });
+  fireEvent.change(slider, { target: { value: "0" } });
+  expect(slider).toHaveValue("0");
+  expect(screen.getByText("0% YES", { selector: "output" })).toBeVisible();
+  fireEvent.change(slider, { target: { value: "100" } });
+  expect(screen.getByText("100% YES", { selector: "output" })).toBeVisible();
+  expect(lock).toBeEnabled();
+  expect(screen.queryByText(/Actual YES/)).not.toBeInTheDocument();
 });
