@@ -122,7 +122,7 @@ function DailyGame({ daily, repository }: Loaded) {
           className="mt-6 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
           aria-labelledby="daily-summary"
         >
-          <RocketWorld round={run.round} />
+          <RocketWorld run={run} />
           <h2
             id="daily-summary"
             ref={summaryHeading}

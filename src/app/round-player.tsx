@@ -100,7 +100,7 @@ export function RoundPlayer({
         className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
         aria-labelledby="result-title"
       >
-        <RocketWorld round={round} />
+        <RocketWorld run={run} />
         <h2
           id="result-title"
           ref={heading}
@@ -149,7 +149,7 @@ export function RoundPlayer({
         className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
         aria-labelledby="flight-title"
       >
-        <RocketWorld round={round} elapsed={elapsed} />
+        <RocketWorld run={run} elapsed={elapsed} />
         <h2 id="flight-title" className="text-2xl font-bold">
           Prediction locked
         </h2>
@@ -200,7 +200,7 @@ export function RoundPlayer({
       aria-labelledby="question"
       className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
     >
-      <RocketWorld round={round} />
+      <RocketWorld run={run} />
       <p className="text-sm text-[#b4c2d1]">{label}</p>
       <h2
         id="question"

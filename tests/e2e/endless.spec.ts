@@ -106,6 +106,23 @@ test("all 40 demo questions complete once without a fake loss", async ({
   await page.goto("/endless");
   const seen = new Set<string>();
   for (let index = 0; index < 40; index++) {
+    const regions: Record<number, string> = {
+      0: "home",
+      5: "amber",
+      15: "tidal",
+      30: "violet",
+    };
+    if (regions[index]) {
+      const scene = page.getByTestId("rocket-world");
+      await expect(scene).toHaveAttribute("data-region", regions[index]);
+      await expect(scene).toHaveAttribute("data-renderer", "ready");
+      await expect(page.getByTestId("universe-region")).toBeVisible();
+      await scene.screenshot({
+        path: testInfo.outputPath(`region-${regions[index]}.png`),
+      });
+      await page.reload();
+      await expect(scene).toHaveAttribute("data-region", regions[index]);
+    }
     const entry = await predict(page, 0);
     expect(seen.has(entry.question.id)).toBe(false);
     seen.add(entry.question.id);

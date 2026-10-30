@@ -11,6 +11,7 @@ import type { SceneRenderer } from "./mount-scene";
 import { flightFrame, trajectoryGeometry } from "./flight-frame";
 import { rocketFrames, rocketTokens, type RocketFrameKey } from "./rocket-art";
 import { loadRocketSheet, rocketAppearance } from "./rocket-sprites";
+import { createUniverse, universeOffsets, type Universe } from "./universe";
 
 const WIDTH = 640;
 const HEIGHT = 256;
@@ -49,16 +50,12 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
     });
     const world = new Container();
     app.stage.addChild(world);
-    const stars = new Graphics();
-    for (let i = 0; i < 64; i++) {
-      const x = (i * 197 + 29) % WIDTH;
-      const y = (i * 89 + 17) % HEIGHT;
-      const size = i % 7 === 0 ? 2 : 1;
-      stars
-        .rect(x, y, size, size)
-        .fill({ color: 0xc4d1dd, alpha: i % 3 === 0 ? 0.7 : 0.3 });
-    }
-    world.addChild(stars);
+    const sky = world.addChild(new Graphics());
+    const far = world.addChild(new Graphics());
+    const near = world.addChild(new Graphics());
+    const debris = world.addChild(new Graphics());
+    let paintedUniverse: Universe | undefined;
+    const defaultUniverse = createUniverse("offcourse", 0);
     const trajectory = world.addChild(new Graphics());
     const destination = world.addChild(new Graphics());
     source = new ImageSource({
@@ -91,6 +88,53 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         world.scale.set(width / WIDTH, height / HEIGHT);
         const { endY, targetY } = trajectoryGeometry(state);
         const frame = flightFrame(state);
+        const universe = state.universe ?? defaultUniverse;
+        const { region } = universe;
+        if (paintedUniverse !== universe) {
+          paintedUniverse = universe;
+          sky.clear().rect(0, 0, WIDTH, HEIGHT).fill(region.sky);
+          sky
+            .ellipse(340, 8, 300, 38)
+            .fill({ color: region.haze, alpha: 0.35 });
+          far.clear();
+          near.clear();
+          debris.clear();
+          for (const star of universe.stars) {
+            for (const repeat of [0, WIDTH]) {
+              (star.layer === 0 ? far : near)
+                .rect(star.x + repeat, star.y, star.radius, star.radius)
+                .fill({
+                  color: region.accent,
+                  alpha: star.layer === 0 ? 0.3 : 0.65,
+                });
+            }
+          }
+          for (const planet of universe.planets) {
+            const { x, y, radius } = planet;
+            if (planet.kind === "ringed")
+              near
+                .ellipse(x, y, radius * 1.7, radius * 0.4)
+                .stroke({ color: region.accent, width: 1 });
+            near.circle(x, y, radius).fill(region.planet);
+            if (planet.kind === "cratered")
+              near
+                .circle(x - 2, y - 2, radius * 0.35)
+                .fill({ color: region.sky, alpha: 0.6 });
+            if (planet.kind === "striped")
+              near
+                .moveTo(x - radius * 0.8, y)
+                .lineTo(x + radius * 0.8, y)
+                .stroke({ color: region.accent, width: 2 });
+          }
+          for (const item of universe.debris)
+            debris
+              .rect(item.x, item.y, item.radius * 2, item.radius)
+              .fill({ color: region.planet, alpha: 0.7 });
+        }
+        const offsets = universeOffsets(frame.x - 86);
+        far.x = offsets.far;
+        near.x = offsets.near;
+        debris.x = offsets.debris;
         const appearance = rocketAppearance(state);
         body.texture = textures[appearance.expression];
         exhaust.visible = appearance.thruster !== null;
@@ -112,10 +156,14 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         // Neutral destination before reveal: no accuracy-dependent hints.
         destination
           .ellipse(532, targetY, 40, 13)
-          .stroke({ color: 0x546b83, width: 2 });
-        destination.circle(532, targetY, 23).fill(0x294557);
-        destination.circle(525, targetY - 7, 7).fill(0x3d6170);
-        destination.circle(540, targetY + 8, 5).fill(0x20394e);
+          .stroke({ color: region.accent, width: 2 });
+        destination.circle(532, targetY, 23).fill(region.planet);
+        destination
+          .circle(525, targetY - 7, 7)
+          .fill({ color: region.accent, alpha: 0.6 });
+        destination
+          .circle(540, targetY + 8, 5)
+          .fill({ color: region.sky, alpha: 0.5 });
         if (state.outcome === "perfect")
           destination
             .circle(504, targetY, 25)

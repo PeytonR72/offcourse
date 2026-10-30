@@ -1,4 +1,5 @@
 import type { RoundState } from "../domain/run";
+import type { Universe } from "./universe";
 
 /** Presentation only. It can never dispatch events or award distance. */
 export type SceneState = Readonly<{
@@ -7,6 +8,7 @@ export type SceneState = Readonly<{
   targetOffset: number | null;
   outcome: "perfect" | "survive" | "miss" | null;
   elapsed?: number;
+  universe?: Universe;
 }>;
 
 const offset = (percentage: number) => (percentage - 50) / 50;

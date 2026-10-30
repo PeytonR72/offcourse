@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useEffectEvent, useRef, useState } from "react";
-import type { RoundState } from "../domain/run";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import type { Run } from "../domain/run";
 import {
   mountScene,
   type RendererLoader,
@@ -12,23 +12,25 @@ import { flightFrame, trajectoryGeometry } from "./flight-frame";
 import { rocketAppearance } from "./rocket-sprites";
 import { rocketTokens } from "./rocket-art";
 import { RocketSprite } from "./rocket-sprite";
+import { createUniverse, cssColor, universeContext } from "./universe";
+import { UniverseView } from "./universe-view";
 
 const loadRenderer: RendererLoader = async () => {
   const { createPixiRenderer } = await import("./pixi-renderer");
   return createPixiRenderer();
 };
 
-export function RocketWorld({
-  round,
-  elapsed,
-}: {
-  round: RoundState;
-  elapsed?: number;
-}) {
+export function RocketWorld({ run, elapsed }: { run: Run; elapsed?: number }) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<ReturnType<typeof mountScene> | null>(null);
   const [status, setStatus] = useState<SceneStatus>("loading");
-  const readState = useEffectEvent(() => toSceneState(round, elapsed));
+  const { round } = run;
+  const { seed, streak } = universeContext(run);
+  const universe = useMemo(() => createUniverse(seed, streak), [seed, streak]);
+  const readState = useEffectEvent(() => ({
+    ...toSceneState(round, elapsed),
+    universe,
+  }));
 
   useEffect(() => {
     if (!host.current) return;
@@ -45,8 +47,8 @@ export function RocketWorld({
     };
   }, []);
   useEffect(() => {
-    scene.current?.update(toSceneState(round, elapsed));
-  }, [round, elapsed]);
+    scene.current?.update({ ...toSceneState(round, elapsed), universe });
+  }, [round, elapsed, universe]);
 
   const state = toSceneState(round, elapsed);
   const frame = flightFrame(state);
@@ -67,8 +69,9 @@ export function RocketWorld({
       data-stage={frame.stage}
       data-outcome={state.outcome ?? "hidden"}
       data-expression={appearance.expression}
+      data-region={universe.region.id}
       role="img"
-      aria-label={label}
+      aria-label={`${universe.region.name}. ${label}`}
     >
       <div className="relative aspect-[5/2]" aria-hidden="true">
         <svg
@@ -76,20 +79,35 @@ export function RocketWorld({
           className="absolute inset-0 size-full"
           aria-hidden="true"
         >
-          <path
-            d="M42 37h2 M145 80h2 M244 28h2 M359 174h2 M424 49h2 M601 204h2 M192 224h2"
-            stroke="#b4c2d1"
-            strokeWidth="2"
-          />
-          <circle cx="532" cy={targetY} r="23" fill="#294557" />
+          <UniverseView universe={universe} travel={frame.x - 86} />
           <ellipse
             cx="532"
             cy={targetY}
             rx="40"
             ry="13"
             fill="none"
-            stroke="#546b83"
+            stroke={cssColor(universe.region.accent)}
             strokeWidth="2"
+          />
+          <circle
+            cx="532"
+            cy={targetY}
+            r="23"
+            fill={cssColor(universe.region.planet)}
+          />
+          <circle
+            cx="525"
+            cy={targetY - 7}
+            r="7"
+            fill={cssColor(universe.region.accent)}
+            opacity="0.6"
+          />
+          <circle
+            cx="540"
+            cy={targetY + 8}
+            r="5"
+            fill={cssColor(universe.region.sky)}
+            opacity="0.5"
           />
           <path
             d={`M86 166 Q310 48 532 ${endY}`}
@@ -123,6 +141,12 @@ export function RocketWorld({
         </svg>
         <div ref={host} className="absolute inset-0" />
       </div>
+      <span
+        className="absolute top-2 left-3 rounded bg-[#101927]/90 px-1.5 py-0.5 text-xs text-[#f8efd9]"
+        data-testid="universe-region"
+      >
+        {universe.region.name}
+      </span>
       <figcaption
         className="absolute right-3 bottom-2 left-3 flex justify-between gap-2 text-xs text-[#b4c2d1]"
         aria-hidden="true"

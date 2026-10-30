@@ -122,7 +122,7 @@ function EndlessGame({ initial, repository }: Loaded) {
           aria-labelledby="endless-summary"
           className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
         >
-          <RocketWorld round={run.round} />
+          <RocketWorld run={run} />
           <h2
             id="endless-summary"
             ref={summaryHeading}
