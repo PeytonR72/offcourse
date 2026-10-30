@@ -8,17 +8,24 @@ import {
   type SceneStatus,
 } from "./mount-scene";
 import { toSceneState } from "./scene-state";
+import { flightFrame, trajectoryGeometry } from "./flight-frame";
 
 const loadRenderer: RendererLoader = async () => {
   const { createPixiRenderer } = await import("./pixi-renderer");
   return createPixiRenderer();
 };
 
-export function RocketWorld({ round }: { round: RoundState }) {
+export function RocketWorld({
+  round,
+  elapsed,
+}: {
+  round: RoundState;
+  elapsed?: number;
+}) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<ReturnType<typeof mountScene> | null>(null);
   const [status, setStatus] = useState<SceneStatus>("loading");
-  const readState = useEffectEvent(() => toSceneState(round));
+  const readState = useEffectEvent(() => toSceneState(round, elapsed));
 
   useEffect(() => {
     if (!host.current) return;
@@ -35,17 +42,17 @@ export function RocketWorld({ round }: { round: RoundState }) {
     };
   }, []);
   useEffect(() => {
-    scene.current?.update(toSceneState(round));
-  }, [round]);
+    scene.current?.update(toSceneState(round, elapsed));
+  }, [round, elapsed]);
 
-  const state = toSceneState(round);
+  const state = toSceneState(round, elapsed);
+  const frame = flightFrame(state);
   const prediction = Math.round((state.predictionOffset + 1) * 50);
   const label =
     state.targetOffset === null
       ? `Rocket trajectory: ${prediction}% YES. Actual target hidden until reveal.`
       : `Rocket trajectory: ${prediction}% YES. Actual YES: ${(state.targetOffset + 1) * 50}%.`;
-  const endY = 128 - state.predictionOffset * 78;
-  const targetY = 128 - (state.targetOffset ?? 0) * 78;
+  const { endY, targetY } = trajectoryGeometry(state);
 
   return (
     <figure
@@ -53,6 +60,8 @@ export function RocketWorld({ round }: { round: RoundState }) {
       data-testid="rocket-world"
       data-renderer={status}
       data-phase={state.phase}
+      data-stage={frame.stage}
+      data-outcome={state.outcome ?? "hidden"}
       role="img"
       aria-label={label}
     >
@@ -91,12 +100,15 @@ export function RocketWorld({ round }: { round: RoundState }) {
             />
           )}
           <g
-            transform={
-              state.targetOffset === null
-                ? "translate(62 150) rotate(-14 24 16)"
-                : `translate(480 ${endY - 16})`
-            }
+            transform={`translate(${frame.x} ${frame.y}) rotate(${(frame.rotation * 180) / Math.PI}) scale(${frame.scaleX} ${frame.scaleY}) translate(-24 -16)`}
+            opacity={frame.alpha}
           >
+            {frame.flame > 0 && (
+              <path
+                d={`M6 10 L${-10 * frame.flame} 16 L6 22Z`}
+                fill="#f5c879"
+              />
+            )}
             <path
               d="M6 6h12V0h8v6h16v4h8v12h-8v4H26v6h-8v-6H6z"
               fill="#f8efd9"
@@ -105,6 +117,16 @@ export function RocketWorld({ round }: { round: RoundState }) {
             <path d="M0 12h6v8H0z" fill="#f5c879" />
             <circle cx="32" cy="16" r="6" fill="#57b9ca" />
           </g>
+          {state.outcome === "perfect" && (
+            <circle
+              cx="504"
+              cy={targetY}
+              r="25"
+              fill="none"
+              stroke="#f5c879"
+              strokeWidth="2"
+            />
+          )}
         </svg>
         <div ref={host} className="absolute inset-0" />
       </div>

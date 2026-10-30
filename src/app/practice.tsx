@@ -10,6 +10,31 @@ import {
   type Run,
 } from "../domain/run";
 import { RocketWorld } from "../world/rocket-world";
+import { advanceFlight, flightTiming } from "../world/flight";
+
+type Playback = { run: Run; elapsed?: number };
+
+function updateFlight(
+  current: Playback,
+  elapsed: number,
+  action?: "skip" | "reduced"
+): Playback {
+  const round = current.run.round;
+  if (
+    round.phase !== "locked" &&
+    round.phase !== "flight" &&
+    round.phase !== "reveal"
+  )
+    return current;
+  const lock = "lock" in round ? round.lock : round.result.lock;
+  const entry = demoCatalog.entries.find(
+    ({ distribution }) => distribution.id === lock.question.distributionId
+  )!;
+  return {
+    run: advanceFlight(current.run, entry.distribution, elapsed, action),
+    elapsed,
+  };
+}
 
 function nextQuestion(run: Run) {
   return selectEndlessDemo(
@@ -32,11 +57,43 @@ function startNext(run: Run): Run {
 
 export function Practice() {
   // Practice uses the continuing scoring rule; this is not a ranked daily attempt.
-  const [run, setRun] = useState(() =>
-    startNext(createRun("practice", "daily"))
-  );
+  const [{ run, elapsed }, setPlayback] = useState<Playback>(() => ({
+    run: startNext(createRun("practice", "daily")),
+  }));
+  const setRun = (update: (current: Run) => Run) =>
+    setPlayback((current) => ({ run: update(current.run) }));
   const heading = useRef<HTMLHeadingElement>(null);
   const round = run.round;
+  const flying =
+    round.phase === "locked" ||
+    round.phase === "flight" ||
+    round.phase === "reveal";
+  useEffect(() => {
+    if (!flying) return;
+    const started = performance.now();
+    const media = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+    const tick = () => {
+      const elapsed = performance.now() - started;
+      setPlayback((current) =>
+        updateFlight(current, elapsed, media?.matches ? "reduced" : undefined)
+      );
+      if (elapsed < flightTiming.settled && !media?.matches)
+        frame = requestAnimationFrame(tick);
+    };
+    const changed = () => {
+      if (media?.matches) {
+        cancelAnimationFrame(frame);
+        tick();
+      }
+    };
+    media?.addEventListener("change", changed);
+    frame = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(frame);
+      media?.removeEventListener("change", changed);
+    };
+  }, [flying]);
   useEffect(() => {
     if (
       run.completedRounds.length > 0 &&
@@ -96,6 +153,54 @@ export function Practice() {
   }
   if (round.phase === "idle")
     return <p role="status">Practice questions are unavailable.</p>;
+  if (
+    round.phase === "locked" ||
+    round.phase === "flight" ||
+    round.phase === "reveal"
+  ) {
+    const lock = "lock" in round ? round.lock : round.result.lock;
+    return (
+      <section
+        className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
+        aria-labelledby="flight-title"
+      >
+        <RocketWorld round={round} elapsed={elapsed} />
+        <h2 id="flight-title" className="text-2xl font-bold">
+          Prediction locked
+        </h2>
+        <p className="mt-3">{lock.question.prompt}</p>
+        <p className="mt-3">Your prediction: {lock.guessPercentage}% YES</p>
+        <div role="status" className="mt-5 space-y-2">
+          {round.phase === "reveal" ? (
+            <>
+              <p>Actual YES: {round.result.distribution.yesPercentage}%</p>
+              <p>Error: {round.result.score.error} percentage points</p>
+              <p>
+                {round.result.score.error === 0
+                  ? "Perfect landing!"
+                  : round.result.score.survived
+                    ? "Close landing — destination reached."
+                    : "Off course — drifting past the destination."}
+              </p>
+            </>
+          ) : (
+            <p>Launching toward your prediction…</p>
+          )}
+        </div>
+        <button
+          className="primary-button mt-6 w-full"
+          disabled={round.phase !== "reveal"}
+          onClick={() =>
+            setPlayback((current) =>
+              updateFlight(current, current.elapsed ?? 0, "skip")
+            )
+          }
+        >
+          Skip flight
+        </button>
+      </section>
+    );
+  }
   if (round.phase !== "answering" && round.phase !== "aiming") return null;
   const choose = (answer: PersonalAnswer) =>
     setRun((current) => {
@@ -188,15 +293,7 @@ export function Practice() {
               current.round.guessPercentage === null
             )
               return current;
-            const selection = nextQuestion(current);
-            if (selection.status !== "question") return current;
-            const locked = transitionRun(current, { type: "lock" });
-            const flight = transitionRun(locked, { type: "launch" });
-            const revealed = transitionRun(flight, {
-              type: "reveal",
-              distribution: selection.entry.distribution,
-            });
-            return transitionRun(revealed, { type: "resolve" });
+            return transitionRun(current, { type: "lock" });
           })
         }
       >

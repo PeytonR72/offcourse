@@ -6,11 +6,17 @@ export type SceneState = Readonly<{
   predictionOffset: number;
   targetOffset: number | null;
   outcome: "perfect" | "survive" | "miss" | null;
+  elapsed?: number;
 }>;
 
 const offset = (percentage: number) => (percentage - 50) / 50;
 
-export function toSceneState(round: RoundState): SceneState {
+export function toSceneState(round: RoundState, elapsed?: number): SceneState {
+  const state = roundSceneState(round);
+  return elapsed === undefined ? state : { ...state, elapsed };
+}
+
+function roundSceneState(round: RoundState): SceneState {
   switch (round.phase) {
     case "idle":
     case "answering":

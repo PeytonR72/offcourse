@@ -1,5 +1,6 @@
 import { Application, Container, Graphics, Sprite } from "pixi.js";
 import type { SceneRenderer } from "./mount-scene";
+import { flightFrame, trajectoryGeometry } from "./flight-frame";
 
 const WIDTH = 640;
 const HEIGHT = 256;
@@ -72,6 +73,7 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
     world.addChild(stars);
     const trajectory = world.addChild(new Graphics());
     const destination = world.addChild(new Graphics());
+    const exhaust = world.addChild(new Graphics());
     const drawing = drawRocket();
     const texture = app.renderer.generateTexture({
       target: drawing,
@@ -92,9 +94,8 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         if (app.screen.width !== width || app.screen.height !== height)
           app.renderer.resize(width, height);
         world.scale.set(width / WIDTH, height / HEIGHT);
-        const endY = 128 - state.predictionOffset * 78;
-        const targetY =
-          state.targetOffset === null ? 128 : 128 - state.targetOffset * 78;
+        const { endY, targetY } = trajectoryGeometry(state);
+        const frame = flightFrame(state);
         trajectory.clear();
         trajectory
           .moveTo(86, 166)
@@ -115,13 +116,25 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         destination.circle(532, targetY, 23).fill(0x294557);
         destination.circle(525, targetY - 7, 7).fill(0x3d6170);
         destination.circle(540, targetY + 8, 5).fill(0x20394e);
-        const revealed = state.targetOffset !== null;
-        rocket.position.set(revealed ? 504 : 86, revealed ? endY : 166);
-        rocket.rotation = revealed
-          ? state.outcome === "miss"
-            ? 0.45
-            : 0
-          : -0.25 - state.predictionOffset * 0.08;
+        if (state.outcome === "perfect")
+          destination
+            .circle(504, targetY, 25)
+            .stroke({ color: 0xf5c879, width: 2 });
+        rocket.position.set(frame.x, frame.y);
+        rocket.rotation = frame.rotation;
+        rocket.scale.set(frame.scaleX, frame.scaleY);
+        rocket.alpha = frame.alpha;
+        exhaust.clear();
+        if (frame.flame > 0) {
+          exhaust
+            .moveTo(-18, -5)
+            .lineTo(-18 - 18 * frame.flame, 0)
+            .lineTo(-18, 5)
+            .closePath()
+            .fill(0xf5c879);
+        }
+        exhaust.position.copyFrom(rocket.position);
+        exhaust.rotation = frame.rotation;
         app.render();
       },
       destroy() {
