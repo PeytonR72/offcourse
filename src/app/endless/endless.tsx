@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { demoCatalog } from "../../data/demo-questions";
 import {
   createEndless,
@@ -10,13 +11,20 @@ import {
 import { createEndlessRepository } from "../../domain/endless-repository";
 import { RocketWorld } from "../../world/rocket-world";
 import { RoundPlayer, type Playback } from "../round-player";
-import { ProgressNotice } from "../progress-notice";
+import { ProgressNotice, SessionStorageNotice } from "../progress-notice";
+import type { createBrowserStorage } from "../../domain/browser-storage";
+import { useProgressStorage } from "../progress-storage";
 
 type Repository = ReturnType<typeof createEndlessRepository>;
 type Session = ReturnType<Repository["load"]> & { elapsed?: number };
-type Loaded = { initial: Session; repository: Repository };
+type Loaded = {
+  initial: Session;
+  repository: Repository;
+  storage: ReturnType<typeof createBrowserStorage>;
+};
 
 export function Endless() {
+  const getStorage = useProgressStorage();
   const [loaded, setLoaded] = useState<Loaded>();
   const [error, setError] = useState(false);
   useEffect(() => {
@@ -24,12 +32,13 @@ export function Endless() {
     queueMicrotask(() => {
       if (cancelled) return;
       try {
+        const storage = getStorage();
         const repository = createEndlessRepository(
-          window.localStorage,
+          storage,
           demoCatalog,
           Math.random
         );
-        setLoaded({ initial: repository.load(), repository });
+        setLoaded({ initial: repository.load(), repository, storage });
       } catch {
         setError(true);
       }
@@ -37,10 +46,10 @@ export function Endless() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [getStorage]);
   if (error)
     return (
-      <ProgressNotice message="Voyage progress could not be saved or restored. Endless play needs available browser storage." />
+      <ProgressNotice message="Voyage progress could not be restored safely. Your saved records have been preserved." />
     );
   if (!loaded)
     return (
@@ -51,7 +60,7 @@ export function Endless() {
   return <EndlessGame {...loaded} />;
 }
 
-function EndlessGame({ initial, repository }: Loaded) {
+function EndlessGame({ initial, repository, storage }: Loaded) {
   const [session, setSession] = useState(initial);
   const current = useRef(session);
   const [error, setError] = useState<string>();
@@ -107,6 +116,7 @@ function EndlessGame({ initial, repository }: Loaded) {
   };
   return (
     <>
+      {!storage.persistent && <SessionStorageNotice />}
       <div className="mt-8 space-y-2">
         <p ref={progressHeading} tabIndex={-1} className="text-xl font-bold">
           Current streak: {progress.streak}
@@ -157,6 +167,12 @@ function EndlessGame({ initial, repository }: Loaded) {
           >
             Restart voyage
           </button>
+          <Link
+            href="/daily"
+            className="secondary-button mt-3 flex items-center justify-center"
+          >
+            Play Daily Expedition
+          </Link>
         </section>
       ) : (
         <RoundPlayer
@@ -174,9 +190,10 @@ function EndlessGame({ initial, repository }: Loaded) {
         />
       )}
       <p className="mt-6 text-sm leading-relaxed text-[#b4c2d1]">
-        Progress and best records are saved on this browser. Clearing storage
-        resets them; records do not sync across devices. Simulated percentages
-        are for demo play only, with no public ranked score.
+        Progress and best records are saved on this browser when storage is
+        available. Clearing storage resets them; records do not sync across
+        devices. Simulated percentages are for demo play only, with no public
+        ranked score.
       </p>
     </>
   );

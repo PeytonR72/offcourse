@@ -5,17 +5,27 @@ import Link from "next/link";
 import { demoCatalog } from "../../data/demo-questions";
 import { nextDaily, type DailyExpedition } from "../../domain/daily";
 import { createDailyRepository } from "../../domain/daily-repository";
+import { dailySummary } from "../../domain/daily-summary";
+import { ShareSummary } from "../share-summary";
 import { RoundPlayer, type Playback } from "../round-player";
-import { ProgressNotice } from "../progress-notice";
+import { ProgressNotice, SessionStorageNotice } from "../progress-notice";
+import type { createBrowserStorage } from "../../domain/browser-storage";
+import { useProgressStorage } from "../progress-storage";
 import { RocketWorld } from "../../world/rocket-world";
 
 type Repository = ReturnType<typeof createDailyRepository>;
-type Loaded = { daily: DailyExpedition; repository: Repository };
+type Loaded = {
+  daily: DailyExpedition;
+  repository: Repository;
+  storage: ReturnType<typeof createBrowserStorage>;
+};
 
 export function Daily() {
+  const getStorage = useProgressStorage();
   const [loaded, setLoaded] = useState<Loaded>();
   const [error, setError] = useState(false);
   useEffect(() => {
+    const storage = getStorage();
     let dateKey = "";
     let timer: ReturnType<typeof setTimeout>;
     const load = () => {
@@ -24,11 +34,11 @@ export function Daily() {
       if (today !== dateKey) {
         try {
           const repository = createDailyRepository(
-            window.localStorage,
+            storage,
             demoCatalog,
             () => new Date()
           );
-          setLoaded({ daily: repository.load(), repository });
+          setLoaded({ daily: repository.load(), repository, storage });
           setError(false);
         } catch {
           setLoaded(undefined);
@@ -50,10 +60,10 @@ export function Daily() {
       window.removeEventListener("focus", load);
       document.removeEventListener("visibilitychange", load);
     };
-  }, []);
+  }, [getStorage]);
   if (error)
     return (
-      <ProgressNotice message="Daily progress could not be saved or restored. Daily play needs available browser storage." />
+      <ProgressNotice message="Daily progress could not be restored safely. Your saved attempt has been preserved." />
     );
   if (!loaded)
     return (
@@ -64,7 +74,7 @@ export function Daily() {
   return <DailyGame key={loaded.daily.dateKey} {...loaded} />;
 }
 
-function DailyGame({ daily, repository }: Loaded) {
+function DailyGame({ daily, repository, storage }: Loaded) {
   const [playback, setPlayback] = useState<Playback>({ run: daily.run });
   const current = useRef(playback);
   const [error, setError] = useState<string>();
@@ -92,6 +102,7 @@ function DailyGame({ daily, repository }: Loaded) {
   );
   const { run } = playback;
   const complete = run.completedRounds.length === 5;
+  const summary = complete ? dailySummary({ ...daily, run }) : undefined;
   useEffect(() => {
     if (complete) summaryHeading.current?.focus();
   }, [complete]);
@@ -99,6 +110,7 @@ function DailyGame({ daily, repository }: Loaded) {
   const reset = new Date(Date.parse(`${daily.dateKey}T00:00:00Z`) + 86400000);
   return (
     <>
+      {!storage.persistent && <SessionStorageNotice />}
       <div className="mt-8 space-y-2">
         <p className="text-sm text-[#b4c2d1]">
           {daily.dateKey} · UTC expedition
@@ -138,6 +150,18 @@ function DailyGame({ daily, repository }: Loaded) {
             5 of 5 destinations explored. Every prediction counts, including
             misses.
           </p>
+          {summary && (
+            <>
+              <p className="mt-3 font-bold text-[#f5c879]">
+                Prediction accuracy: {summary.accuracy}%
+              </p>
+              <p className="mt-1 text-sm text-[#c4d1dd]">
+                Average error: {summary.averageError} percentage points.
+                Accuracy is 100 minus average error.
+              </p>
+              <ShareSummary text={summary.text} />
+            </>
+          )}
           <ol className="mt-5 space-y-4" aria-label="Daily round results">
             {run.completedRounds.map(({ lock, distribution, score }, index) => (
               <li key={lock.roundId}>
@@ -161,6 +185,12 @@ function DailyGame({ daily, repository }: Loaded) {
             href="/"
           >
             Play practice
+          </Link>
+          <Link
+            className="secondary-button mt-3 flex items-center justify-center"
+            href="/endless"
+          >
+            Play Endless Voyage
           </Link>
         </section>
       ) : (
@@ -190,9 +220,9 @@ function DailyGame({ daily, repository }: Loaded) {
         </>
       )}
       <p className="mt-6 text-sm leading-relaxed text-[#b4c2d1]">
-        One daily attempt per browser, saved on this device. Clearing storage
-        resets participation; records do not sync across devices. This demo uses
-        simulated percentages and records no public ranked score.
+        One daily attempt per browser when storage is available. Clearing
+        storage resets participation; records do not sync across devices. This
+        demo uses simulated percentages and records no public ranked score.
       </p>
     </>
   );

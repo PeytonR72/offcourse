@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { ExperienceProvider } from "./experience";
+import { ProgressStorageProvider } from "./progress-storage";
 
 export const metadata: Metadata = {
   title: "Offcourse",
@@ -18,7 +19,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
-        <ExperienceProvider>{children}</ExperienceProvider>
+        <ProgressStorageProvider>
+          <ExperienceProvider>{children}</ExperienceProvider>
+        </ProgressStorageProvider>
       </body>
     </html>
   );

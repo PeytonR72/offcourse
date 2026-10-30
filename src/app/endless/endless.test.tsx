@@ -4,8 +4,22 @@ import { demoCatalog } from "../../data/demo-questions";
 import { Endless } from "./endless";
 
 afterEach(() => {
+  vi.restoreAllMocks();
   localStorage.clear();
   vi.unstubAllGlobals();
+});
+
+test("endless remains playable with session records when localStorage access throws", async () => {
+  vi.spyOn(window, "localStorage", "get").mockImplementation(() => {
+    throw new Error("Denied");
+  });
+  render(<Endless />);
+  expect(
+    await screen.findByText(/Progress and records last only/)
+  ).toBeVisible();
+  expect(screen.getByText("Best streak: 0")).toBeVisible();
+  fireEvent.click(screen.getByRole("radio", { name: "YES" }));
+  expect(screen.getByRole("button", { name: "Lock prediction" })).toBeEnabled();
 });
 
 test("survives 10, ends at 11, and restarts with browser bests intact", async () => {
@@ -38,6 +52,9 @@ test("survives 10, ends at 11, and restarts with browser bests intact", async ()
   expect(
     screen.queryByRole("button", { name: "Continue" })
   ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "Play Daily Expedition" })
+  ).toHaveAttribute("href", "/daily");
   expect(screen.getByText("Run distance: 50 ly")).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Restart voyage" }));
   expect(await screen.findByRole("slider")).toBeDisabled();

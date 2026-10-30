@@ -3,6 +3,28 @@ import { demoCatalog } from "../data/demo-questions";
 import { createDaily, nextDaily, type DailyExpedition } from "./daily";
 import { createDailyRepository } from "./daily-repository";
 import { transitionRun } from "./run";
+import { dailySummary } from "./daily-summary";
+
+test("daily sharing is a deterministic anonymous summary with date, distance and defined accuracy", () => {
+  let daily = createDaily(demoCatalog, new Date("2026-10-29T12:00:00Z"));
+  expect(() => dailySummary(daily)).toThrow(/complete/i);
+  for (const [index, error] of [0, 1, 9, 10, 20].entries()) {
+    const actual = daily.questions[index].distribution.yesPercentage;
+    daily = finishRound(daily, actual > 50 ? actual - error : actual + error);
+    if (index < 4) daily = nextDaily(daily);
+  }
+  expect(dailySummary(daily)).toEqual({
+    accuracy: 92,
+    averageError: 8,
+    text: "Offcourse · Daily Expedition · 2026-10-29 UTC\n300 / 500 ly · 92% accuracy\nAverage error: 8 percentage points (accuracy = 100 − average error).\nDemo · Illustrative results",
+  });
+  expect(
+    dailySummary({
+      ...daily,
+      run: { ...daily.run, id: "private-installation-id" },
+    })
+  ).toEqual(dailySummary(daily));
+});
 
 function finishRound(expedition: DailyExpedition, percentage: number) {
   let run = expedition.run;

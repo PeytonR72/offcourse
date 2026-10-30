@@ -190,9 +190,9 @@ summary; there is no same-day replay. Midnight UTC unlocks a new attempt, includ
 on an open page. Stale tabs cannot overwrite newer progress.
 
 Daily participation is best effort per browser. Clearing storage resets it;
-records do not sync across devices. If storage is unavailable or corrupted, daily
-play stops with a recovery message and a link to practice. This remains a demo,
-with no genuine crowd data or public ranked score. Sharing remains in T14.
+records do not sync across devices. Unavailable storage uses session memory with
+a visible notice; corrupt progress stops with a recovery link to practice. This
+remains a demo, with no genuine crowd data or public ranked score.
 
 T08 checks cover 0/500 ly boundaries, five misses, deterministic questions, frozen
 reload recovery, replay blocking, UTC rollover, and storage failures. Desktop and
@@ -213,8 +213,8 @@ repeat within a run; reaching the end of the available pool completes the voyage
 without a loss. `endless-repository.ts` saves frozen questions, locked predictions,
 current input, and bests together in a versioned browser record. Reload replays
 validated inputs through the domain rules and credits a saved lock once. Stale
-tabs cannot overwrite newer progress. Unavailable or corrupt storage stops play
-with a recovery message and a practice link.
+tabs cannot overwrite newer progress. Unavailable storage uses session memory;
+corrupt progress stops with a recovery message and a practice link.
 
 Records are local to this browser and clearing storage resets them. Percentages
 remain visibly simulated; no public ranked score or genuine crowd data is claimed.
@@ -242,3 +242,23 @@ tablet, 1440px desktop, and 844×390 landscape layouts across all three modes,
 alongside touch dragging, keyboard focus, pause/resume, loading, error recovery,
 and saved input. These are Chromium emulations; physical-device and other-engine
 profiling remain part of launch QA.
+
+## Sharing and local records (T14)
+
+Complete the Daily Expedition to share an anonymous summary with its UTC date,
+distance, and prediction accuracy. Accuracy means 100 minus mean absolute
+percentage-point error, displayed to one decimal place when needed. The summary
+includes the **Demo · Illustrative results** disclosure and omits personal
+answers, question prompts, and identifiers. Share opens native sharing where
+available; Copy summary uses the clipboard. If copying is blocked, the selectable
+text remains available for manual copying. Canceling native share does not copy.
+
+Completed daily attempts reopen the same summary after reload. Play practice or
+Endless Voyage while waiting for the next UTC daily reset; an ended voyage can
+restart or switch to Daily. Independent endless best streak and distance persist
+across attempts. Sound, haptics, and reduced-motion preferences remain local too.
+
+When browser storage is blocked or fills up, current progress and bests stay in
+memory until this page closes or reloads, with a session-only notice. Existing
+corrupt records are preserved for recovery. Clearing browser storage resets
+records; nothing syncs across devices.

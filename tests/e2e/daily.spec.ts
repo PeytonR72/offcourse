@@ -13,6 +13,20 @@ for (const distance of [0, 500]) {
   }, testInfo) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "share", {
+        configurable: true,
+        value: async (data: ShareData) =>
+          sessionStorage.setItem("test:shared", JSON.stringify(data)),
+      });
+      Object.defineProperty(navigator, "clipboard", {
+        configurable: true,
+        value: {
+          writeText: async (text: string) =>
+            sessionStorage.setItem("test:copied", text),
+        },
+      });
+    });
     await page.clock.install({ time: at });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
@@ -63,11 +77,38 @@ for (const distance of [0, 500]) {
       page.getByText("Illustrative results", { exact: true })
     ).toBeVisible();
     await expect(page.getByText(/Already played today/)).toBeVisible();
+    const shareText = await page
+      .getByRole("textbox", { name: "Daily share text" })
+      .inputValue();
+    expect(shareText).toContain("2026-10-29 UTC");
+    expect(shareText).toContain(`${distance} / 500 ly`);
+    expect(shareText).toContain("accuracy");
+    expect(shareText).toContain("Demo · Illustrative results");
+    if (distance === 500) expect(shareText).toContain("100% accuracy");
+    await page.getByRole("button", { name: "Share daily summary" }).click();
+    await expect(
+      page.getByText("Summary shared.", { exact: true })
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() =>
+        JSON.parse(sessionStorage.getItem("test:shared")!)
+      )
+    ).toEqual({ text: shareText });
+    await page.getByRole("button", { name: "Copy summary" }).click();
+    await expect(
+      page.getByText("Summary copied.", { exact: true })
+    ).toBeVisible();
+    expect(
+      await page.evaluate(() => sessionStorage.getItem("test:copied"))
+    ).toBe(shareText);
     await page.screenshot({
       path: testInfo.outputPath(`daily-${distance}-summary.png`),
       fullPage: true,
     });
     await page.reload();
+    await expect(
+      page.getByRole("textbox", { name: "Daily share text" })
+    ).toHaveValue(shareText);
     await expect(page.getByRole("status")).toHaveText(
       `${distance} light-years traveled`
     );
@@ -145,17 +186,18 @@ test("an open daily page unlocks the new UTC expedition at midnight", async ({
   ).toBeVisible();
 });
 
-test("unavailable browser storage leaves a clear recovery path to practice", async ({
+test("corrupt browser progress leaves a clear recovery path to practice", async ({
   page,
 }) => {
   await page.addInitScript(() => {
-    Storage.prototype.setItem = () => {
-      throw new Error("Storage is unavailable");
-    };
+    localStorage.setItem(
+      `offcourse:daily:v1:${new Date().toISOString().slice(0, 10)}`,
+      "broken json"
+    );
   });
   await page.goto("/daily");
   await expect(page.getByRole("main").getByRole("alert")).toContainText(
-    "Daily progress could not be saved or restored"
+    "Daily progress could not be restored safely"
   );
   await expect(page.getByRole("slider")).toHaveCount(0);
   await page.getByRole("link", { name: "play practice", exact: true }).click();

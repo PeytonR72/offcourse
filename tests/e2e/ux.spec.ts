@@ -189,9 +189,7 @@ test("pause freezes a locked flight; hidden tabs require explicit resume", async
 
 test("storage error recovery offers a full touch target", async ({ page }) => {
   await page.addInitScript(() => {
-    Storage.prototype.setItem = () => {
-      throw new Error("Unavailable");
-    };
+    localStorage.setItem("offcourse:endless:v1", "broken json");
   });
   await page.goto("/endless");
   const recovery = page.getByRole("link", {

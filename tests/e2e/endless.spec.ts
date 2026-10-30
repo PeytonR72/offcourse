@@ -200,15 +200,13 @@ test("reload preserves input and settles a locked prediction once", async ({
   expect((await currentQuestion(page)).question.id).not.toBe(entry.question.id);
 });
 
-test("unavailable storage provides a recovery path", async ({ page }) => {
+test("corrupt storage provides a recovery path", async ({ page }) => {
   await page.addInitScript(() => {
-    Storage.prototype.setItem = () => {
-      throw new Error("Unavailable storage");
-    };
+    localStorage.setItem("offcourse:endless:v1", "broken json");
   });
   await page.goto("/endless");
   await expect(page.getByRole("main").getByRole("alert")).toContainText(
-    "Voyage progress could not be saved or restored"
+    "Voyage progress could not be restored safely"
   );
   await page.getByRole("link", { name: "play practice", exact: true }).click();
   await expect(page.getByRole("slider")).toBeVisible();
