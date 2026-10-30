@@ -1,5 +1,9 @@
 # Offcourse
 
+T15 adds an opt-in server poll pipeline with editorial publication and frozen
+Daily Five manifests. The game remains demo-only; intake is disabled by default.
+See [poll setup and operator commands](docs/poll-pipeline.md).
+
 Guess what humanity thinks to steer a tiny rocket through space.
 
 The prototype includes open practice flights, a five-round Daily Expedition
