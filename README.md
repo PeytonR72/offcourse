@@ -81,3 +81,33 @@ is built and served by Next.js. Pixi world rendering belongs to T06.
 
 T01 verification and retained screenshots are recorded in
 [its ticket](.scratch/offcourse/issues/T01-repository-and-test-harness.md).
+
+## Domain rules (T02)
+
+`src/domain/content.ts` defines readonly questions and versioned distributions,
+with validators that throw for invalid content fields and numeric metadata.
+Crowd percentages may be fractional; player guesses must be integers from 0–100.
+Content validation checks structure, not publication eligibility or sample policy.
+
+`src/domain/run.ts` exposes `createRun(id, mode)` and the pure
+`transitionRun(run, event)` function. The caller supplies round IDs, questions,
+and distribution versions. The round follows:
+
+```text
+idle -> answering -> aiming -> locked -> flight -> reveal -> resolved
+                     ^                                      |
+                     |             answering <--------------+
+                     +-- change choice/guess
+```
+
+Choose a personal answer before aiming, then explicitly aim before locking.
+The guess always predicts YES, including when the personal answer is NO.
+Lock pins the input and distribution identity/version. Reveal accepts only the
+matching snapshot; resolve appends one immutable result to `completedRounds`.
+Out-of-order events and reused round IDs throw. State snapshots are frozen and
+transitions leave their inputs unchanged; callers must retain the returned run.
+
+This module has no browser, clock, randomness, storage, or rendering dependency.
+Scoring and mode completion belong to T03 and later tickets; scheduling and
+eligibility filtering belong to the content tickets. Reload persistence and
+server idempotency will build on these rules in their respective tickets.
