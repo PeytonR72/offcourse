@@ -1,8 +1,9 @@
 # Offcourse
 
-T15 adds an opt-in server poll pipeline with editorial publication and frozen
-Daily Five manifests. The game remains demo-only; intake is disabled by default.
-See [poll setup and operator commands](docs/poll-pipeline.md).
+T15–T16 add an opt-in server poll pipeline and answer-free play manifests with
+official lock/scoring and disconnect recovery. Intake and server-backed play are
+disabled by default; the current game remains a labeled demo.
+See [poll setup](docs/poll-pipeline.md) and [server-backed play](docs/server-play.md).
 
 Guess what humanity thinks to steer a tiny rocket through space.
 

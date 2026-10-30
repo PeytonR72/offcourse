@@ -48,6 +48,7 @@ export function RoundPlayer({
   label,
   onContinue,
   completionText,
+  onLock,
 }: {
   playback: Playback;
   update: (change: (current: Playback) => Playback) => void;
@@ -55,6 +56,7 @@ export function RoundPlayer({
   label: string;
   onContinue?: () => void;
   completionText?: string;
+  onLock?: (answer: PersonalAnswer, guessPercentage: number) => void;
 }) {
   const { run, elapsed } = playback;
   const { reducedMotion, launch, reveal, stopFeedback } = useExperience();
@@ -370,6 +372,10 @@ export function RoundPlayer({
         onClick={() => {
           if (round.phase !== "aiming" || round.guessPercentage === null)
             return;
+          if (onLock) {
+            onLock(round.answer, round.guessPercentage);
+            return;
+          }
           launch();
           setRun((current) => {
             if (

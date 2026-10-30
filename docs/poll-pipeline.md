@@ -4,7 +4,8 @@ The game remains a **Demo · Illustrative results** experience. This pipeline is
 server infrastructure for future qualified content. It does not enable real
 scored play, collect live responses by default, provision a service, or import
 any real poll. Server-backed play and anti-spoiler manifests belong to T16;
-content coverage and the switch to real scoring belong to T17.
+content coverage and the switch to real scoring belong to T17. T16 is now documented
+in [server-backed play](server-play.md); it remains disabled by default.
 
 ## Storage and setup
 

@@ -14,6 +14,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:server": "node --experimental-strip-types scripts/test-play-backend.mjs",
     "build": "next build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
