@@ -1,11 +1,12 @@
 # T18: Production QA, privacy, and launch
 
-Status: ready-for-agent
+Status: ready-for-human
 Blocked by: T10–T17
 Execution: Authorized by `/implement ticket 18 auto accept tests seams` on
 2026-10-30. T10–T17 complete. Seams and tests automatically approved.
-Completion: In progress. Physical-phone profiling and screen-reader QA remain
-human release gates; the deployed game must remain demo-only.
+Completion: Software implementation delivered. Ticket acceptance remains open
+for physical-phone profiling and screen-reader QA; the deployed game remains
+demo-only. Genuine-crowd release requires separate explicit approval.
 
 ## What to build
 
@@ -48,9 +49,8 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
   server scores/participation, disconnect/idempotency, concurrent locks,
   cross-installation isolation, content shortage and answer-free readiness.
   Fixtures are not genuine crowd data and never leave the local fixture cluster.
-- Format, lint, typecheck and production build pass. Full Vitest rerun passed
-  182 tests before splitting three independent health scenarios; the five
-  resulting health tests passed. Final precommit full results will be appended.
+- Format, lint, typecheck and production build pass. Final precommit full Vitest
+  suite passed **185 tests / 27 files**, including five separate health scenarios.
   An earlier daily test timeout under competing browser/build load passed both
   targeted and full sequential reruns, with no unrelated gameplay change.
 - Performance report and four manually reviewed desktop/mobile screenshots:
@@ -69,7 +69,28 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
 - Last-known-good rollback candidate before this work:
   `dpl_C75gxU41cJxqiGi1sBvVqnec9wSN`, READY production deployment of baseline
   `c8a2148`, URL `offcourse-hvb7mnb0t-peytonr7272-gmailcoms-projects.vercel.app`.
-- Commit/push, new deployment, CI and production smoke evidence are pending.
+- Implementation commit **`6fe0ee05423e52930f8e598db9167a518152e588`** pushed
+  normally to `main`. Vercel verified exact Git SHA, project and production
+  target: **`dpl_E4BcK1pacYv1VBkWd1mstpiwDLe3`**, READY and aliased to
+  `https://offcourse-five.vercel.app`. Generated URLs retain deployment protection.
+- Production smoke: **14 passed** on desktop/mobile against that deployment,
+  using fresh browser-local demo records. Daily 0/500 boundaries, same-day
+  replay, endless inclusive 10/11 survival/loss/restart, home/disclosure,
+  privacy/audits and disabled answer-free play endpoints all pass. `/api/health`
+  returns 200, `Cache-Control: no-store`, `{status: "ok", play: "demo"}`.
+  `docs/evidence/t18/production-smoke.json` records scope and remaining gates.
+- CLI smoke output exposed Playwright's inherited-server concatenation. Both
+  configs now use explicit object overrides: production starts no local app,
+  backend starts only port 3101, shared tracing/projects remain. Repeat targeted
+  smoke verifies the correction. Independent follow-up reviews report no findings.
+- Final delivery CI is tracked by the [main validation runs](https://github.com/PeytonR72/offcourse/actions/workflows/ci.yml).
+  This final normal evidence/configuration commit runs the same complete CI
+  validation and does not bypass checks. Final CI/deployment results are reported
+  to the user after that run finishes.
+- Next unlocked ticket: **none — T18 is the final scoped ticket**. Remaining
+  human steps are the physical-device/screen-reader checks in
+  `docs/launch-readiness.md`; do not mark all acceptance complete or claim a
+  genuine-crowd launch from desktop emulation or synthetic fixtures.
 
 ## Standards
 
@@ -85,4 +106,5 @@ Independent fresh-context review: **0 actionable implementation discrepancies**.
 Follow-up review confirms the Pause guard preserves normal/keyboard activation,
 the production smoke submits no real votes, and the measurements retain the
 sub-60 throttled result honestly. Remaining physical-phone/screen-reader and
-final CI/deployment gates are reported as pending, not claimed complete.
+CI/deployment checks are tracked separately; human gates remain open and are
+not claimed complete.

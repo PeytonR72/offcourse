@@ -1,0 +1,22 @@
+{
+  "implementationCommit": "6fe0ee05423e52930f8e598db9167a518152e588",
+  "deploymentId": "dpl_E4BcK1pacYv1VBkWd1mstpiwDLe3",
+  "deploymentState": "READY",
+  "projectId": "prj_EgeN02OuyS0QhVXZqLLy9sKk71mH",
+  "target": "production",
+  "origin": "https://offcourse-five.vercel.app",
+  "browserChecks": {
+    "desktopChromium": 7,
+    "mobileChromium": 7,
+    "totalPassed": 14
+  },
+  "health": {
+    "httpStatus": 200,
+    "cacheControl": "no-store",
+    "body": { "status": "ok", "play": "demo" }
+  },
+  "scope": "Fresh browser-local demo daily/endless records, privacy/accessibility and invalid-payload disabled play endpoints; no poll votes submitted",
+  "genuineCrowdReleaseApproved": false,
+  "physicalPhoneVerified": false,
+  "screenReaderVerified": false
+}

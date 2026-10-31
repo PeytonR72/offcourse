@@ -6,7 +6,8 @@ if (!process.env.SMOKE_BASE_URL)
 const origin = new URL(process.env.SMOKE_BASE_URL).origin;
 
 // These journeys use only the demo and fresh browser-local records.
-export default defineConfig(base, {
+export default defineConfig({
+  ...base,
   testMatch: [
     "home.spec.ts",
     "launch.spec.ts",
@@ -16,6 +17,6 @@ export default defineConfig(base, {
   ],
   grep: /home page introduces|health reports|privacy stays|daily completes|10 survives|server-backed play stays/,
   retries: 0,
-  use: { baseURL: origin },
-  webServer: undefined,
+  use: { ...base.use, baseURL: origin },
+  webServer: [],
 });
