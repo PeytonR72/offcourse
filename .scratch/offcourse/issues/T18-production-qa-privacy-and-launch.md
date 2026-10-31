@@ -132,3 +132,14 @@ the production smoke submits no real votes, and the measurements retain the
 sub-60 throttled result honestly. Remaining physical-phone/screen-reader and
 CI/deployment checks are tracked separately; human gates remain open and are
 not claimed complete.
+
+## User-authorized visual follow-up — 2026-10-31
+
+The user explicitly requested a full professional redesign using the awwwards
+skill and krillion.io for style inspiration. This follow-up preserves the T01–T18
+ticket structure and completed dependencies. It does not authorize a real-data
+release. Original orbital artwork, typography, mode navigation, responsive game
+controls, result hierarchy, preference controls, privacy/recovery pages and
+metadata were refreshed. No scoring, persistence, backend or poll eligibility
+rules changed. See `DESIGN.md` and `docs/evidence/redesign/QA.md` for the brief,
+independent review, test results and retained desktop/mobile evidence.

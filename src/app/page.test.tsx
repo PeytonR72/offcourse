@@ -1,6 +1,21 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import Home from "./page";
+import { Practice } from "./practice";
+
+test("offers both expeditions and instructions before the practice flight", () => {
+  render(<Home />);
+  expect(
+    screen.getByRole("link", { name: /launch daily expedition/i })
+  ).toHaveAttribute("href", "/daily");
+  expect(
+    screen.getByRole("link", { name: /launch endless voyage/i })
+  ).toHaveAttribute("href", "/endless");
+  expect(screen.getByRole("link", { name: /how to play/i })).toHaveAttribute(
+    "href",
+    "#how-to-play"
+  );
+});
 
 test("introduces the prototype with an honest results disclosure", () => {
   render(<Home />);
@@ -12,11 +27,14 @@ test("introduces the prototype with an honest results disclosure", () => {
   expect(
     screen.getByText("Illustrative results", { exact: true })
   ).toBeVisible();
-  expect(screen.getByText(/simulated, not real crowd votes/i)).toBeVisible();
+  for (const disclosure of screen.getAllByText(
+    /simulated, not real crowd votes/i
+  ))
+    expect(disclosure).toBeVisible();
 });
 
 test("locks once, reveals numeric feedback and continues with fresh input", async () => {
-  render(<Home />);
+  render(<Practice />);
   const question = screen.getByRole("heading", { level: 2 }).textContent;
   fireEvent.click(screen.getByRole("radio", { name: "YES" }));
   fireEvent.change(screen.getByRole("slider"), { target: { value: "100" } });
@@ -32,7 +50,7 @@ test("locks once, reveals numeric feedback and continues with fresh input", asyn
   expect(screen.getByText(/Your prediction: 100% YES/)).toBeVisible();
   expect(screen.getByText(/Actual YES: \d+%/)).toBeVisible();
   expect(screen.getByText(/Error: \d+ percentage points/)).toBeVisible();
-  expect(screen.getByText(/Distance: \d+ ly/)).toBeVisible();
+  expect(screen.getByRole("status")).toHaveTextContent(/Distance: \d+ ly/);
   fireEvent.click(lock);
   expect(screen.getAllByRole("heading", { name: "Round result" })).toHaveLength(
     1
@@ -49,7 +67,7 @@ test("locks once, reveals numeric feedback and continues with fresh input", asyn
 });
 
 test("locks input during flight, permits skip only after reveal and leaves a stable result", async () => {
-  render(<Home />);
+  render(<Practice />);
   fireEvent.click(screen.getByRole("radio", { name: "YES" }));
   fireEvent.click(screen.getByRole("button", { name: "Lock prediction" }));
   expect(screen.queryByText(/Actual YES:/)).not.toBeInTheDocument();
@@ -74,7 +92,7 @@ test("reduced motion shows the static result without a moving flight", async () 
     removeEventListener() {},
   }));
   try {
-    render(<Home />);
+    render(<Practice />);
     fireEvent.click(screen.getByRole("radio", { name: "NO" }));
     fireEvent.click(screen.getByRole("button", { name: "Lock prediction" }));
     expect(
@@ -90,7 +108,7 @@ test("reduced motion shows the static result without a moving flight", async () 
 });
 
 test("chooses a personal answer and aims on the YES axis without revealing results", () => {
-  render(<Home />);
+  render(<Practice />);
   const lock = screen.getByRole("button", { name: "Lock prediction" });
   expect(lock).toBeDisabled();
   expect(

@@ -67,7 +67,7 @@ export function Daily() {
     );
   if (!loaded)
     return (
-      <p role="status" className="mt-8">
+      <p role="status" className="flight-loading mt-8">
         Loading today’s expedition…
       </p>
     );
@@ -111,29 +111,18 @@ function DailyGame({ daily, repository, storage }: Loaded) {
   return (
     <>
       {!storage.persistent && <SessionStorageNotice />}
-      <div className="mt-8 space-y-2">
+      <div className="flight-dashboard daily-dashboard">
         <p className="text-sm text-[#b4c2d1]">
           {daily.dateKey} · UTC expedition
         </p>
         <p className="font-bold text-[#f5c879]">
-          Total distance: {run.totalDistance} ly / 500 ly
-        </p>
-        <p>
-          Next expedition:{" "}
-          <time dateTime={reset.toISOString()}>
-            {reset.toLocaleString(undefined, {
-              dateStyle: "medium",
-              timeStyle: "short",
-            })}
-          </time>{" "}
-          (your local time; resets 00:00 UTC).
+          Total distance:{" "}
+          <span className="distance-unit">{run.totalDistance} ly</span> /{" "}
+          <span className="distance-unit">500 ly</span>
         </p>
       </div>
       {complete ? (
-        <section
-          className="mt-6 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
-          aria-labelledby="daily-summary"
-        >
+        <section className="round-card" aria-labelledby="daily-summary">
           <RocketWorld run={run} />
           <h2
             id="daily-summary"
@@ -195,15 +184,25 @@ function DailyGame({ daily, repository, storage }: Loaded) {
         </section>
       ) : (
         <>
-          <p className="mt-5 font-bold">
-            Round{" "}
-            {Math.min(
-              run.completedRounds.length +
-                (run.round.phase === "resolved" ? 0 : 1),
-              5
-            )}{" "}
-            of 5
-          </p>
+          <div className="round-progress">
+            <p>
+              Round{" "}
+              {Math.min(
+                run.completedRounds.length +
+                  (run.round.phase === "resolved" ? 0 : 1),
+                5
+              )}{" "}
+              of 5
+            </p>
+            <div className="round-progress-track" aria-hidden="true">
+              {Array.from({ length: 5 }, (_, index) => (
+                <span
+                  key={index}
+                  data-complete={index < run.completedRounds.length}
+                />
+              ))}
+            </div>
+          </div>
           <RoundPlayer
             playback={playback}
             update={update}
@@ -220,6 +219,17 @@ function DailyGame({ daily, repository, storage }: Loaded) {
         </>
       )}
       <p className="mt-6 text-sm leading-relaxed text-[#b4c2d1]">
+        Next expedition:{" "}
+        <time dateTime={reset.toISOString()}>
+          {reset.toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short",
+          })}
+        </time>{" "}
+        (your local time; resets 00:00 UTC). Everyone gets the same five
+        questions each UTC day.
+      </p>
+      <p className="mt-3 text-sm leading-relaxed text-[#b4c2d1]">
         One daily attempt per browser when storage is available. Clearing
         storage resets participation; records do not sync across devices. This
         demo uses simulated percentages and records no public ranked score.

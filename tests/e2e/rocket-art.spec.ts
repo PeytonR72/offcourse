@@ -21,6 +21,7 @@ for (const missingAsset of [false, true]) {
       missingAsset ? "embedded" : "asset"
     );
     // The same 47 × 31 pixel silhouette is used by GPU and fallback renderers.
+    await scene.scrollIntoViewIfNeeded();
     const bounds = await scene.locator("[data-rocket-body]").boundingBox();
     expect(bounds?.width).toBeGreaterThanOrEqual(30);
     expect(bounds?.height).toBeGreaterThanOrEqual(20);

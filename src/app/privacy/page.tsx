@@ -1,12 +1,17 @@
 import Link from "next/link";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy & storage",
+  description:
+    "How Offcourse saves browser-local progress and preferences, handles optional server play, and keeps illustrative demo results clearly labeled.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto min-h-svh max-w-3xl px-5 py-8 sm:px-10 sm:py-12">
-      <Link
-        href="/"
-        className="inline-flex min-h-12 items-center text-[#b4cbd0] underline"
-      >
+    <main id="main-content" tabIndex={-1} className="game-page">
+      <Link href="/" className="back-link">
         Back to demo practice
       </Link>
       <h1 className="mt-4 text-4xl font-bold">Privacy &amp; storage</h1>

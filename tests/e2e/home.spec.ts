@@ -37,7 +37,7 @@ test("practice can be played with keyboard controls", async ({
   page,
 }, testInfo) => {
   await page.goto("/");
-  const question = await page.getByRole("heading", { level: 2 }).textContent();
+  const question = await page.locator("#question").textContent();
   const lock = page.getByRole("button", { name: "Lock prediction" });
   await expect(lock).toBeDisabled();
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
@@ -45,11 +45,22 @@ test("practice can be played with keyboard controls", async ({
     .getByRole("group", { name: "Flight preferences" })
     .getByRole("button");
   await expect(preferences.first()).toBeEnabled();
-  for (let index = 0; index < (await preferences.count()); index++) {
-    await page.keyboard.press("Tab");
-    await expect(preferences.nth(index)).toBeFocused();
-  }
   await page.keyboard.press("Tab");
+  await expect(
+    page.getByRole("link", { name: "Skip to content" })
+  ).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("main")).toBeFocused();
+  // The launchpad and guide precede practice. Traverse them without a pointer.
+  for (let index = 0; index < 10; index++) {
+    if (
+      await page
+        .getByRole("radio", { name: "YES", exact: true })
+        .evaluate((element) => element === document.activeElement)
+    )
+      break;
+    await page.keyboard.press("Tab");
+  }
   await expect(
     page.getByRole("radio", { name: "YES", exact: true })
   ).toBeFocused();
@@ -84,10 +95,8 @@ test("practice can be played with keyboard controls", async ({
   await page.keyboard.press("Tab");
   await expect(page.getByRole("button", { name: "Continue" })).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 2 })).not.toHaveText(
-    question!
-  );
-  await expect(page.getByRole("heading", { level: 2 })).toBeFocused();
+  await expect(page.locator("#question")).not.toHaveText(question!);
+  await expect(page.locator("#question")).toBeFocused();
   await expect(lock).toBeDisabled();
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
   await page.keyboard.press("Tab");

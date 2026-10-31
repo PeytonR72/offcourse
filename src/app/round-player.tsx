@@ -139,7 +139,7 @@ export function RoundPlayer({
   }, [round.phase, run.completedRounds.length]);
   const pauseControl = (
     <button
-      className="secondary-button mt-3 w-full"
+      className="secondary-button pause-button mt-3 w-full"
       onClick={(event) => {
         // Lock changes the layout; its second click can land on Pause.
         if (event.detail > 1) return;
@@ -156,7 +156,7 @@ export function RoundPlayer({
         initial={false}
         animate={{ y: 0, scale: 1 }}
         transition={cardSpring}
-        className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
+        className="round-card"
         aria-labelledby="pause-title"
       >
         <RocketWorld run={run} elapsed={elapsed} paused />
@@ -184,7 +184,7 @@ export function RoundPlayer({
         initial={false}
         animate={{ y: 0, scale: 1 }}
         transition={cardSpring}
-        className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
+        className="round-card"
         aria-labelledby="result-title"
       >
         <RocketWorld run={run} />
@@ -197,14 +197,15 @@ export function RoundPlayer({
           Round result
         </h2>
         <p className="mt-3">{lock.question.prompt}</p>
-        <div role="status" className="mt-5 space-y-2">
+        <div role="status" className="result-stats result-summary">
+          <p className="distance-earned">
+            <span>Distance: </span>
+            <strong>{score.distance} ly</strong>
+          </p>
           <p>Your answer: {lock.answer.toUpperCase()}</p>
           <p>Your prediction: {lock.guessPercentage}% YES</p>
           <p>Actual YES: {distribution.yesPercentage}%</p>
           <p>Error: {score.error} percentage points</p>
-          <p className="font-bold text-[#f5c879]">
-            Distance: {score.distance} ly
-          </p>
         </div>
         {!onContinue ? (
           <p className="mt-6">{completionText}</p>
@@ -236,7 +237,7 @@ export function RoundPlayer({
         initial={false}
         animate={{ y: -2, scale: 0.997 }}
         transition={cardSpring}
-        className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
+        className="round-card"
         aria-labelledby="flight-title"
       >
         <RocketWorld run={run} elapsed={elapsed} />
@@ -250,7 +251,7 @@ export function RoundPlayer({
         </h2>
         <p className="mt-3">{lock.question.prompt}</p>
         <p className="mt-3">Your prediction: {lock.guessPercentage}% YES</p>
-        <div role="status" className="mt-5 space-y-2">
+        <div role="status" className="result-stats">
           {round.phase === "reveal" ? (
             <>
               <p>Actual YES: {round.result.distribution.yesPercentage}%</p>
@@ -297,10 +298,10 @@ export function RoundPlayer({
       animate={{ y: round.phase === "aiming" ? -2 : 0, scale: 1 }}
       transition={cardSpring}
       aria-labelledby="question"
-      className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
+      className="round-card"
     >
       <RocketWorld run={run} />
-      <p className="text-sm text-[#b4c2d1]">{label}</p>
+      <p className="round-label">{label}</p>
       <h2
         id="question"
         ref={heading}
@@ -313,10 +314,7 @@ export function RoundPlayer({
         <legend>Your own answer</legend>
         <div className="mt-2 flex gap-3">
           {(["yes", "no"] as const).map((answer) => (
-            <label
-              key={answer}
-              className="flex min-h-12 flex-1 cursor-pointer items-center justify-center gap-3 rounded-lg border border-[#6d8399] px-4"
-            >
+            <label key={answer} className="answer-option">
               <input
                 type="radio"
                 name="answer"
@@ -329,14 +327,16 @@ export function RoundPlayer({
           ))}
         </div>
       </fieldset>
-      <label htmlFor="prediction" className="mt-6 block font-bold">
+      <label
+        htmlFor="prediction"
+        className="prediction-label mt-6 block font-bold"
+      >
         {round.question.sourceType === "simulated"
           ? "What percentage of players chose YES?"
           : "What percentage of poll respondents chose YES?"}
       </label>
       <p id="aim-help" className="mt-2 text-sm text-[#b4c2d1]">
-        Always predict YES, even if your own answer is NO. Drag to aim, or use
-        arrow keys for 1% steps. Home: 0%. End: 100%.
+        Always predict YES, even if your own answer is NO.
       </p>
       <output
         htmlFor="prediction"
@@ -394,6 +394,13 @@ export function RoundPlayer({
         Lock prediction
       </button>
       {pauseControl}
+      <details className="aim-instructions">
+        <summary>Keyboard controls</summary>
+        <p>
+          Arrow keys adjust by 1%. Home: 0%. End: 100%. Tab to Lock prediction,
+          then press Enter to launch.
+        </p>
+      </details>
     </motion.section>
   );
 }

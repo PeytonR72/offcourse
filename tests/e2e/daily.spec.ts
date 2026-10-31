@@ -30,7 +30,7 @@ for (const distance of [0, 500]) {
     await page.clock.install({ time: at });
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
-    await page.getByRole("link", { name: /Play Daily Expedition/ }).click();
+    await page.getByRole("link", { name: /Launch Daily Expedition/ }).click();
     await expect(
       page.getByRole("heading", { name: "Daily Expedition", exact: true })
     ).toBeVisible();

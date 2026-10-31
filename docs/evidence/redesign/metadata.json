@@ -1,0 +1,167 @@
+{
+  "routes": [
+    {
+      "route": "/",
+      "status": 200,
+      "title": "Offcourse",
+      "description": "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo.",
+      "canonical": "https://offcourse-five.vercel.app/",
+      "og": [
+        ["og:title", "Offcourse"],
+        [
+          "og:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["og:url", "https://offcourse-five.vercel.app"],
+        ["og:site_name", "Offcourse"],
+        [
+          "og:image",
+          "https://offcourse-five.vercel.app/opengraph-image?f661f180bee834df"
+        ],
+        ["og:image:type", "image/png"],
+        ["og:image:width", "1200"],
+        ["og:image:height", "630"],
+        ["og:image:alt", "Offcourse: a little rocket, a lot of humanity"],
+        ["og:type", "website"]
+      ],
+      "twitter": [
+        ["twitter:card", "summary_large_image"],
+        ["twitter:title", "Offcourse"],
+        [
+          "twitter:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["twitter:image", "https://offcourse-five.vercel.app/opengraph-image"]
+      ],
+      "jsonld": "{\"@context\":\"https://schema.org\",\"@type\":\"VideoGame\",\"name\":\"Offcourse\",\"url\":\"https://offcourse-five.vercel.app\",\"description\":\"A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo.\",\"image\":\"https://offcourse-five.vercel.app/opengraph-image\",\"inLanguage\":\"en\",\"isAccessibleForFree\":true,\"gamePlatform\":\"Web browser\",\"playMode\":\"SinglePlayer\"}"
+    },
+    {
+      "route": "/daily",
+      "status": 200,
+      "title": "Daily Expedition | Offcourse",
+      "description": "Five questions, five destinations. Predict the crowd and travel up to 500 light-years in today's shared Offcourse expedition. Illustrative demo results.",
+      "canonical": "https://offcourse-five.vercel.app/daily",
+      "og": [
+        ["og:title", "Offcourse"],
+        [
+          "og:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["og:url", "https://offcourse-five.vercel.app"],
+        ["og:site_name", "Offcourse"],
+        ["og:image", "https://offcourse-five.vercel.app/opengraph-image"],
+        ["og:image:width", "1200"],
+        ["og:image:height", "630"],
+        ["og:image:alt", "Offcourse: a little rocket, a lot of humanity"],
+        ["og:type", "website"]
+      ],
+      "twitter": [
+        ["twitter:card", "summary_large_image"],
+        ["twitter:title", "Offcourse"],
+        [
+          "twitter:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["twitter:image", "https://offcourse-five.vercel.app/opengraph-image"]
+      ]
+    },
+    {
+      "route": "/endless",
+      "status": 200,
+      "title": "Endless Voyage | Offcourse",
+      "description": "Trust your intuition and keep your rocket flying. Predict within 10 percentage points to grow your streak in Offcourse. Illustrative demo results.",
+      "canonical": "https://offcourse-five.vercel.app/endless",
+      "og": [
+        ["og:title", "Offcourse"],
+        [
+          "og:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["og:url", "https://offcourse-five.vercel.app"],
+        ["og:site_name", "Offcourse"],
+        ["og:image", "https://offcourse-five.vercel.app/opengraph-image"],
+        ["og:image:width", "1200"],
+        ["og:image:height", "630"],
+        ["og:image:alt", "Offcourse: a little rocket, a lot of humanity"],
+        ["og:type", "website"]
+      ],
+      "twitter": [
+        ["twitter:card", "summary_large_image"],
+        ["twitter:title", "Offcourse"],
+        [
+          "twitter:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["twitter:image", "https://offcourse-five.vercel.app/opengraph-image"]
+      ]
+    },
+    {
+      "route": "/privacy",
+      "status": 200,
+      "title": "Privacy & storage | Offcourse",
+      "description": "How Offcourse saves browser-local progress and preferences, handles optional server play, and keeps illustrative demo results clearly labeled.",
+      "canonical": "https://offcourse-five.vercel.app/privacy",
+      "og": [
+        ["og:title", "Offcourse"],
+        [
+          "og:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["og:url", "https://offcourse-five.vercel.app"],
+        ["og:site_name", "Offcourse"],
+        ["og:image", "https://offcourse-five.vercel.app/opengraph-image"],
+        ["og:image:width", "1200"],
+        ["og:image:height", "630"],
+        ["og:image:alt", "Offcourse: a little rocket, a lot of humanity"],
+        ["og:type", "website"]
+      ],
+      "twitter": [
+        ["twitter:card", "summary_large_image"],
+        ["twitter:title", "Offcourse"],
+        [
+          "twitter:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["twitter:image", "https://offcourse-five.vercel.app/opengraph-image"]
+      ]
+    },
+    {
+      "route": "/missing",
+      "status": 404,
+      "title": "Destination not found | Offcourse",
+      "description": "This destination is off the map. Return to the Offcourse launchpad and start a daily expedition or endless voyage.",
+      "canonical": "https://offcourse-five.vercel.app/",
+      "og": [
+        ["og:title", "Offcourse"],
+        [
+          "og:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["og:url", "https://offcourse-five.vercel.app"],
+        ["og:site_name", "Offcourse"],
+        [
+          "og:image",
+          "https://offcourse-five.vercel.app/opengraph-image?f661f180bee834df"
+        ],
+        ["og:image:type", "image/png"],
+        ["og:image:width", "1200"],
+        ["og:image:height", "630"],
+        ["og:image:alt", "Offcourse: a little rocket, a lot of humanity"],
+        ["og:type", "website"]
+      ],
+      "twitter": [
+        ["twitter:card", "summary_large_image"],
+        ["twitter:title", "Offcourse"],
+        [
+          "twitter:description",
+          "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo."
+        ],
+        ["twitter:image", "https://offcourse-five.vercel.app/opengraph-image"]
+      ]
+    }
+  ],
+  "og": {
+    "status": 200,
+    "type": "image/png"
+  }
+}

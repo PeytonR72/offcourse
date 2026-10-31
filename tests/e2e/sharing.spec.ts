@@ -30,7 +30,9 @@ for (const route of ["/daily", "/endless"]) {
     await page
       .getByRole("link", {
         name:
-          route === "/daily" ? /Play Daily Expedition/ : /Play Endless Voyage/,
+          route === "/daily"
+            ? /Launch Daily Expedition/
+            : /Launch Endless Voyage/,
       })
       .click();
     await expect(page.getByRole("slider")).toHaveValue("73");

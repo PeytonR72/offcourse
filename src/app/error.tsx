@@ -14,7 +14,7 @@ export default function ErrorPage({
     heading.current?.focus();
   }, []);
   return (
-    <main className="mx-auto min-h-svh max-w-3xl px-5 py-8 sm:px-10 sm:py-12">
+    <main id="main-content" tabIndex={-1} className="game-page">
       <h1 ref={heading} tabIndex={-1} className="text-4xl font-bold">
         Flight interrupted
       </h1>

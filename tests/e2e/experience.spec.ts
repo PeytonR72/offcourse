@@ -89,6 +89,10 @@ test("reduced motion stops idle movement, skips polish immediately, and suppress
     .getByRole("button", { name: /^Reduce motion (on|off)$/, exact: true })
     .click();
   await expect(scene).toHaveAttribute("data-reduced-motion", "true");
+  const launchCard = page.getByRole("link", {
+    name: /Launch Daily Expedition/,
+  });
+  await expect(launchCard).toHaveCSS("transition-duration", "0s");
   await page.clock.install();
   const rocket = scene.locator("svg > g[transform]");
   const transform = await rocket.getAttribute("transform");
@@ -223,9 +227,7 @@ test("abandoning a flight cannot authorize sound for a restored round on another
       () => window.feedbackEvents.filter((event) => event === "note").length
     )
   ).toBe(2);
-  await page
-    .getByRole("link", { name: "Play Daily Expedition · 5 rounds" })
-    .click();
+  await page.getByRole("link", { name: /Launch Daily Expedition/ }).click();
   await expect(
     page.getByRole("heading", { name: "Round result" })
   ).toBeVisible();

@@ -26,9 +26,7 @@ test("universe stays inside its scene and renders a responsive flight", async ({
   await page.getByRole("slider").fill("44");
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
   const sceneBounds = (await scene.boundingBox())!;
-  const headingBounds = (await page
-    .getByRole("heading", { level: 2 })
-    .boundingBox())!;
+  const headingBounds = (await page.locator("#question").boundingBox())!;
   expect(sceneBounds.y + sceneBounds.height).toBeLessThan(headingBounds.y);
   const client = await context.newCDPSession(page);
   // Hosted CI uses software graphics on shared CPUs. Keep its responsiveness

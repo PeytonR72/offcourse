@@ -53,7 +53,7 @@ export function Endless() {
     );
   if (!loaded)
     return (
-      <p role="status" className="mt-8">
+      <p role="status" className="flight-loading mt-8">
         Preparing your voyage…
       </p>
     );
@@ -117,7 +117,7 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
   return (
     <>
       {!storage.persistent && <SessionStorageNotice />}
-      <div className="mt-8 space-y-2">
+      <div className="flight-dashboard endless-dashboard">
         <p ref={progressHeading} tabIndex={-1} className="text-xl font-bold">
           Current streak: {progress.streak}
         </p>
@@ -128,10 +128,7 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
         <p className="text-[#b4c2d1]">Best distance: {best.distance} ly</p>
       </div>
       {complete ? (
-        <section
-          aria-labelledby="endless-summary"
-          className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8"
-        >
+        <section aria-labelledby="endless-summary" className="round-card">
           <RocketWorld run={run} />
           <h2
             id="endless-summary"
@@ -190,6 +187,10 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
         />
       )}
       <p className="mt-6 text-sm leading-relaxed text-[#b4c2d1]">
+        Questions never repeat within a run. Explore until you miss or complete
+        the available demo pool.
+      </p>
+      <p className="mt-3 text-sm leading-relaxed text-[#b4c2d1]">
         Progress and best records are saved on this browser when storage is
         available. Clearing storage resets them; records do not sync across
         devices. Simulated percentages are for demo play only, with no public

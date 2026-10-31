@@ -1,8 +1,16 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { playEnabled } from "../../server/play-runtime";
 import { ServerPlay } from "./server-play";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Server play preview",
+  description:
+    "The optional server-backed Offcourse play preview. The illustrative demo stays available while qualified poll content is prepared.",
+  alternates: { canonical: "/play" },
+  robots: { index: false, follow: false },
+};
 
 export default async function PlayPage({
   searchParams,
@@ -11,11 +19,8 @@ export default async function PlayPage({
 }) {
   const mode = (await searchParams).mode === "endless" ? "endless" : "daily";
   return (
-    <main className="mx-auto min-h-svh max-w-3xl px-5 py-8 sm:px-10 sm:py-12">
-      <Link
-        href="/"
-        className="inline-flex min-h-12 items-center text-[#b4cbd0] underline"
-      >
+    <main id="main-content" tabIndex={-1} className="game-page">
+      <Link href="/" className="back-link">
         Offcourse · Demo practice
       </Link>
       <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">

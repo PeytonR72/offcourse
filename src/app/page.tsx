@@ -1,39 +1,155 @@
-import { Practice } from "./practice";
 import Link from "next/link";
+import { Practice } from "./practice";
+import { StarChart } from "./star-chart";
+import { FlightIcon } from "./flight-icon";
+import { flightInstructions, site } from "../data/site";
 
 export default function Home() {
   return (
-    <main className="mx-auto min-h-svh max-w-3xl px-5 py-8 sm:px-10 sm:py-12">
-      <p className="mb-4 flex items-center gap-3 text-sm text-[#b4cbd0]">
-        <span aria-hidden="true" className="size-2 rounded-full bg-[#f5c879]" />
-        Prototype in progress
-      </p>
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-        Offcourse
-      </h1>
-      <p className="mt-3 max-w-xl text-base leading-relaxed text-[#c4d1dd]">
-        Guess what humanity thinks to steer a tiny rocket through space.
-      </p>
-      <div className="mt-5">
-        <p className="text-sm font-bold text-[#f5c879]">Illustrative results</p>
-        <p className="mt-2 max-w-lg text-base leading-relaxed text-[#b4c2d1]">
-          Practice percentages are simulated, not real crowd votes. No ranked
-          score is recorded.
-        </p>
+    <main id="main-content" tabIndex={-1} className="home-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "VideoGame",
+            name: site.name,
+            url: site.url,
+            description: site.description,
+            image: `${site.url}/opengraph-image`,
+            inLanguage: "en",
+            isAccessibleForFree: true,
+            gamePlatform: "Web browser",
+            playMode: "SinglePlayer",
+          }),
+        }}
+      />
+      <section className="launchpad" aria-labelledby="home-title">
+        <div className="hero-copy">
+          <p className="hero-kicker">{site.tagline}</p>
+          <h1 id="home-title">Offcourse</h1>
+          <p className="hero-description">{site.introduction}</p>
+        </div>
+        <StarChart />
+        <div className="mission-select">
+          <Link href="/daily" className="mission-card mission-daily">
+            <div className="mission-top">
+              <FlightIcon kind="sun" />
+              <span>THE DAILY FIVE</span>
+              <span className="mission-tag">A fresh start, every day</span>
+            </div>
+            <h2>Daily Expedition</h2>
+            <p>
+              Five questions. One shared journey.
+              <br />
+              How far will you go today?
+            </p>
+            <div className="mission-launch">
+              <span>Launch Daily Expedition</span>
+              <FlightIcon kind="arrow" />
+            </div>
+            <div className="mission-facts">
+              <span>5 destinations</span>
+              <span>Up to 500 light-years</span>
+            </div>
+          </Link>
+          <Link href="/endless" className="mission-card mission-endless">
+            <div className="mission-top">
+              <FlightIcon kind="infinity" />
+              <span>GO THE DISTANCE</span>
+            </div>
+            <h2>Endless Voyage</h2>
+            <p>
+              Keep your predictions within 10 points.
+              <br />
+              One miss, and it’s back to the stars.
+            </p>
+            <div className="mission-launch">
+              <span>Launch Endless Voyage</span>
+              <FlightIcon kind="arrow" />
+            </div>
+            <div className="mission-facts">
+              <span>One life</span>
+              <span>Chase your best streak</span>
+            </div>
+          </Link>
+        </div>
+        <div className="launchpad-note">
+          <span className="status-dot" />
+          <strong>Illustrative results</strong>
+          <span>Percentages are simulated, not real crowd votes.</span>
+        </div>
+        <a href="#how-to-play" className="how-link">
+          First time here? <span>How to play</span>
+          <span aria-hidden="true">↓</span>
+        </a>
+      </section>
+      <section
+        id="how-to-play"
+        className="flight-guide"
+        aria-labelledby="guide-title"
+      >
+        <div className="guide-heading">
+          <FlightIcon />
+          <h2 id="guide-title">
+            Your intuition <br />
+            is the fuel.
+          </h2>
+          <p>
+            No trivia to memorize. <br />
+            Just a feel for other humans.
+          </p>
+        </div>
+        <ol>
+          {flightInstructions.map((step, i) => (
+            <li key={step.title}>
+              <span className="step-number">0{i + 1}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section
+        id="practice"
+        className="practice-section"
+        aria-labelledby="practice-title"
+      >
+        <div className="practice-intro">
+          <span className="section-label">THE TRAINING GROUND</span>
+          <h2 id="practice-title">
+            Take a <br />
+            test flight.
+          </h2>
+          <p>
+            A little room to find your bearings. Try the controls, trust your
+            instinct, and watch your rocket find its way.
+          </p>
+          <div className="practice-rule">
+            <FlightIcon kind="orbit" />
+            <p>
+              <strong>Closer guesses. Longer journeys.</strong>
+              <br />A perfect prediction earns 100 light-years. Every point of
+              error takes off 5.
+            </p>
+          </div>
+          <p className="practice-note">
+            Practice percentages are simulated, not real crowd votes. No ranked
+            score is recorded.
+          </p>
+          <Link href="/daily" className="text-link">
+            Ready for the daily? <FlightIcon kind="arrow" />
+          </Link>
+        </div>
+        <div className="practice-console">
+          <Practice />
+        </div>
+      </section>
+      <div className="demo-status">
+        <span className="status-dot" />
+        <span>Prototype in progress</span>
+        <span>Made for curious humans. No account needed.</span>
       </div>
-      <Practice />
-      <Link
-        href="/daily"
-        className="primary-button mt-6 flex items-center justify-center"
-      >
-        Play Daily Expedition · 5 rounds
-      </Link>
-      <Link
-        href="/endless"
-        className="primary-button mt-3 flex items-center justify-center"
-      >
-        Play Endless Voyage · one miss ends the run
-      </Link>
     </main>
   );
 }

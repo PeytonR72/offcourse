@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
-import Home from "./page";
+import { Practice } from "./practice";
 
 test("pauses an unlocked prediction and resumes with the same answer and aim", () => {
-  render(<Home />);
+  render(<Practice />);
   fireEvent.click(screen.getByRole("radio", { name: "NO" }));
   fireEvent.change(screen.getByRole("slider"), { target: { value: "73" } });
   fireEvent.click(screen.getByRole("button", { name: "Pause" }));

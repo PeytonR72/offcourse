@@ -31,7 +31,7 @@ test("10 survives, 11 ends, and restart preserves bests across reload", async ({
   page.on("pageerror", (error) => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await page.getByRole("link", { name: /Play Endless Voyage/ }).click();
+  await page.getByRole("link", { name: /Launch Endless Voyage/ }).click();
   await expect(
     page.getByRole("heading", { name: "Endless Voyage", exact: true })
   ).toBeVisible();

@@ -11,4 +11,6 @@ coverage/
 .next/
 out/
 *.tsbuildinfo
+.scratch/design/
+.shots/
 next-env.d.ts

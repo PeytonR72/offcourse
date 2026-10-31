@@ -28,7 +28,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start -- --port 3100",
+    command: "node node_modules/next/dist/bin/next start --port 3100",
     url: "http://localhost:3100",
     reuseExistingServer: false,
   },

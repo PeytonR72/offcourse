@@ -11,6 +11,8 @@ import {
 } from "react";
 import { MotionConfig } from "motion/react";
 import { createFlightFeedback } from "../world/flight-feedback";
+import { SiteNav } from "./site-nav";
+import { FlightIcon } from "./flight-icon";
 
 type Preferences = { sound: boolean; haptics: boolean; reducedMotion: boolean };
 const defaults: Preferences = {
@@ -103,42 +105,52 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
       }}
     >
       <MotionConfig reducedMotion={reducedMotion ? "always" : "never"}>
-        <div
-          className="experience-controls"
-          role="group"
-          aria-label="Flight preferences"
-        >
-          <button
-            disabled={!ready}
-            aria-pressed={preferences.sound}
-            onClick={() => toggle("sound")}
-          >
-            Sound {preferences.sound ? "on" : "off"}
-          </button>
-          <button
-            disabled={!ready}
-            aria-pressed={reducedMotion}
-            onClick={() => toggle("reducedMotion")}
-            aria-describedby={systemReduced ? "system-motion" : undefined}
-          >
-            Reduce motion {reducedMotion ? "on" : "off"}
-          </button>
-          {hapticsSupported && (
-            <button
-              disabled={!ready}
-              aria-pressed={preferences.haptics}
-              onClick={() => toggle("haptics")}
+        <div className="experience-root" data-reduced-motion={reducedMotion}>
+          <a className="skip-link" href="#main-content">
+            Skip to content
+          </a>
+          <header className="site-header">
+            <SiteNav />
+            <div
+              className="experience-controls"
+              role="group"
+              aria-label="Flight preferences"
             >
-              Haptics {preferences.haptics ? "on" : "off"}
-            </button>
-          )}
-          {systemReduced && (
-            <span id="system-motion" className="text-xs text-[#b4c2d1]">
-              Device reduced motion is on.
-            </span>
-          )}
+              <button
+                disabled={!ready}
+                aria-pressed={preferences.sound}
+                onClick={() => toggle("sound")}
+              >
+                <FlightIcon kind="sound" />
+                Sound {preferences.sound ? "on" : "off"}
+              </button>
+              <button
+                disabled={!ready}
+                aria-pressed={reducedMotion}
+                onClick={() => toggle("reducedMotion")}
+                aria-describedby={systemReduced ? "system-motion" : undefined}
+              >
+                <FlightIcon kind="motion" />
+                <span>Reduce motion {reducedMotion ? "on" : "off"}</span>
+              </button>
+              <button
+                disabled={!ready || !hapticsSupported}
+                aria-hidden={!hapticsSupported}
+                style={{ visibility: hapticsSupported ? "visible" : "hidden" }}
+                aria-pressed={preferences.haptics}
+                onClick={() => toggle("haptics")}
+              >
+                Haptics {preferences.haptics ? "on" : "off"}
+              </button>
+              {systemReduced && (
+                <span id="system-motion" className="text-xs text-[#b4c2d1]">
+                  Device reduced motion is on.
+                </span>
+              )}
+            </div>
+          </header>
+          {children}
         </div>
-        {children}
       </MotionConfig>
     </Experience.Provider>
   );
