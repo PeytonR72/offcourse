@@ -12,7 +12,9 @@ test("all local preferences survive remount and remain usable when storage is un
     </ExperienceProvider>
   );
   for (const name of ["Sound", "Reduce motion", "Haptics"]) {
-    const button = await screen.findByRole("button", { name });
+    const button = await screen.findByRole("button", {
+      name: new RegExp(`^${name} (on|off)$`),
+    });
     await waitFor(() => expect(button).toBeEnabled());
     fireEvent.click(button);
   }
@@ -24,10 +26,9 @@ test("all local preferences survive remount and remain usable when storage is un
   );
   for (const name of ["Sound", "Reduce motion", "Haptics"])
     await waitFor(() =>
-      expect(screen.getByRole("button", { name })).toHaveAttribute(
-        "aria-pressed",
-        "true"
-      )
+      expect(
+        screen.getByRole("button", { name: new RegExp(`^${name} (on|off)$`) })
+      ).toHaveAttribute("aria-pressed", "true")
     );
   restored.unmount();
   vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
@@ -39,7 +40,7 @@ test("all local preferences survive remount and remain usable when storage is un
         <p>Demo</p>
       </ExperienceProvider>
     );
-    const sound = screen.getByRole("button", { name: "Sound" });
+    const sound = screen.getByRole("button", { name: /^Sound (on|off)$/ });
     await waitFor(() => expect(sound).toBeEnabled());
     fireEvent.click(sound);
     expect(sound).toHaveAttribute("aria-pressed", "false");
@@ -57,7 +58,7 @@ test("sound defaults off and the player's mute choice survives remounting", asyn
       <Home />
     </ExperienceProvider>
   );
-  const sound = await screen.findByRole("button", { name: "Sound" });
+  const sound = await screen.findByRole("button", { name: /^Sound (on|off)$/ });
   expect(sound).toHaveAttribute("aria-pressed", "false");
   fireEvent.click(sound);
   expect(sound).toHaveAttribute("aria-pressed", "true");
@@ -68,12 +69,11 @@ test("sound defaults off and the player's mute choice survives remounting", asyn
     </ExperienceProvider>
   );
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Sound" })).toHaveAttribute(
-      "aria-pressed",
-      "true"
-    )
+    expect(
+      screen.getByRole("button", { name: /^Sound (on|off)$/ })
+    ).toHaveAttribute("aria-pressed", "true")
   );
-  fireEvent.click(screen.getByRole("button", { name: "Sound" }));
+  fireEvent.click(screen.getByRole("button", { name: /^Sound (on|off)$/ }));
   second.unmount();
   render(
     <ExperienceProvider>
@@ -81,9 +81,8 @@ test("sound defaults off and the player's mute choice survives remounting", asyn
     </ExperienceProvider>
   );
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Sound" })).toHaveAttribute(
-      "aria-pressed",
-      "false"
-    )
+    expect(
+      screen.getByRole("button", { name: /^Sound (on|off)$/ })
+    ).toHaveAttribute("aria-pressed", "false")
   );
 });

@@ -16,9 +16,11 @@ for (const route of ["/daily", "/endless"]) {
     await expect(
       page.getByText(/Progress and records last only/)
     ).toBeVisible();
-    await page.getByRole("button", { name: "Sound", exact: true }).click();
+    await page
+      .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+      .click();
     await expect(
-      page.getByRole("button", { name: "Sound", exact: true })
+      page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
     ).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("radio", { name: "NO", exact: true }).check();
     await page.getByRole("slider").fill("73");

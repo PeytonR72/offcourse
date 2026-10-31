@@ -1,5 +1,11 @@
 # Offcourse
 
+T18 adds a shared privacy/storage notice at `/privacy`, answer-free `/api/health`,
+unexpected-error recovery, accessibility audits, and server-backed E2E in CI.
+See [launch readiness and operations](docs/launch-readiness.md) for profiling,
+deployment smoke, monitoring, fallback/rollback and remaining physical-device
+release gates. The deployed game remains an illustrative-results demo.
+
 T15–T16 add an opt-in server poll pipeline and answer-free play manifests with
 official lock/scoring and disconnect recovery. Intake and server-backed play are
 disabled by default; the current game remains a labeled demo.

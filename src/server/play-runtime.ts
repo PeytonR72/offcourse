@@ -1,6 +1,7 @@
 import "server-only";
 import { Pool } from "pg";
 import { PlayRepository, type PlayDatabase } from "./play";
+import { ContentRepository } from "./content";
 
 let database: PlayDatabase | undefined;
 
@@ -48,6 +49,15 @@ export function getPlayRuntime() {
     };
   }
   return {
+    checkContent: () =>
+      database!.transaction(
+        async (db) =>
+          (
+            await new ContentRepository(db).coverage(
+              new Date().toISOString().slice(0, 10)
+            )
+          ).ready
+      ),
     repository: new PlayRepository(database),
     secret: process.env.PLAY_SECRET!,
     clock: () => new Date(),

@@ -41,7 +41,7 @@ test("feedback is opt-in, mute persists, and reload never autoplays", async ({
   await page.goto("/");
   const events = () => page.evaluate(() => window.feedbackEvents);
   await expect(
-    page.getByRole("button", { name: "Sound", exact: true })
+    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
   ).toHaveAttribute("aria-pressed", "false");
   await page.getByRole("radio", { name: "YES", exact: true }).check();
   await page.getByRole("button", { name: "Lock prediction" }).click();
@@ -49,8 +49,12 @@ test("feedback is opt-in, mute persists, and reload never autoplays", async ({
     page.getByRole("heading", { name: "Round result" })
   ).toBeVisible();
   expect(await events()).toEqual([]);
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
-  await page.getByRole("button", { name: "Haptics", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: /^Haptics (on|off)$/, exact: true })
+    .click();
   expect(await events()).toEqual([]);
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("radio", { name: "YES", exact: true }).check();
@@ -59,13 +63,15 @@ test("feedback is opt-in, mute persists, and reload never autoplays", async ({
   expect(await events()).toContain("haptic");
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Sound", exact: true })
+    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
   ).toHaveAttribute("aria-pressed", "true");
   expect(await events()).toEqual([]);
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Sound", exact: true })
+    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
   ).toHaveAttribute("aria-pressed", "false");
   expect(await events()).toEqual([]);
 });
@@ -76,9 +82,11 @@ test("reduced motion stops idle movement, skips polish immediately, and suppress
   await page.goto("/");
   const scene = page.getByTestId("rocket-world");
   await expect(scene).toHaveAttribute("data-renderer", "ready");
-  await page.getByRole("button", { name: "Haptics", exact: true }).click();
   await page
-    .getByRole("button", { name: "Reduce motion", exact: true })
+    .getByRole("button", { name: /^Haptics (on|off)$/, exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: /^Reduce motion (on|off)$/, exact: true })
     .click();
   await expect(scene).toHaveAttribute("data-reduced-motion", "true");
   await page.clock.install();
@@ -102,12 +110,12 @@ test("reduced motion stops idle movement, skips polish immediately, and suppress
   });
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Reduce motion", exact: true })
+    page.getByRole("button", { name: /^Reduce motion (on|off)$/, exact: true })
   ).toHaveAttribute("aria-pressed", "true");
   await page.emulateMedia({ reducedMotion: "reduce" });
   // The device preference wins even if the manual preference is turned off.
   await page
-    .getByRole("button", { name: "Reduce motion", exact: true })
+    .getByRole("button", { name: /^Reduce motion (on|off)$/, exact: true })
     .click();
   await expect(scene).toHaveAttribute("data-reduced-motion", "true");
 });
@@ -116,12 +124,14 @@ test("restoring a locked voyage is silent despite persisted sound opt-in", async
   page,
 }) => {
   await page.goto("/endless");
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
   await page.getByRole("radio", { name: "YES", exact: true }).check();
   await page.getByRole("button", { name: "Lock prediction" }).click();
   await page.reload();
   await expect(
-    page.getByRole("button", { name: "Sound", exact: true })
+    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
   ).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("rocket-world")).toHaveAttribute(
     "data-stage",
@@ -134,7 +144,9 @@ test("muting during a flight cancels its result cue without delaying scoring", a
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
   await page.getByRole("radio", { name: "YES", exact: true }).check();
   await page.getByRole("slider").fill("44");
   await page.clock.install();
@@ -146,7 +158,9 @@ test("muting during a flight cancels its result cue without delaying scoring", a
       )
     )
     .toBe(2);
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
   await page.clock.runFor(1850);
   await expect(page.getByRole("status")).toContainText("Distance: 100 ly");
   expect(
@@ -172,9 +186,11 @@ test("blocked storage and unavailable feedback APIs leave practice playable", as
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
   await expect(
-    page.getByRole("button", { name: "Haptics", exact: true })
+    page.getByRole("button", { name: /^Haptics (on|off)$/, exact: true })
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
   await page.getByRole("radio", { name: "YES", exact: true }).check();
   await page.getByRole("button", { name: "Lock prediction" }).click();
   await expect(
@@ -195,7 +211,9 @@ test("abandoning a flight cannot authorize sound for a restored round on another
   ).toBeVisible();
   await page.getByRole("link", { name: "Offcourse · Practice" }).click();
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.getByRole("button", { name: "Sound", exact: true }).click();
+  await page
+    .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    .click();
   await page.clock.install();
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.getByRole("radio", { name: "YES", exact: true }).check();

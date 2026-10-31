@@ -32,6 +32,12 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Verify server play against isolated PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes postgresql
+          export PG_BIN="$(pg_config --bindir)"
+          npm run test:e2e:server
       - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:

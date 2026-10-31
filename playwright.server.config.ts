@@ -3,6 +3,11 @@ import base from "./playwright.config";
 
 export default defineConfig(base, {
   testMatch: "server-play.spec.ts",
+  outputDir: "test-results/server-play",
+  reporter: [
+    ["list"],
+    ["html", { outputFolder: "playwright-report/server-play", open: "never" }],
+  ],
   use: { baseURL: "http://localhost:3101" },
   webServer: {
     command: "npm run start -- --port 3101",

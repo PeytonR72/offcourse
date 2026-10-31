@@ -110,7 +110,6 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
         >
           <button
             disabled={!ready}
-            aria-label="Sound"
             aria-pressed={preferences.sound}
             onClick={() => toggle("sound")}
           >
@@ -118,7 +117,6 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
           </button>
           <button
             disabled={!ready}
-            aria-label="Reduce motion"
             aria-pressed={reducedMotion}
             onClick={() => toggle("reducedMotion")}
             aria-describedby={systemReduced ? "system-motion" : undefined}
@@ -128,7 +126,6 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
           {hapticsSupported && (
             <button
               disabled={!ready}
-              aria-label="Haptics"
               aria-pressed={preferences.haptics}
               onClick={() => toggle("haptics")}
             >

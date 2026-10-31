@@ -1,0 +1,103 @@
+{
+  "capturedAt": "2026-10-31T00:31:30.206Z",
+  "browser": "156.0.8078.4",
+  "platform": "win32",
+  "samples": [
+    {
+      "profile": "desktop",
+      "cpuThrottle": 1,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "guess": 44,
+      "result": "Your answer: YESYour prediction: 44% YESActual YES: 44%Error: 0 percentage pointsDistance: 100 ly",
+      "frameIntervals": 133,
+      "elapsedMs": 2216.6,
+      "meanFps": 60.00180456555085,
+      "medianGapMs": 16.699999999999818,
+      "p95GapMs": 16.799999999999727,
+      "gapsOver33Ms": 0
+    },
+    {
+      "profile": "desktop",
+      "cpuThrottle": 1,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "guess": 54,
+      "result": "Your answer: YESYour prediction: 54% YESActual YES: 44%Error: 10 percentage pointsDistance: 50 ly",
+      "frameIntervals": 133,
+      "elapsedMs": 2216.4999999999995,
+      "meanFps": 60.004511617414856,
+      "medianGapMs": 16.699999999999818,
+      "p95GapMs": 16.799999999999955,
+      "gapsOver33Ms": 0
+    },
+    {
+      "profile": "desktop",
+      "cpuThrottle": 1,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "guess": 55,
+      "result": "Your answer: YESYour prediction: 55% YESActual YES: 44%Error: 11 percentage pointsDistance: 45 ly",
+      "frameIntervals": 133,
+      "elapsedMs": 2216.6000000000004,
+      "meanFps": 60.001804565550835,
+      "medianGapMs": 16.699999999999932,
+      "p95GapMs": 16.799999999999955,
+      "gapsOver33Ms": 0
+    },
+    {
+      "profile": "mobile-emulation",
+      "cpuThrottle": 4,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "guess": 44,
+      "result": "Your answer: YESYour prediction: 44% YESActual YES: 44%Error: 0 percentage pointsDistance: 100 ly",
+      "frameIntervals": 103,
+      "elapsedMs": 2216.6,
+      "meanFps": 46.46756293422359,
+      "medianGapMs": 16.699999999999818,
+      "p95GapMs": 33.40000000000009,
+      "gapsOver33Ms": 11
+    },
+    {
+      "profile": "mobile-emulation",
+      "cpuThrottle": 4,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "guess": 54,
+      "result": "Your answer: YESYour prediction: 54% YESActual YES: 44%Error: 10 percentage pointsDistance: 50 ly",
+      "frameIntervals": 101,
+      "elapsedMs": 2233.2,
+      "meanFps": 45.22658069138456,
+      "medianGapMs": 16.700000000000045,
+      "p95GapMs": 33.40000000000009,
+      "gapsOver33Ms": 9
+    },
+    {
+      "profile": "mobile-emulation",
+      "cpuThrottle": 4,
+      "viewport": {
+        "width": 412,
+        "height": 839
+      },
+      "guess": 55,
+      "result": "Your answer: YESYour prediction: 55% YESActual YES: 44%Error: 11 percentage pointsDistance: 45 ly",
+      "frameIntervals": 97,
+      "elapsedMs": 2216.7000000000003,
+      "meanFps": 43.75874047006811,
+      "medianGapMs": 16.700000000000045,
+      "p95GapMs": 33.40000000000009,
+      "gapsOver33Ms": 19
+    }
+  ]
+}

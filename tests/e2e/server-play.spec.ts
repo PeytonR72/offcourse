@@ -1,7 +1,17 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 // Run only with the isolated PostgreSQL fixture runner (never a hosted database).
 test.skip(!process.env.PLAY_TEST_DATABASE_URL, "Use npm run test:e2e:server");
+
+test("readiness probes qualified coverage without answers or identifiers", async ({
+  request,
+}) => {
+  const response = await request.get("/api/health");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["cache-control"]).toBe("no-store");
+  expect(await response.json()).toEqual({ status: "ok", play: "ready" });
+});
 
 test("real HTTP manifests hide targets; daily plays five rounds and resumes the official total", async ({
   page,
@@ -29,6 +39,13 @@ test("real HTTP manifests hide targets; daily plays five rounds and resumes the 
   await expect(page.getByText(/Sample:/)).toHaveCount(0);
   await expect(page.getByText("Demo flight", { exact: true })).toHaveCount(0);
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
+  expect(
+    (
+      await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze()
+    ).violations
+  ).toEqual([]);
   await page.screenshot({
     path: testInfo.outputPath("server-aim.png"),
     fullPage: true,
@@ -48,6 +65,13 @@ test("real HTTP manifests hide targets; daily plays five rounds and resumes the 
   }
   await expect(page.getByText("Daily Expedition complete.")).toBeVisible();
   await expect(page.getByText(/Distance: 250 ly/)).toBeVisible();
+  expect(
+    (
+      await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze()
+    ).violations
+  ).toEqual([]);
   await page.reload();
   await expect(page.getByText("Daily Expedition complete.")).toBeVisible();
   await expect(page.getByRole("slider")).toHaveCount(0);

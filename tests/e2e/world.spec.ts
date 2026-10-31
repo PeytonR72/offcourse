@@ -1,5 +1,25 @@
 import { expect, test } from "@playwright/test";
 
+test("only the active renderer paints and context loss restores the current fallback", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const scene = page.getByTestId("rocket-world");
+  await expect(scene).toHaveAttribute("data-renderer", "ready");
+  await expect(scene.locator("svg")).toBeHidden();
+  await page.getByRole("radio", { name: "YES", exact: true }).check();
+  await page.getByRole("slider").fill("73");
+  await scene
+    .locator("canvas")
+    .evaluate((canvas) => canvas.dispatchEvent(new Event("webglcontextlost")));
+  await expect(scene).toHaveAttribute("data-renderer", "unavailable");
+  await expect(scene.locator("svg")).toBeVisible();
+  await expect(scene).toHaveAttribute("aria-label", /73% YES.*hidden/);
+  await page.getByRole("button", { name: "Lock prediction" }).click();
+  await expect(page.getByText("Your prediction: 73% YES")).toBeVisible();
+});
+
 test("rocket scene persists through aim, reveal and continue", async ({
   page,
 }, testInfo) => {
@@ -17,6 +37,7 @@ test("rocket scene persists through aim, reveal and continue", async ({
   await expect(scene).toHaveAttribute("aria-label", /75% YES.*hidden/);
   await scene.screenshot({ path: testInfo.outputPath("world-aim.png") });
   await expect(scene.locator("canvas")).toHaveScreenshot("world-aim.png", {
+    mask: [scene.locator("figcaption"), scene.getByTestId("universe-region")],
     maxDiffPixelRatio: 0.01,
   });
   await page.emulateMedia({ reducedMotion: "no-preference" });

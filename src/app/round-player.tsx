@@ -140,7 +140,9 @@ export function RoundPlayer({
   const pauseControl = (
     <button
       className="secondary-button mt-3 w-full"
-      onClick={() => {
+      onClick={(event) => {
+        // Lock changes the layout; its second click can land on Pause.
+        if (event.detail > 1) return;
         stopFeedback();
         setPaused(true);
       }}

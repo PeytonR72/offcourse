@@ -1,0 +1,51 @@
+{
+  "capturedAt": "2026-10-31T00:27:03.339Z",
+  "source": "npm run qa:profile console output before SVG paint suppression",
+  "browser": "156.0.8078.4",
+  "platform": "Windows, Ryzen 7 PRO 8840HS, Radeon integrated graphics",
+  "measurement": "requestAnimationFrame cadence, 2.2 seconds per flight; not physical-phone or GPU presentation FPS",
+  "samples": [
+    {
+      "profile": "desktop",
+      "cpuThrottle": 1,
+      "guess": 44,
+      "meanFps": 60.00451161741484,
+      "p95GapMs": 16.700000000000273
+    },
+    {
+      "profile": "desktop",
+      "cpuThrottle": 1,
+      "guess": 54,
+      "meanFps": 59.54545454545455,
+      "p95GapMs": 16.799999999999727
+    },
+    {
+      "profile": "desktop",
+      "cpuThrottle": 1,
+      "guess": 55,
+      "meanFps": 60.00180456555085,
+      "p95GapMs": 16.799999999999955
+    },
+    {
+      "profile": "mobile-emulation",
+      "cpuThrottle": 4,
+      "guess": 44,
+      "meanFps": 42.85843183253632,
+      "p95GapMs": 33.40000000000009
+    },
+    {
+      "profile": "mobile-emulation",
+      "cpuThrottle": 4,
+      "guess": 54,
+      "meanFps": 41.19464469618949,
+      "p95GapMs": 33.40000000000009
+    },
+    {
+      "profile": "mobile-emulation",
+      "cpuThrottle": 4,
+      "guess": 55,
+      "meanFps": 43.30957322024723,
+      "p95GapMs": 33.40000000000009
+    }
+  ]
+}

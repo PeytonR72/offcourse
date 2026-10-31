@@ -127,6 +127,7 @@ export function RocketWorld({
         <svg
           viewBox="0 0 640 256"
           className="absolute inset-0 size-full"
+          style={{ visibility: status === "ready" ? "hidden" : "visible" }}
           aria-hidden="true"
         >
           <UniverseView universe={universe} travel={frame.x - 86} />
