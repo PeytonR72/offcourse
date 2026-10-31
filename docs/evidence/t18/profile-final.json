@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-10-31T00:31:30.206Z",
+  "capturedAt": "2026-10-31T01:25:20.231Z",
   "browser": "156.0.8078.4",
   "platform": "win32",
   "samples": [
@@ -13,10 +13,10 @@
       "guess": 44,
       "result": "Your answer: YESYour prediction: 44% YESActual YES: 44%Error: 0 percentage pointsDistance: 100 ly",
       "frameIntervals": 133,
-      "elapsedMs": 2216.6,
-      "meanFps": 60.00180456555085,
+      "elapsedMs": 2216.6000000000004,
+      "meanFps": 60.001804565550835,
       "medianGapMs": 16.699999999999818,
-      "p95GapMs": 16.799999999999727,
+      "p95GapMs": 16.700000000000273,
       "gapsOver33Ms": 0
     },
     {
@@ -29,10 +29,10 @@
       "guess": 54,
       "result": "Your answer: YESYour prediction: 54% YESActual YES: 44%Error: 10 percentage pointsDistance: 50 ly",
       "frameIntervals": 133,
-      "elapsedMs": 2216.4999999999995,
-      "meanFps": 60.004511617414856,
+      "elapsedMs": 2216.6,
+      "meanFps": 60.00180456555085,
       "medianGapMs": 16.699999999999818,
-      "p95GapMs": 16.799999999999955,
+      "p95GapMs": 16.700000000000273,
       "gapsOver33Ms": 0
     },
     {
@@ -47,7 +47,7 @@
       "frameIntervals": 133,
       "elapsedMs": 2216.6000000000004,
       "meanFps": 60.001804565550835,
-      "medianGapMs": 16.699999999999932,
+      "medianGapMs": 16.699999999999818,
       "p95GapMs": 16.799999999999955,
       "gapsOver33Ms": 0
     },
@@ -60,12 +60,12 @@
       },
       "guess": 44,
       "result": "Your answer: YESYour prediction: 44% YESActual YES: 44%Error: 0 percentage pointsDistance: 100 ly",
-      "frameIntervals": 103,
-      "elapsedMs": 2216.6,
-      "meanFps": 46.46756293422359,
+      "frameIntervals": 120,
+      "elapsedMs": 2216.7,
+      "meanFps": 54.13452429286778,
       "medianGapMs": 16.699999999999818,
-      "p95GapMs": 33.40000000000009,
-      "gapsOver33Ms": 11
+      "p95GapMs": 33.30000000000018,
+      "gapsOver33Ms": 3
     },
     {
       "profile": "mobile-emulation",
@@ -76,12 +76,12 @@
       },
       "guess": 54,
       "result": "Your answer: YESYour prediction: 54% YESActual YES: 44%Error: 10 percentage pointsDistance: 50 ly",
-      "frameIntervals": 101,
-      "elapsedMs": 2233.2,
-      "meanFps": 45.22658069138456,
-      "medianGapMs": 16.700000000000045,
-      "p95GapMs": 33.40000000000009,
-      "gapsOver33Ms": 9
+      "frameIntervals": 121,
+      "elapsedMs": 2216.6,
+      "meanFps": 54.58810791301994,
+      "medianGapMs": 16.699999999999818,
+      "p95GapMs": 33.30000000000018,
+      "gapsOver33Ms": 4
     },
     {
       "profile": "mobile-emulation",
@@ -92,12 +92,12 @@
       },
       "guess": 55,
       "result": "Your answer: YESYour prediction: 55% YESActual YES: 44%Error: 11 percentage pointsDistance: 45 ly",
-      "frameIntervals": 97,
-      "elapsedMs": 2216.7000000000003,
-      "meanFps": 43.75874047006811,
-      "medianGapMs": 16.700000000000045,
-      "p95GapMs": 33.40000000000009,
-      "gapsOver33Ms": 19
+      "frameIntervals": 117,
+      "elapsedMs": 2200,
+      "meanFps": 53.18181818181818,
+      "medianGapMs": 16.699999999999818,
+      "p95GapMs": 33.399999999999864,
+      "gapsOver33Ms": 6
     }
   ]
 }

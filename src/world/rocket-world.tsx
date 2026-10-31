@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Run } from "../domain/run";
 import {
   mountScene,
@@ -23,6 +31,20 @@ const loadRenderer: RendererLoader = async () => {
   const { createPixiRenderer } = await import("./pixi-renderer");
   return createPixiRenderer();
 };
+
+// Keep hidden SVG geometry out of per-frame reconciliation. When the GPU fails,
+// visible changes to true and the fallback renders the latest authoritative pose.
+const FallbackContents = memo(
+  function FallbackContents({
+    children,
+  }: {
+    visible: boolean;
+    children: ReactNode;
+  }) {
+    return children;
+  },
+  (previous, next) => !previous.visible && !next.visible
+);
 
 export function RocketWorld({
   run,
@@ -130,78 +152,80 @@ export function RocketWorld({
           style={{ visibility: status === "ready" ? "hidden" : "visible" }}
           aria-hidden="true"
         >
-          <UniverseView universe={universe} travel={frame.x - 86} />
-          <ellipse
-            cx="532"
-            cy={targetY}
-            rx="40"
-            ry="13"
-            fill="none"
-            stroke={cssColor(universe.region.accent)}
-            strokeWidth="2"
-          />
-          <circle
-            cx="532"
-            cy={targetY}
-            r="23"
-            fill={cssColor(universe.region.planet)}
-          />
-          <circle
-            cx="525"
-            cy={targetY - 7}
-            r="7"
-            fill={cssColor(universe.region.accent)}
-            opacity="0.6"
-          />
-          <circle
-            cx="540"
-            cy={targetY + 8}
-            r="5"
-            fill={cssColor(universe.region.sky)}
-            opacity="0.5"
-          />
-          <path
-            d={`M86 166 Q310 48 532 ${endY}`}
-            fill="none"
-            stroke="#f5c879"
-            strokeWidth="2"
-          />
-          {state.targetOffset !== null && (
-            <path
-              d={`M86 166 Q310 48 532 ${targetY}`}
-              fill="none"
-              stroke="#7bdeea"
-            />
-          )}
-          <g
-            ref={fallbackRocket}
-            transform={transform(frame)}
-            opacity={frame.alpha}
-          >
-            <RocketSprite {...appearance} flameScale={frame.flame || 1} />
-          </g>
-          <g data-testid="engine-sparks">
-            {frame.particles.map((spark, index) => (
-              <circle
-                key={index}
-                cx={spark.x}
-                cy={spark.y}
-                r={spark.radius}
-                opacity={spark.alpha}
-                fill="#f5c879"
-              />
-            ))}
-          </g>
-          {state.outcome === "perfect" && (
-            <circle
-              cx="504"
+          <FallbackContents visible={status !== "ready"}>
+            <UniverseView universe={universe} travel={frame.x - 86} />
+            <ellipse
+              cx="532"
               cy={targetY}
-              r="25"
+              rx="40"
+              ry="13"
+              fill="none"
+              stroke={cssColor(universe.region.accent)}
+              strokeWidth="2"
+            />
+            <circle
+              cx="532"
+              cy={targetY}
+              r="23"
+              fill={cssColor(universe.region.planet)}
+            />
+            <circle
+              cx="525"
+              cy={targetY - 7}
+              r="7"
+              fill={cssColor(universe.region.accent)}
+              opacity="0.6"
+            />
+            <circle
+              cx="540"
+              cy={targetY + 8}
+              r="5"
+              fill={cssColor(universe.region.sky)}
+              opacity="0.5"
+            />
+            <path
+              d={`M86 166 Q310 48 532 ${endY}`}
               fill="none"
               stroke="#f5c879"
               strokeWidth="2"
             />
-          )}
+            {state.targetOffset !== null && (
+              <path
+                d={`M86 166 Q310 48 532 ${targetY}`}
+                fill="none"
+                stroke="#7bdeea"
+              />
+            )}
+            <g
+              ref={fallbackRocket}
+              transform={transform(frame)}
+              opacity={frame.alpha}
+            >
+              <RocketSprite {...appearance} flameScale={frame.flame || 1} />
+            </g>
+            <g data-testid="engine-sparks">
+              {frame.particles.map((spark, index) => (
+                <circle
+                  key={index}
+                  cx={spark.x}
+                  cy={spark.y}
+                  r={spark.radius}
+                  opacity={spark.alpha}
+                  fill="#f5c879"
+                />
+              ))}
+            </g>
+            {state.outcome === "perfect" && (
+              <circle
+                cx="504"
+                cy={targetY}
+                r="25"
+                fill="none"
+                stroke="#f5c879"
+                strokeWidth="2"
+              />
+            )}
+          </FallbackContents>
         </svg>
         <div ref={host} className="absolute inset-0" />
       </div>

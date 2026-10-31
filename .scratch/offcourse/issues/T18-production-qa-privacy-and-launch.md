@@ -55,7 +55,9 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
   targeted and full sequential reruns, with no unrelated gameplay change.
 - Performance report and four manually reviewed desktop/mobile screenshots:
   `docs/evidence/t18/`. Final measured desktop rAF cadence **60.0 FPS**; 4× CPU
-  mobile emulation **43.8–46.5 FPS**, p95 **33.4 ms**. No phone or GPU-presentation
+  mobile emulation **53.2–54.6 FPS**, p95 **33.3–33.4 ms** after skipping hidden
+  fallback reconciliation. The earlier paint-only 43.8–46.5 FPS capture remains
+  in `profile-paint-only.json`. No phone or GPU-presentation
   FPS claim. Prior T17 hosted CI failed its 4× timing probe and stale screenshots;
   CI now records a 1× responsiveness smoke with unchanged limits, while local
   actual profiling retains 4×. World screenshot masks omit only text overlays;
@@ -102,6 +104,13 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
   preserve metric/screenshot artifacts before asserting the same limits, and
   other CI journeys trace on first retry per Playwright's performance guidance.
   No performance budget is relaxed and raw 4× measured results remain unchanged.
+- Run `41154239676` confirms all ten backend checks pass on Linux. Desktop
+  frame-time still reached p95 100 ms without tracing. The fallback SVG now
+  skips hidden geometry reconciliation while Pixi is ready, and renders current
+  authoritative children when GPU failure makes it visible. Fourteen focused
+  world/art/cadence checks pass, including earned happy-expression recovery
+  after landing. Fresh profiling is recorded above; both reviewers report no
+  findings in the memo/state behavior.
 - Next unlocked ticket: **none — T18 is the final scoped ticket**. Remaining
   human steps are the physical-device/screen-reader checks in
   `docs/launch-readiness.md`; do not mark all acceptance complete or claim a

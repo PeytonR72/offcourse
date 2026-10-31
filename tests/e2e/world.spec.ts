@@ -1,5 +1,25 @@
 import { expect, test } from "@playwright/test";
 
+test("context loss after landing restores the earned rocket expression", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const scene = page.getByTestId("rocket-world");
+  await expect(scene).toHaveAttribute("data-renderer", "ready");
+  await page.getByRole("radio", { name: "YES", exact: true }).check();
+  await page.getByRole("slider").fill("44");
+  await page.getByRole("button", { name: "Lock prediction" }).click();
+  await expect(
+    page.getByText("Distance: 100 ly", { exact: true })
+  ).toBeVisible();
+  await scene
+    .locator("canvas")
+    .evaluate((canvas) => canvas.dispatchEvent(new Event("webglcontextlost")));
+  await expect(scene.locator('[data-rocket-body="happy"]')).toBeVisible();
+  await expect(page.getByText("Your prediction: 44% YES")).toBeVisible();
+});
+
 test("only the active renderer paints and context loss restores the current fallback", async ({
   page,
 }) => {

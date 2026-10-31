@@ -16,12 +16,14 @@ miss. Practice uses daily distance rules, so the 11-point practice round earns
 | Profile                            | Before mean FPS range | Final mean FPS range | Final p95 gap |
 | ---------------------------------- | --------------------- | -------------------- | ------------- |
 | Desktop, 1280×720, 1× CPU          | 59.5–60.0             | 60.0–60.0            | 16.8 ms       |
-| Pixel 7 emulation, 412×839, 4× CPU | 41.2–43.3             | 43.8–46.5            | 33.4 ms       |
+| Pixel 7 emulation, 412×839, 4× CPU | 41.2–43.3             | 53.2–54.6            | 33.3–33.4 ms  |
 
 Raw final capture: `profile-final.json`; baseline values retained from the first
-console capture in `profile-baseline.json`. The paint fix hides SVG while the
-opaque Pixi canvas is active; current SVG remains available immediately on
-context loss. These single-run measurements show desktop meeting the cadence
+console capture in `profile-baseline.json`. The intermediate paint-only capture
+(43.8–46.5 FPS under 4× emulation) is retained in `profile-paint-only.json`.
+The paint fix hides SVG while the opaque Pixi canvas is active; a memo also
+skips hidden SVG subtree reconciliation until it is needed. Context loss renders
+the latest authoritative pose immediately. These single-run measurements show desktop meeting the cadence
 target and a throttled profile below it. They do not establish statistical
 improvement, physical-phone performance, or GPU presentation rate. No claim of
 60 FPS on phones is made. Remaining device QA is in `docs/launch-readiness.md`.
@@ -77,3 +79,11 @@ traces on first retry instead of tracing every successful test, following
 [Playwright's guidance on tracing overhead](https://playwright.dev/docs/best-practices#debugging-on-ci).
 This removes diagnostic instrumentation from timed measurements; it does not
 change app rendering, physical-device gates or the recorded 4× profile.
+
+Run `41154239676` verified PostgreSQL fixture startup and all ten backend checks
+on Linux. Its desktop timing probe still reached p95 100 ms without tracing,
+while mobile passed. The follow-up app change skips reconciliation of the hidden
+SVG geometry while Pixi is ready. Fourteen focused browser checks passed,
+including context loss after a perfect landing showing the earned happy sprite.
+The fresh profile above records the resulting 53.2–54.6 FPS throttled capture;
+it remains below the 60 FPS target and is not a physical-phone result.
