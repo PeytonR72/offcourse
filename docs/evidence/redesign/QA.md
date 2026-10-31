@@ -105,3 +105,15 @@ Local development: `npm run dev`. Production build: `npm run build`.
 The existing GitHub main-branch push deploys the illustrative demo to Vercel.
 Content lives in `src/data/site.ts`; no fictional credentials or stock-image
 placeholders need replacement. Simulated poll percentages remain deliberate.
+
+## Deployment verification
+
+Commit `2aab9ae` deployed through the existing main-branch integration to
+https://offcourse-five.vercel.app. Vercel reported READY with that exact SHA and
+stable alias. The initial live smoke caught a test selector racing navigation:
+its generic heading matched the homepage's Endless card before the destination
+loaded. The test now waits for the destination h1 and reads `#question`; the
+independent standards reviewer confirmed the fix. This changed no application
+behavior. The production suite was rerun against the deployed demo.
+
+Live production smoke: **14 passed** on desktop and mobile.

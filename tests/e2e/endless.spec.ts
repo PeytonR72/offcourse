@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { demoCatalog } from "../../src/data/demo-questions";
 
 async function currentQuestion(page: Page) {
-  const heading = page.getByRole("heading", { level: 2 });
+  const heading = page.locator("#question");
   await expect(page.getByRole("slider")).toBeVisible();
   const prompt = await heading.textContent();
   const entry = demoCatalog.entries.find(
@@ -33,7 +33,7 @@ test("10 survives, 11 ends, and restart preserves bests across reload", async ({
   await page.goto("/");
   await page.getByRole("link", { name: /Launch Endless Voyage/ }).click();
   await expect(
-    page.getByRole("heading", { name: "Endless Voyage", exact: true })
+    page.getByRole("heading", { level: 1, name: "Endless Voyage", exact: true })
   ).toBeVisible();
   const first = await currentQuestion(page);
   await page.screenshot({
