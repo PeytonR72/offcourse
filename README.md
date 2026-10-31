@@ -4,6 +4,9 @@ T15–T16 add an opt-in server poll pipeline and answer-free play manifests with
 official lock/scoring and disconnect recovery. Intake and server-backed play are
 disabled by default; the current game remains a labeled demo.
 See [poll setup](docs/poll-pipeline.md) and [server-backed play](docs/server-play.md).
+T17 adds [editorial scheduling and qualified-content coverage](docs/content-strategy.md),
+recent-repeat protection, retirement/quality reports, and source-specific badges.
+New scored runs require seven ready daily manifests and 100 qualified questions.
 
 Guess what humanity thinks to steer a tiny rocket through space.
 

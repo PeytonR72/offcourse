@@ -16,6 +16,8 @@ export function playResponse(reply: PlayReply, code?: number): Response {
       invalid: 400,
       conflict: 409,
       unavailable: 503,
+      not_ready: 503,
+      exhausted: 200,
       rate_limited: 429,
     }[reply.status];
   return Response.json(reply, {

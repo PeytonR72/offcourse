@@ -8,6 +8,7 @@ import type { QuestionSnapshot } from "../domain/questions";
 import type { ResolvedRound } from "../domain/run";
 import { randomUUID } from "node:crypto";
 import type { PollDatabase } from "./polls";
+import { ContentRepository } from "./content";
 
 export type PlayDatabase = {
   transaction<T>(work: (db: PollDatabase) => Promise<T>): Promise<T>;
@@ -48,6 +49,8 @@ export class PlayRepository {
       if (existing.rows.length) {
         return { status: "ok", play: await manifest(db, existing.rows[0]) };
       }
+      if (!(await new ContentRepository(db).coverage(dateKey)).ready)
+        return { status: "not_ready" };
       let ids: string[];
       if (mode === "daily") {
         const daily = await db.query<{ snapshot_ids: string[] }>(
@@ -57,13 +60,19 @@ export class PlayRepository {
         ids = daily.rows[0]?.snapshot_ids ?? [];
       } else {
         const pool = await db.query<{ id: string }>(
-          `SELECT DISTINCT ON (s.question_id) s.id FROM offcourse_poll.snapshots s
-           JOIN offcourse_poll.questions q ON q.id=s.question_id WHERE q.moderation='approved'
-           ORDER BY s.question_id, s.version DESC`
+          `SELECT DISTINCT ON (s.question_id) s.id FROM offcourse_poll.eligible_snapshots s
+           WHERE NOT EXISTS (
+             SELECT 1 FROM offcourse_poll.play_results r
+             JOIN offcourse_poll.play_runs p ON p.id=r.run_id
+             WHERE p.participant=$1 AND r.locked_at > $2::timestamptz - interval '168 hours'
+               AND r.result->'lock'->'question'->>'id'=s.question_id
+           ) ORDER BY s.question_id, s.version DESC`,
+          [participant, at.toISOString()]
         );
         ids = pool.rows.map(({ id }) => id);
       }
-      if (!ids.length) return { status: "unavailable" };
+      if (!ids.length)
+        return { status: mode === "endless" ? "exhausted" : "not_ready" };
       // A browser can keep its request id across midnight. Daily identity is the
       // server UTC date, while an interrupted old run remains lockable by its id.
       const prior = await db.query<{
@@ -147,8 +156,13 @@ export class PlayRepository {
         ),
       };
       await db.query(
-        "INSERT INTO offcourse_poll.play_results VALUES ($1,$2,$3)",
-        [run.id, prediction.roundIndex, JSON.stringify(result)]
+        "INSERT INTO offcourse_poll.play_results (run_id,round_index,result,locked_at) VALUES ($1,$2,$3,$4)",
+        [
+          run.id,
+          prediction.roundIndex,
+          JSON.stringify(result),
+          at.toISOString(),
+        ]
       );
       const finished = prediction.roundIndex + 1 === run.snapshot_ids.length;
       const status =

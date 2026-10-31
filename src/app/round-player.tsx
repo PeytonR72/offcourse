@@ -328,7 +328,9 @@ export function RoundPlayer({
         </div>
       </fieldset>
       <label htmlFor="prediction" className="mt-6 block font-bold">
-        What percentage of players chose YES?
+        {round.question.sourceType === "simulated"
+          ? "What percentage of players chose YES?"
+          : "What percentage of poll respondents chose YES?"}
       </label>
       <p id="aim-help" className="mt-2 text-sm text-[#b4c2d1]">
         Always predict YES, even if your own answer is NO. Drag to aim, or use

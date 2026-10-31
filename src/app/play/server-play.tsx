@@ -76,7 +76,10 @@ export function ServerPlay({ mode }: { mode: RunMode }) {
   const [play, setPlay] = useState<PlayManifest | null>(null);
   const [playback, setPlayback] = useState<Playback | null>(null);
   const [waiting, setWaiting] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{
+    message: string;
+    availability: boolean;
+  } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [pendingPrediction, setPendingPrediction] =
     useState<PlaySession["pending"]>();
@@ -148,13 +151,19 @@ export function ServerPlay({ mode }: { mode: RunMode }) {
     } catch (failure) {
       const message =
         failure instanceof Error ? failure.message : "unavailable";
-      setError(
-        message === "rate_limited"
-          ? "Too many requests. Wait a minute, then retry."
-          : message === "conflict"
-            ? "This prediction differs from the server record. Reload to recover the official result."
-            : "Connection or browser storage unavailable. Your prediction is held; retry when ready. No result is shown until the server confirms it."
-      );
+      setError({
+        availability: message === "not_ready" || message === "exhausted",
+        message:
+          message === "not_ready"
+            ? "Qualified content is being prepared. Demo practice is available while new expeditions are scheduled."
+            : message === "exhausted"
+              ? "You have explored all currently eligible destinations. New qualified questions or the seven-day repeat window will open more routes. Pool complete."
+              : message === "rate_limited"
+                ? "Too many requests. Wait a minute, then retry."
+                : message === "conflict"
+                  ? "This prediction differs from the server record. Reload to recover the official result."
+                  : "Connection or browser storage unavailable. Your prediction is held; retry when ready. No result is shown until the server confirms it.",
+      });
     } finally {
       busy.current = false;
       setWaiting(false);
@@ -219,9 +228,11 @@ export function ServerPlay({ mode }: { mode: RunMode }) {
       <section className="mt-8 rounded-2xl border border-[#344354] bg-[#172334] p-5 sm:p-8">
         {playback && <RocketWorld run={playback.run} paused />}
         <h2 className="text-2xl font-bold">
-          {pendingPrediction
-            ? "Prediction held"
-            : "Connecting to mission control"}
+          {error?.availability
+            ? "Awaiting new routes"
+            : pendingPrediction
+              ? "Prediction held"
+              : "Connecting to mission control"}
         </h2>
         {pendingPrediction && (
           <p className="mt-3">
@@ -230,19 +241,24 @@ export function ServerPlay({ mode }: { mode: RunMode }) {
           </p>
         )}
         <p role="status" className="mt-3">
-          {error ?? "Waiting for the official server record…"}
+          {error?.message ?? "Waiting for the official server record…"}
         </p>
         {error && (
           <button
             className="primary-button mt-6 w-full"
             onClick={() => void connect()}
           >
-            Retry connection
+            {error.availability ? "Check availability" : "Retry connection"}
           </button>
         )}
       </section>
     );
   if (!play || !playback) return null;
+  const currentQuestion =
+    play.questions[
+      playback.run.completedRounds.length -
+        (playback.run.round.phase === "resolved" ? 1 : 0)
+    ].question;
   const summary =
     play.status === "lost"
       ? "Voyage ended — off course."
@@ -253,6 +269,13 @@ export function ServerPlay({ mode }: { mode: RunMode }) {
           : undefined;
   return (
     <>
+      <p className="mt-5 font-bold text-[#f5c879]">
+        {currentQuestion.sourceType === "licensed_external"
+          ? "Licensed poll results"
+          : currentQuestion.sourceType === "first_party"
+            ? "Offcourse poll results"
+            : "Illustrative results"}
+      </p>
       {notice && (
         <p role="status" className="mt-4">
           {notice}

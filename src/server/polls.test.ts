@@ -22,6 +22,8 @@ const key = (index: number) => index.toString(16).padStart(64, "0");
 beforeEach(async () => {
   await db.exec("DROP SCHEMA IF EXISTS offcourse_poll CASCADE");
   await db.exec(await readFile("db/migrations/001-polls.sql", "utf8"));
+  await db.exec(await readFile("db/migrations/002-play.sql", "utf8"));
+  await db.exec(await readFile("db/migrations/003-content.sql", "utf8"));
 }, 30_000);
 afterAll(() => db.close());
 

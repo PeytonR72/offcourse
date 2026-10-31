@@ -22,10 +22,10 @@ export default async function PlayPage({
         {mode === "daily" ? "Daily Expedition" : "Endless Voyage"}
       </h1>
       <p className="mt-4 text-[#b4c2d1]">
-        Server-backed play preview. Only published, qualified poll snapshots can
-        be used here. A random browser installation key tracks participation;
-        records do not sync across devices. Gameplay choices are not added to
-        poll votes.
+        Server-backed play preview. New expeditions open when seven daily
+        expeditions and at least 100 qualified endless questions are ready. A
+        random browser installation key tracks participation; records do not
+        sync across devices. Gameplay choices are not added to poll votes.
       </p>
       {playEnabled() ? (
         <ServerPlay key={mode} mode={mode} />

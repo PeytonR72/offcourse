@@ -68,6 +68,15 @@ test("unlocked inputs survive reload without requesting an answer", async () => 
   );
   const view = render(<ServerPlay mode="daily" />);
   await screen.findByText("Tea today?");
+  expect(screen.getByText("Licensed poll results")).toBeInTheDocument();
+  expect(
+    screen.getByRole("slider", {
+      name: "What percentage of poll respondents chose YES?",
+    })
+  ).toBeInTheDocument();
+  expect(screen.queryByText(/Sample:/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Illustrative results/)).not.toBeInTheDocument();
+  expect(screen.queryByText("Demo flight")).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("radio", { name: "YES" }));
   fireEvent.change(screen.getByRole("slider"), { target: { value: "73" } });
   view.unmount();
@@ -75,6 +84,39 @@ test("unlocked inputs survive reload without requesting an answer", async () => 
   await waitFor(() => expect(screen.getByRole("slider")).toHaveValue("73"));
   expect(screen.getByRole("radio", { name: "YES" })).toBeChecked();
 });
+
+test.each([
+  [
+    "not_ready",
+    "Qualified content is being prepared. Demo practice is available while new expeditions are scheduled.",
+  ],
+  [
+    "exhausted",
+    "You have explored all currently eligible destinations. New qualified questions or the seven-day repeat window will open more routes. Pool complete.",
+  ],
+])(
+  "content availability %s is explained without implying a lost prediction",
+  async (status, message) => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn<typeof fetch>()
+        .mockImplementation(async () =>
+          Response.json(
+            { status },
+            { status: status === "not_ready" ? 503 : 200 }
+          )
+        )
+    );
+    render(<ServerPlay mode="endless" />);
+    await screen.findByText(message);
+    expect(screen.queryByText(/prediction is held/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("slider")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Check availability" })
+    ).toBeInTheDocument();
+  }
+);
 
 test("a different tab's locked prediction can be recovered without an editable replay", async () => {
   const result = {
@@ -146,4 +188,35 @@ test("a pending lock is never sent when browser storage cannot save it", async (
   } finally {
     denied.mockRestore();
   }
+});
+
+test("first-party polls are identified without inventing a sample count before reveal", async () => {
+  const firstParty = {
+    ...play,
+    questions: [
+      {
+        ...play.questions[0],
+        question: { ...play.questions[0].question, sourceType: "first_party" },
+      },
+    ],
+  };
+  vi.stubGlobal(
+    "fetch",
+    vi
+      .fn<typeof fetch>()
+      .mockImplementation(async () =>
+        Response.json({ status: "ok", play: firstParty })
+      )
+  );
+  render(<ServerPlay mode="daily" />);
+  await screen.findByText("Offcourse poll results");
+  expect(
+    screen.getByRole("slider", {
+      name: "What percentage of poll respondents chose YES?",
+    })
+  ).toBeInTheDocument();
+  expect(screen.queryByText(/Sample:/)).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/Licensed poll|Illustrative results/)
+  ).not.toBeInTheDocument();
 });

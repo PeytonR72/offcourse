@@ -222,7 +222,7 @@ export function RocketWorld({
         <span>
           {status === "unavailable"
             ? "Static view · controls available"
-            : "Demo flight"}
+            : "Flight view"}
         </span>
       </figcaption>
     </figure>

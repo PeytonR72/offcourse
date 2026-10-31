@@ -123,6 +123,9 @@ npm run polls -- snapshot question-id:v1
 ```
 
 These inspection commands contain answers and are for trusted operators only.
+The [T17 content strategy](content-strategy.md) adds atomic seven-day publication,
+seven-date repeat protection (including single-day commands), coverage checks,
+retirement controls, and quality reports. Apply `003-content.sql` before use.
 They are not client play endpoints. Rejection of a question blocks future
 publication while preserving existing snapshots and manifests for already locked
 play. Daily dates are stored as dates rather than local-time timestamps.

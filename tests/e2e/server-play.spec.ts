@@ -18,6 +18,16 @@ test("real HTTP manifests hide targets; daily plays five rounds and resumes the 
     /yesPercentage|sampleSize|participant/
   );
   await expect(page.getByRole("slider")).toBeVisible();
+  await expect(
+    page.getByRole("slider", {
+      name: "What percentage of poll respondents chose YES?",
+    })
+  ).toBeVisible();
+  await expect(
+    page.getByText("Licensed poll results", { exact: true })
+  ).toBeVisible();
+  await expect(page.getByText(/Sample:/)).toHaveCount(0);
+  await expect(page.getByText("Demo flight", { exact: true })).toHaveCount(0);
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
   await page.screenshot({
     path: testInfo.outputPath("server-aim.png"),
@@ -34,6 +44,7 @@ test("real HTTP manifests hide targets; daily plays five rounds and resumes the 
     expect(reply.play.results).toHaveLength(index + 1);
     expect(reply.play.totalDistance).toBe(50 * (index + 1));
     await expect(page.getByText("Actual YES: 67%")).toBeVisible();
+    await expect(page.getByText(/Sample: 100/)).toBeVisible();
   }
   await expect(page.getByText("Daily Expedition complete.")).toBeVisible();
   await expect(page.getByText(/Distance: 250 ly/)).toBeVisible();
@@ -90,6 +101,37 @@ test("a committed lock with a lost response is recovered after reload without du
   await expect(
     page.getByRole("button", { name: "Continue", exact: true })
   ).toHaveCount(0);
+  await page.getByRole("button", { name: "New voyage", exact: true }).click();
+  await expect(page.getByRole("slider")).toBeVisible();
+  await expect(page.locator("#question")).not.toHaveText(
+    "Synthetic test question 1?"
+  );
+  await expect(page.locator("#question")).not.toHaveText(
+    "Synthetic test question 2?"
+  );
+});
+
+test("content shortage explains availability and keeps demo practice reachable", async ({
+  page,
+}, testInfo) => {
+  await page.route("**/api/play", (route) =>
+    route.fulfill({ status: 503, json: { status: "not_ready" } })
+  );
+  await page.goto("/play");
+  await expect(
+    page.getByText(/Qualified content is being prepared/)
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Check availability" })
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Offcourse · Demo practice" })
+  ).toBeVisible();
+  await expect(page.getByRole("slider")).toHaveCount(0);
+  await page.screenshot({
+    path: testInfo.outputPath("server-content-waiting.png"),
+    fullPage: true,
+  });
 });
 
 test("concurrent requests serialize locks and cross-installation access returns no answers", async ({

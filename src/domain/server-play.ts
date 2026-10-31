@@ -17,7 +17,15 @@ export type PlayManifest = Readonly<{
 export type PlayReply =
   | { status: "ok"; play: PlayManifest }
   | { status: "conflict"; play: PlayManifest }
-  | { status: "invalid" | "unavailable" | "conflict" | "rate_limited" };
+  | {
+      status:
+        | "invalid"
+        | "unavailable"
+        | "conflict"
+        | "rate_limited"
+        | "not_ready"
+        | "exhausted";
+    };
 
 export type PlayPrediction = Readonly<{
   roundIndex: number;

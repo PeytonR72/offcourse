@@ -19,6 +19,7 @@ beforeEach(async () => {
   await db.exec("DROP SCHEMA IF EXISTS offcourse_poll CASCADE");
   await db.exec(await readFile("db/migrations/001-polls.sql", "utf8"));
   await db.exec(await readFile("db/migrations/002-play.sql", "utf8"));
+  await db.exec(await readFile("db/migrations/003-content.sql", "utf8"));
 }, 30_000);
 afterAll(() => db.close());
 
@@ -44,9 +45,13 @@ async function publish(id: string, yesVotes = 67) {
 }
 
 async function daily() {
-  const ids = [];
-  for (let i = 0; i < 5; i++) ids.push(await publish(`q-${i}`));
-  await polls.publishDaily("2026-10-30", ids);
+  const ids: string[] = [];
+  for (let i = 0; i < 100; i++) ids.push(await publish(`q-${i}`));
+  for (let day = 0; day < 8; day++)
+    await polls.publishDaily(
+      new Date(Date.UTC(2026, 9, 30 + day)).toISOString().slice(0, 10),
+      ids.slice(day * 5, day * 5 + 5)
+    );
 }
 
 test("starting a daily pins safe question fields and resumes one participation per UTC day", async () => {
@@ -139,7 +144,7 @@ test("participation requests are throttled across repositories, including retrie
   for (let i = 0; i < 30; i++) {
     expect(
       await new PlayRepository(db).start(participant, runId, "daily", at)
-    ).toEqual({ status: "unavailable" });
+    ).toEqual({ status: "not_ready" });
   }
   expect(
     await plays.lock(
@@ -156,7 +161,7 @@ test("participation requests are throttled across repositories, including retrie
       "daily",
       new Date(at.getTime() + 60_000)
     )
-  ).toEqual({ status: "unavailable" });
+  ).toEqual({ status: "not_ready" });
 });
 
 const installationId = runId;
@@ -229,13 +234,6 @@ test("daily continues all five misses, resumes completion, and starts a fresh se
     status: "ok",
     play: { id: runId, status: "complete" },
   });
-  await polls.publishDaily("2026-10-31", [
-    "q-0:v1",
-    "q-1:v1",
-    "q-2:v1",
-    "q-3:v1",
-    "q-4:v1",
-  ]);
   expect(
     await plays.start(
       participant,
@@ -256,56 +254,65 @@ test("daily continues all five misses, resumes completion, and starts a fresh se
 });
 
 test("endless pins one latest approved version per question, distinguishes exhaustion from loss, and prevents post-loss advance", async () => {
+  await daily();
   await publish("a");
   await polls.publish("a");
   await publish("b");
   await publish("rejected");
   await polls.review("rejected", "rejected", "Retired fixture");
   const start = await plays.start(participant, runId, "endless", at);
-  expect(start).toMatchObject({
-    status: "ok",
-    play: {
-      questions: [
-        { question: { id: "a", distributionId: "a:v2" } },
-        { question: { id: "b" } },
-      ],
-    },
-  });
-  await plays.lock(
-    participant,
-    runId,
-    { roundIndex: 0, answer: "yes", guessPercentage: 57 },
-    at
+  if (start.status !== "ok") throw new Error("Expected play");
+  expect(start.play.questions.slice(0, 2)).toMatchObject([
+    { question: { id: "a", distributionId: "a:v2" } },
+    { question: { id: "b" } },
+  ]);
+  expect(start.play.questions.some((q) => q.question.id === "rejected")).toBe(
+    false
   );
-  expect(
-    await plays.lock(
-      participant,
-      runId,
-      { roundIndex: 1, answer: "yes", guessPercentage: 67 },
-      at
-    )
-  ).toMatchObject({
-    status: "ok",
-    play: { status: "exhausted", totalDistance: 150, streak: 2 },
-  });
-  await plays.start(participant, otherId, "endless", at);
+  for (let roundIndex = 0; roundIndex < 102; roundIndex++) {
+    expect(
+      await plays.lock(
+        participant,
+        runId,
+        {
+          roundIndex,
+          answer: "yes",
+          guessPercentage: roundIndex === 0 ? 57 : 67,
+        },
+        new Date(at.getTime() + roundIndex * 3000)
+      )
+    ).toMatchObject({
+      status: "ok",
+      play: { status: roundIndex === 101 ? "exhausted" : "active" },
+    });
+  }
+  const otherParticipant = "c".repeat(64);
+  await plays.start(otherParticipant, otherId, "endless", at);
   const prediction = {
     roundIndex: 0,
     answer: "yes" as const,
     guessPercentage: 56,
   };
-  const lost = await plays.lock(participant, otherId, prediction, at);
+  const lost = await plays.lock(otherParticipant, otherId, prediction, at);
   expect(lost).toMatchObject({
     status: "ok",
     play: { status: "lost", totalDistance: 0, streak: 0 },
   });
   expect(
-    await plays.lock(participant, otherId, { ...prediction, roundIndex: 1 }, at)
+    await plays.lock(
+      otherParticipant,
+      otherId,
+      { ...prediction, roundIndex: 1 },
+      at
+    )
   ).toEqual({ status: "conflict" });
-  expect(await plays.lock(participant, otherId, prediction, at)).toEqual(lost);
+  expect(await plays.lock(otherParticipant, otherId, prediction, at)).toEqual(
+    lost
+  );
 });
 
 test("a failed commit rolls back the credit and the same lock can safely be retried", async () => {
+  await daily();
   await publish("a");
   await plays.start(participant, runId, "endless", at);
   const interrupted = new PlayRepository({

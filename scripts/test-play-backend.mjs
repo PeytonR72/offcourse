@@ -81,7 +81,7 @@ try {
   }
   const polls = new PollRepository(pool);
   const ids = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 100; i++) {
     const id = `fixture-${i}`;
     await polls.createQuestion({
       id,
@@ -103,15 +103,17 @@ try {
     ids.push((await polls.publish(id)).distribution.id);
   }
   const today = new Date();
-  for (let day = 0; day <= 1; day++) {
+  for (let day = 0; day < 8; day++) {
     await polls.publishDaily(
       new Date(today.getTime() + day * 86_400_000).toISOString().slice(0, 10),
-      ids
+      ids.slice(day * 5, day * 5 + 5)
     );
   }
   await pool.query(`CREATE ROLE offcourse_play LOGIN;
     GRANT USAGE ON SCHEMA offcourse_poll TO offcourse_play;
     GRANT SELECT ON offcourse_poll.questions, offcourse_poll.snapshots, offcourse_poll.daily_manifests TO offcourse_play;
+    GRANT SELECT ON offcourse_poll.eligible_snapshots TO offcourse_play;
+    GRANT EXECUTE ON FUNCTION offcourse_poll.content_coverage(date) TO offcourse_play;
     GRANT SELECT, INSERT, UPDATE ON offcourse_poll.play_runs, offcourse_poll.play_limits TO offcourse_play;
     GRANT SELECT, INSERT ON offcourse_poll.play_results TO offcourse_play;
     GRANT EXECUTE ON FUNCTION offcourse_poll.snapshot_json(text) TO offcourse_play;`);

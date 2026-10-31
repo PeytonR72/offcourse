@@ -3,7 +3,8 @@
 The existing practice, `/daily`, and `/endless` modes remain **Demo · Illustrative
 results**. This ticket adds an opt-in `/play` preview and server contracts for
 qualified polls. It does not source live content, enable production scoring, or
-authorize public launch. Coverage and the transition to real scoring belong to T17;
+authorize public launch. [T17 content strategy](content-strategy.md) now gates new
+scored runs on a seven-day calendar and 100 distinct qualified endless questions;
 launch approval remains T18.
 
 ## Configuration
@@ -25,11 +26,12 @@ The runtime role needs only these privileges (replace `offcourse_play` as needed
 ```sql
 GRANT USAGE ON SCHEMA offcourse_poll TO offcourse_play;
 GRANT SELECT ON offcourse_poll.questions, offcourse_poll.snapshots,
-  offcourse_poll.daily_manifests TO offcourse_play;
+  offcourse_poll.daily_manifests, offcourse_poll.eligible_snapshots TO offcourse_play;
 GRANT SELECT, INSERT, UPDATE ON offcourse_poll.play_runs,
   offcourse_poll.play_limits TO offcourse_play;
 GRANT SELECT, INSERT ON offcourse_poll.play_results TO offcourse_play;
 GRANT EXECUTE ON FUNCTION offcourse_poll.snapshot_json(text) TO offcourse_play;
+GRANT EXECUTE ON FUNCTION offcourse_poll.content_coverage(date) TO offcourse_play;
 ```
 
 This is a trusted server role that can read targets internally; its credentials
@@ -67,9 +69,12 @@ it never accepts a client date or falls back to demo data. A second request ID
 resumes the same installation/day. Reusing yesterday's request ID starts today's
 participation with a new run ID. Previously issued runs stay pinned and lockable
 across midnight. Endless pins the latest published version of every currently
-approved question, one per question, in stable question-ID order. T17 owns broader
-editorial scheduling and recent-repeat policy. Reusing its request ID resumes the
-same run; a fresh UUID starts another voyage. Empty/missing pools are unavailable.
+approved, non-retired question, one per question, in stable question-ID order,
+excluding this installation's locks in either mode during the past seven days.
+Reusing its request ID resumes the same run; a fresh UUID starts another voyage.
+New runs require T17 coverage. Insufficient global coverage returns 503
+`not_ready`; a fully recent endless pool returns 200 `exhausted` with no run.
+Issued runs resume before checking coverage and remain lockable after retirement.
 
 `POST /api/play/<run-id>/lock`:
 
