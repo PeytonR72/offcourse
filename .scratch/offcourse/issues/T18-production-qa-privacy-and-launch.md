@@ -87,6 +87,16 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
   This final normal evidence/configuration commit runs the same complete CI
   validation and does not bypass checks. Final CI/deployment results are reported
   to the user after that run finishes.
+- Final Linux run `41152054541` passed all format/lint/typecheck/unit/build and
+  full browser checks, then exposed PostgreSQL startup failure before any server
+  tests. The fixture runner now explicitly disables distro Unix sockets and
+  retains loopback TCP on its ephemeral port; this avoids group-owned socket
+  directories. Startup failures now retain diagnostic log output too. This
+  runner-only correction does not change the deployed app or database schema.
+- A repeated local precommit run reproduced the daily UI test's one-second
+  result-wait timeout. Its async watchdog now allows three seconds, consistent
+  with other flight UI tests; assertions and gameplay are unchanged. This avoids
+  treating concurrent test scheduling as an animation-timing requirement.
 - Next unlocked ticket: **none — T18 is the final scoped ticket**. Remaining
   human steps are the physical-device/screen-reader checks in
   `docs/launch-readiness.md`; do not mark all acceptance complete or claim a

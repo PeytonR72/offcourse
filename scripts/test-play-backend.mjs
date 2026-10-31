@@ -53,7 +53,8 @@ try {
     "-l",
     join(root, "postgres.log"),
     "-o",
-    `-h 127.0.0.1 -p ${port}`,
+    // Use only loopback TCP; distro Unix-socket paths may require postgres-group access.
+    `-h 127.0.0.1 -p ${port} -c unix_socket_directories=`,
     "-w",
     "start",
   ]);
@@ -132,8 +133,10 @@ try {
     }
   );
 } catch (error) {
-  if (started)
-    console.error(await readFile(join(root, "postgres.log"), "utf8"));
+  const log = await readFile(join(root, "postgres.log"), "utf8").catch(
+    () => null
+  );
+  if (log) console.error(log);
   throw error;
 } finally {
   await pool?.end();

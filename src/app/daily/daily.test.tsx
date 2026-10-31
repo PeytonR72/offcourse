@@ -59,7 +59,12 @@ test("daily play shows progress, finishes all five misses and blocks replay afte
     fireEvent.change(screen.getByRole("slider"), { target: { value: "0" } });
     fireEvent.click(screen.getByRole("button", { name: "Lock prediction" }));
     if (index < 5) {
-      await screen.findByRole("heading", { name: "Round result" });
+      // Verify completion rather than a one-second scheduler deadline under suite load.
+      await screen.findByRole(
+        "heading",
+        { name: "Round result" },
+        { timeout: 3000 }
+      );
       fireEvent.click(screen.getByRole("button", { name: "Continue" }));
     }
   }

@@ -60,3 +60,11 @@ The first full local browser run found one interaction regression: rapid Lock's
 second click could hit Pause after the layout moved. Pause now ignores repeated
 pointer clicks like Continue does, while single clicks and keyboard activation
 still work. The existing rapid-lock test demonstrated the failure before the fix.
+
+CI run `41152054541` passed the complete Linux browser suite, then exposed a
+fixture PostgreSQL startup failure. The runner now uses loopback TCP only and
+disables Unix-domain sockets, avoiding distribution-owned socket directories.
+It also prints the fixture log on startup failure. PostgreSQL documents that
+an empty `unix_socket_directories` value disables these sockets in its
+[connection settings](https://www.postgresql.org/docs/16/runtime-config-connection.html).
+This affects isolated test infrastructure only.
