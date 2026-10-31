@@ -32,7 +32,15 @@ jobs:
       - run: npm run build
         id: build
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      # Measure frame cadence without another emulated browser competing for CPU/GPU.
+      # Preserve the test's existing p95/median budgets and saved raw measurements.
+      - name: Verify isolated flight cadence
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report-cadence
+        run: npm run test:e2e -- tests/e2e/universe.spec.ts --workers=1 --output=test-results-cadence
+      - name: Verify browser journeys
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run test:e2e -- --grep-invert "universe stays inside its scene"
       - name: Verify server play against isolated PostgreSQL
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
@@ -46,5 +54,7 @@ jobs:
           name: playwright-evidence
           path: |
             playwright-report/
+            playwright-report-cadence/
             test-results/
+            test-results-cadence/
           retention-days: 14

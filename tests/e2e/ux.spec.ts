@@ -37,7 +37,8 @@ test.describe("T13 device matrix", () => {
           );
           if (layout.name === "landscape" && route === "/")
             await expect(page.locator(".world-viewport")).toHaveScreenshot(
-              "landscape-world.png",
+              // Font and GPU edge rasterization differ between Windows and Linux.
+              `landscape-world-${process.platform}.png`,
               { maxDiffPixelRatio: 0.01 }
             );
           const sizes = await page

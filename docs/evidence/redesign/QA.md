@@ -117,3 +117,24 @@ independent standards reviewer confirmed the fix. This changed no application
 behavior. The production suite was rerun against the deployed demo.
 
 Live production smoke: **14 passed** on desktop and mobile.
+
+## Hosted CI follow-up
+
+Run `41249702393` passed 86 browser cases and all isolated PostgreSQL checks;
+16 browser cases were expected skips. Two hosted checks failed:
+
+- The desktop cadence probe measured median 50–66.6 ms and p95 100–133.4 ms.
+  The same isolated local command passes at 4x CPU throttle, including forced
+  SwiftShader (median 16.7 ms, p95 16.8 ms). Shared-runner resource contention is
+  a hypothesis, not yet a confirmed root cause. CI now runs the same cadence
+  test with one worker in its own step, then all other browser journeys. No
+  timing budget, retries or assertion was relaxed, and raw metrics stay attached.
+- Landscape screenshots differed by 1189 pixels across all retries. Inspection
+  showed matching composition with font and GPU-edge rasterization differences.
+  That crop now uses reviewed Windows and Linux baselines, keeping the existing
+  1% comparison limit. The local landscape journey passes with its Windows image.
+
+These follow-up edits only affect verification; deployed application code is
+unchanged. The final hosted result is reported with the handoff.
+
+Cadence reports and raw artifacts use separate output directories so the subsequent journey run cannot erase them.

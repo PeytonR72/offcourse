@@ -6,7 +6,9 @@ dist/
 .env.*
 !.env.example
 playwright-report/
+playwright-report-cadence/
 test-results/
+test-results-cadence/
 coverage/
 .next/
 out/
