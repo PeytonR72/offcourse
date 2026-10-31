@@ -68,3 +68,12 @@ It also prints the fixture log on startup failure. PostgreSQL documents that
 an empty `unix_socket_directories` value disables these sockets in its
 [connection settings](https://www.postgresql.org/docs/16/runtime-config-connection.html).
 This affects isolated test infrastructure only.
+
+Run `41153142468` then exposed variable hosted frame-time failures at 1× CPU
+(p95 roughly 133–167 ms) while DOM trace recording was active. The probe now
+turns off tracing, writes its JSON/screenshot before budget assertions, and
+retains the same p95 <100 ms / median <50 ms limits. Other CI journeys record
+traces on first retry instead of tracing every successful test, following
+[Playwright's guidance on tracing overhead](https://playwright.dev/docs/best-practices#debugging-on-ci).
+This removes diagnostic instrumentation from timed measurements; it does not
+change app rendering, physical-device gates or the recorded 4× profile.

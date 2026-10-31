@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
+// DOM tracing changes frame cadence. Keep this probe uninstrumented, including retries.
+test.use({ trace: "off" });
+
 test("universe stays inside its scene and renders a responsive flight", async ({
   page,
   context,
@@ -57,8 +60,6 @@ test("universe stays inside its scene and renders a responsive flight", async ({
   const sorted = [...frames].sort((a, b) => a - b);
   const p95 = sorted[Math.floor(sorted.length * 0.95)];
   const median = sorted[Math.floor(sorted.length / 2)];
-  expect(p95).toBeLessThan(100);
-  expect(median).toBeLessThan(50);
   const performancePath = testInfo.outputPath("performance-smoke.json");
   await writeFile(
     performancePath,
@@ -82,6 +83,8 @@ test("universe stays inside its scene and renders a responsive flight", async ({
     path: testInfo.outputPath("universe-flight.png"),
     fullPage: true,
   });
+  expect(p95).toBeLessThan(100);
+  expect(median).toBeLessThan(50);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth

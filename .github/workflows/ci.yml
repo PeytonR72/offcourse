@@ -30,9 +30,11 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+        id: build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - name: Verify server play against isolated PostgreSQL
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
         run: |
           sudo apt-get update
           sudo apt-get install --yes postgresql

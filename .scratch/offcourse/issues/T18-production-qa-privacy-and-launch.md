@@ -97,6 +97,11 @@ Follow the per-ticket red-green-refactor, verification, visual review, code revi
   result-wait timeout. Its async watchdog now allows three seconds, consistent
   with other flight UI tests; assertions and gameplay are unchanged. This avoids
   treating concurrent test scheduling as an animation-timing requirement.
+- Run `41153142468` found hosted frame-time variability while recording DOM
+  traces (p95 roughly 133–167 ms even at 1×). Timing probes now disable tracing,
+  preserve metric/screenshot artifacts before asserting the same limits, and
+  other CI journeys trace on first retry per Playwright's performance guidance.
+  No performance budget is relaxed and raw 4× measured results remain unchanged.
 - Next unlocked ticket: **none — T18 is the final scoped ticket**. Remaining
   human steps are the physical-device/screen-reader checks in
   `docs/launch-readiness.md`; do not mark all acceptance complete or claim a
