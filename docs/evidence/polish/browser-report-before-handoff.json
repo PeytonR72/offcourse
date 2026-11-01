@@ -1,0 +1,142 @@
+{
+  "measurements": [
+    {
+      "route": "/",
+      "cpu": "4x",
+      "network": "1.6 Mbps / 150 ms latency",
+      "lcp": 1540,
+      "cls": 0,
+      "element": "observatory-art",
+      "art": [
+        {
+          "name": "http://127.0.0.1:4400/_next/image?url=%2Fart%2Fobservatory.webp&w=1200&q=75",
+          "start": 211.69999998807907,
+          "end": 1514
+        },
+        {
+          "name": "http://127.0.0.1:4400/_next/image?url=%2Fart%2Fobservatory.webp&w=1080&q=75",
+          "start": 228.9000000357628,
+          "end": 1393.9000000357628
+        },
+        {
+          "name": "http://127.0.0.1:4400/art/observatory-flight.webp",
+          "start": 703.6999999880791,
+          "end": 2378.5
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "route": "/daily",
+      "cpu": "4x",
+      "network": "1.6 Mbps / 150 ms latency",
+      "lcp": 2520,
+      "cls": 0,
+      "element": "flight-deck",
+      "art": [
+        {
+          "name": "http://127.0.0.1:4400/art/observatory-flight.webp",
+          "start": 207.60000002384186,
+          "end": 1922.300000011921
+        }
+      ],
+      "overflow": false
+    },
+    {
+      "route": "/endless",
+      "cpu": "4x",
+      "network": "1.6 Mbps / 150 ms latency",
+      "lcp": 2480,
+      "cls": 0,
+      "element": "flight-deck",
+      "art": [
+        {
+          "name": "http://127.0.0.1:4400/art/observatory-flight.webp",
+          "start": 217.69999998807907,
+          "end": 1915.0999999642372
+        }
+      ],
+      "overflow": false
+    }
+  ],
+  "metadata": [
+    {
+      "route": "/",
+      "status": 200,
+      "title": "Offcourse",
+      "description": "A little rocket. A lot of humanity. Predict the crowd, chart your course, and play a daily expedition or an endless voyage. An illustrative browser-game demo.",
+      "canonical": "https://offcourse-five.vercel.app/",
+      "ogImage": "https://offcourse-five.vercel.app/opengraph-image?f661f180bee834df",
+      "twitter": "summary_large_image",
+      "icon": "http://127.0.0.1:4400/icon.svg?icon.3udf3e7p2vcg-.svg",
+      "h1": ["Offcourse"],
+      "lang": "en",
+      "ogImageStatus": 200
+    },
+    {
+      "route": "/daily",
+      "status": 200,
+      "title": "Daily Expedition | Offcourse",
+      "description": "Five questions, five destinations. Predict the crowd and travel up to 500 light-years in today's shared Offcourse expedition. Illustrative demo results.",
+      "canonical": "https://offcourse-five.vercel.app/daily",
+      "ogImage": "https://offcourse-five.vercel.app/opengraph-image",
+      "twitter": "summary_large_image",
+      "icon": "http://127.0.0.1:4400/icon.svg?icon.3udf3e7p2vcg-.svg",
+      "h1": ["Daily Expedition"],
+      "lang": "en",
+      "ogImageStatus": 200
+    },
+    {
+      "route": "/endless",
+      "status": 200,
+      "title": "Endless Voyage | Offcourse",
+      "description": "Trust your intuition and keep your rocket flying. Predict within 10 percentage points to grow your streak in Offcourse. Illustrative demo results.",
+      "canonical": "https://offcourse-five.vercel.app/endless",
+      "ogImage": "https://offcourse-five.vercel.app/opengraph-image",
+      "twitter": "summary_large_image",
+      "icon": "http://127.0.0.1:4400/icon.svg?icon.3udf3e7p2vcg-.svg",
+      "h1": ["Endless Voyage"],
+      "lang": "en",
+      "ogImageStatus": 200
+    },
+    {
+      "route": "/privacy",
+      "status": 200,
+      "title": "Privacy & storage | Offcourse",
+      "description": "How Offcourse saves browser-local progress and preferences, handles optional server play, and keeps illustrative demo results clearly labeled.",
+      "canonical": "https://offcourse-five.vercel.app/privacy",
+      "ogImage": "https://offcourse-five.vercel.app/opengraph-image",
+      "twitter": "summary_large_image",
+      "icon": "http://127.0.0.1:4400/icon.svg?icon.3udf3e7p2vcg-.svg",
+      "h1": ["Privacy & storage"],
+      "lang": "en",
+      "ogImageStatus": 200
+    },
+    {
+      "route": "/lost-destination",
+      "status": 404,
+      "title": "Destination not found | Offcourse",
+      "description": "This destination is off the map. Return to the Offcourse launchpad and start a daily expedition or endless voyage.",
+      "canonical": "https://offcourse-five.vercel.app/",
+      "ogImage": "https://offcourse-five.vercel.app/opengraph-image?f661f180bee834df",
+      "twitter": "summary_large_image",
+      "icon": "http://127.0.0.1:4400/icon.svg?icon.3udf3e7p2vcg-.svg",
+      "h1": ["A little off course."],
+      "lang": "en",
+      "ogImageStatus": 200
+    }
+  ],
+  "enabledLaunch": {
+    "before": {
+      "background": "rgb(255, 207, 139)",
+      "translate": "none",
+      "shadow": "rgb(150, 112, 68) 0px 3px 0px 0px, rgba(255, 242, 204, 0.5) 0px 1px 0px 0px inset"
+    },
+    "after": {
+      "background": "rgb(255, 225, 172)",
+      "translate": "0px -2px",
+      "shadow": "rgb(150, 112, 68) 0px 5px 0px 0px"
+    }
+  },
+  "sliderSnapshot": "- slider \"Predict the YES vote\": \"50\""
+}

@@ -1,5 +1,49 @@
 import { expect, test } from "@playwright/test";
 
+for (const guess of [0, 44, 45, 75, 100]) {
+  test(`revealed route labels explain a ${guess}% prediction without early hints`, async ({
+    page,
+  }, testInfo) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const scene = page.getByTestId("rocket-world");
+    const annotations = scene.locator(".trajectory-annotations");
+    await page.getByRole("radio", { name: "YES", exact: true }).check();
+    await page.getByRole("slider").fill(String(guess));
+    await expect(annotations).toHaveCount(0);
+    await page.getByRole("button", { name: "Lock prediction" }).click();
+    await expect(scene).toHaveAttribute("data-phase", "resolved");
+    await expect(annotations).toBeVisible();
+    await expect(annotations).toContainText(
+      guess === 44 ? "Perfect · 44%" : `Predicted ${guess}%`
+    );
+    if (guess !== 44) await expect(annotations).toContainText("Actual 44%");
+    // Read all bounds in one layout frame while result focus can scroll the page.
+    const { frame, labels } = await scene.evaluate((element) => ({
+      frame: element.getBoundingClientRect().toJSON(),
+      labels: Array.from(
+        element.querySelectorAll(".trajectory-label"),
+        (label) => label.getBoundingClientRect().toJSON()
+      ),
+    }));
+    for (const box of labels) {
+      expect(box.left).toBeGreaterThanOrEqual(frame.left);
+      expect(box.right).toBeLessThanOrEqual(frame.right);
+      expect(box.top).toBeGreaterThanOrEqual(frame.top);
+      expect(box.bottom).toBeLessThanOrEqual(frame.bottom);
+    }
+    if (labels.length === 2) {
+      const [first, second] = labels;
+      expect(first.bottom <= second.top || second.bottom <= first.top).toBe(
+        true
+      );
+    }
+    await scene.screenshot({
+      path: testInfo.outputPath(`revealed-${guess}.png`),
+    });
+  });
+}
+
 test("context loss after landing restores the earned rocket expression", async ({
   page,
 }) => {

@@ -22,6 +22,10 @@ export function FlightDeck({
           ? round.result.lock.guessPercentage
           : null;
   const revealed = round.phase === "reveal" || round.phase === "resolved";
+  const result =
+    round.phase === "reveal" || round.phase === "resolved"
+      ? round.result
+      : null;
   return (
     <div className="flight-deck">
       <div className="deck-heading">
@@ -44,15 +48,21 @@ export function FlightDeck({
           </strong>
         </div>
         <div>
-          <span>{revealed ? "Flight log" : "Destination"}</span>
+          <span>{revealed ? "Actual destination" : "Destination"}</span>
           <strong className="destination-status">
-            {paused ? "On hold" : revealed ? "Revealed" : "Unknown"}
+            {paused
+              ? "On hold"
+              : result
+                ? `${result.distribution.yesPercentage}% YES`
+                : "Unknown"}
           </strong>
         </div>
       </div>
       <p className="deck-hint">
-        {revealed
-          ? "Every flight starts with a little intuition."
+        {result
+          ? result.score.error === 0
+            ? "A perfect match. Right on the destination."
+            : `Your guess was ${result.score.error} ${result.score.error === 1 ? "point" : "points"} ${result.lock.guessPercentage > result.distribution.yesPercentage ? "above" : "below"} the result.`
           : "The real destination appears after launch."}
       </p>
     </div>

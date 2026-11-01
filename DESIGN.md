@@ -181,3 +181,21 @@ streak and longest streak. Share text is a native disclosure that opens
 automatically if manual copying is needed. Game routes preload the scenery from
 their server-rendered introduction. The redundant caption beneath the title-screen
 rocket was the final decorative cut.
+
+The last flight-feedback refinement labels predicted and actual endpoints directly
+on the scene in warm gold and mint. Labels retain 12px text across scene sizes,
+use the existing trajectory geometry, and appear only after the reveal. Exact
+matches become one badge; misses state the size and direction of the error.
+Fractional actual percentages stay authoritative, so a near match is never
+rounded into a perfect result. No extra animation clock or scoring rule is added.
+
+The final navigation handoff uses React 19.3's native ViewTransition integration:
+the selected mission title travels from its card into the route heading in 360ms,
+while content leaves in 90ms and arrives over 240ms after a 110ms handoff. This supersedes the old 14px
+Motion-only route arrival. Browser-native snapshots keep the handoff continuous;
+both reduced-motion settings and unsupported browsers retain direct navigation.
+The pattern follows the installed Next.js 16.4.3
+[view-transitions guide](https://nextjs.org/docs/app/guides/view-transitions).
+
+Phone results use a compact horizontal reward, an adjacent scoring explanation,
+paired prediction/actual values and a fully visible Continue button at 360×800.

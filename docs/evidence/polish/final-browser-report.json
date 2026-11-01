@@ -4,24 +4,24 @@
       "route": "/",
       "cpu": "4x",
       "network": "1.6 Mbps / 150 ms latency",
-      "lcp": 1540,
+      "lcp": 1512,
       "cls": 0,
       "element": "observatory-art",
       "art": [
         {
           "name": "http://127.0.0.1:4400/_next/image?url=%2Fart%2Fobservatory.webp&w=1200&q=75",
-          "start": 211.69999998807907,
-          "end": 1514
+          "start": 221,
+          "end": 1491
         },
         {
           "name": "http://127.0.0.1:4400/_next/image?url=%2Fart%2Fobservatory.webp&w=1080&q=75",
-          "start": 228.9000000357628,
-          "end": 1393.9000000357628
+          "start": 233.5999999642372,
+          "end": 1376.2999999523163
         },
         {
           "name": "http://127.0.0.1:4400/art/observatory-flight.webp",
-          "start": 703.6999999880791,
-          "end": 2378.5
+          "start": 721.3999999761581,
+          "end": 2402.199999988079
         }
       ],
       "overflow": false
@@ -30,14 +30,14 @@
       "route": "/daily",
       "cpu": "4x",
       "network": "1.6 Mbps / 150 ms latency",
-      "lcp": 2520,
+      "lcp": 2436,
       "cls": 0,
       "element": "flight-deck",
       "art": [
         {
           "name": "http://127.0.0.1:4400/art/observatory-flight.webp",
-          "start": 207.60000002384186,
-          "end": 1922.300000011921
+          "start": 197.20000004768372,
+          "end": 1909.4000000357628
         }
       ],
       "overflow": false
@@ -46,14 +46,14 @@
       "route": "/endless",
       "cpu": "4x",
       "network": "1.6 Mbps / 150 ms latency",
-      "lcp": 2480,
+      "lcp": 2316,
       "cls": 0,
       "element": "flight-deck",
       "art": [
         {
           "name": "http://127.0.0.1:4400/art/observatory-flight.webp",
-          "start": 217.69999998807907,
-          "end": 1915.0999999642372
+          "start": 202.5,
+          "end": 1901.800000011921
         }
       ],
       "overflow": false

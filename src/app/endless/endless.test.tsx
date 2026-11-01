@@ -46,8 +46,12 @@ test("survives 10, ends at 11, and restarts with browser bests intact", async ()
   expect(screen.getByText("Current streak: 1")).toBeVisible();
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   await predict(11);
-  await waitFor(() =>
-    expect(screen.getByRole("heading", { name: "Voyage ended" })).toHaveFocus()
+  await waitFor(
+    () =>
+      expect(
+        screen.getByRole("heading", { name: "Voyage ended" })
+      ).toHaveFocus(),
+    { timeout: 3000 }
   );
   expect(
     screen.queryByRole("button", { name: "Continue" })

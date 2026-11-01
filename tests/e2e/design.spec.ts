@@ -1,6 +1,26 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+test("a narrow phone shows the reward explanation and Continue together", async ({
+  page,
+}) => {
+  await page.clock.install({ time: new Date("2026-11-01T12:00:00Z") });
+  await page.setViewportSize({ width: 360, height: 800 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/daily");
+  await page.getByRole("radio", { name: "YES", exact: true }).check();
+  await page.getByRole("slider").fill("44");
+  await page.getByRole("button", { name: "Lock prediction" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Round result" })
+  ).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect(page.getByRole("button", { name: "Continue" })).toBeInViewport({
+    ratio: 1,
+  });
+  await expect(page.getByText("20+ points off earns 0 ly.")).toBeVisible();
+});
+
 test("a narrow phone keeps aim, world, and launch together", async ({
   page,
 }) => {

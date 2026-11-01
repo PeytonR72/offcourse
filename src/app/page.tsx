@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Practice } from "./practice";
 import { StarChart } from "./star-chart";
 import { FlightIcon } from "./flight-icon";
+import { MissionTitle } from "./mission-title";
 import { flightInstructions, site } from "../data/site";
 
 export default function Home() {
@@ -58,7 +59,9 @@ export default function Home() {
               <span>THE DAILY FIVE</span>
               <span className="mission-tag">New every day</span>
             </div>
-            <h2>Daily Expedition</h2>
+            <MissionTitle mode="daily">
+              <h2>Daily Expedition</h2>
+            </MissionTitle>
             <p>
               Five questions. One shared journey. A new corner of the cosmos,
               every day.
@@ -85,7 +88,9 @@ export default function Home() {
               </span>
               <span>GO THE DISTANCE</span>
             </div>
-            <h2>Endless Voyage</h2>
+            <MissionTitle mode="endless">
+              <h2>Endless Voyage</h2>
+            </MissionTitle>
             <p>
               Stay within 10 points to keep flying. One little ship. See how far
               you can go.

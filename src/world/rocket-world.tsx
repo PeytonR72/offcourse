@@ -27,6 +27,10 @@ import { useExperience } from "../app/experience";
 const transform = (frame: ReturnType<typeof flightFrame>) =>
   `translate(${frame.x} ${frame.y}) rotate(${(frame.rotation * 180) / Math.PI}) scale(${frame.scaleX * rocketTokens.scale} ${frame.scaleY * rocketTokens.scale}) translate(-32 -20)`;
 
+// Keep labels legible in CSS pixels while the flight geometry uses its 640×256 frame.
+const annotationTop = (y: number, above: boolean) =>
+  `clamp(0px, calc(${(y / 256) * 100}% ${above ? "- 36px" : "+ 12px"}), calc(100% - 24px))`;
+
 const loadRenderer: RendererLoader = async () => {
   const { createPixiRenderer } = await import("./pixi-renderer");
   return createPixiRenderer();
@@ -127,10 +131,19 @@ export function RocketWorld({
   const frame = flightFrame(state);
   const appearance = rocketAppearance(state);
   const prediction = Math.round((state.predictionOffset + 1) * 50);
+  const result =
+    round.phase === "reveal" || round.phase === "resolved"
+      ? round.result
+      : null;
+  const actual =
+    state.targetOffset === null
+      ? null
+      : (result?.distribution.yesPercentage ?? null);
+  const error = result?.score.error ?? null;
   const label =
     state.targetOffset === null
       ? `Rocket trajectory: ${prediction}% YES. Actual target hidden until reveal.`
-      : `Rocket trajectory: ${prediction}% YES. Actual YES: ${(state.targetOffset + 1) * 50}%.`;
+      : `Rocket trajectory: ${prediction}% YES. Actual YES: ${actual}%.`;
   const { endY, targetY } = trajectoryGeometry(state);
 
   return (
@@ -248,6 +261,38 @@ export function RocketWorld({
           </FallbackContents>
         </svg>
         <div ref={host} className="absolute inset-0" />
+        {actual !== null && (
+          <div className="trajectory-annotations">
+            <div className="trajectory-map">
+              {error === 0 ? (
+                <span
+                  className="trajectory-label"
+                  data-tone="perfect"
+                  style={{ top: annotationTop(targetY, true) }}
+                >
+                  Perfect · {actual}%
+                </span>
+              ) : (
+                <>
+                  <span
+                    className="trajectory-label"
+                    data-tone="prediction"
+                    style={{ top: annotationTop(endY, endY < targetY) }}
+                  >
+                    Predicted {prediction}%
+                  </span>
+                  <span
+                    className="trajectory-label"
+                    data-tone="actual"
+                    style={{ top: annotationTop(targetY, targetY < endY) }}
+                  >
+                    Actual {actual}%
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
       <span
         className="absolute top-2 left-3 rounded bg-[#101927]/90 px-1.5 py-0.5 text-xs text-[#f8efd9]"
@@ -262,14 +307,18 @@ export function RocketWorld({
         aria-hidden="true"
       >
         <span>
-          {state.targetOffset === null
+          {actual === null
             ? "Aim · always % YES"
-            : "Gold: prediction · teal: actual"}
+            : error === 0
+              ? "Perfect match"
+              : `${error} ${error === 1 ? "point" : "points"} ${prediction > actual ? "above" : "below"} actual`}
         </span>
         <span>
           {status === "unavailable"
             ? "Static view · controls available"
-            : "Flight view"}
+            : actual === null
+              ? "Flight view"
+              : ""}
         </span>
       </figcaption>
     </figure>

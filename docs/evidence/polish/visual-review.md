@@ -1,32 +1,40 @@
 # Independent visual review
 
-A fresh critic reviewed only screenshots and browser evidence, without source,
-the design brief, earlier scores or a target score. This is an estimate, not an
-Awwwards result or a claim of 10/10.
+The final fresh critic saw only screenshots, browser measurements and the rubric,
+without source, the design brief, prior scores or a target score. This is an
+estimate, not an award or a verified 10/10.
 
-> Offcourse turns guessing human preferences into a small cosmic expedition,
-> using a rocket's predicted and actual flight paths to make intuition visible.
+> Offcourse turns guessing the crowd's opinions into a small space expedition,
+> with prediction error expressed as a rocket's distance from its destination.
 
-| Criterion  | Score | Evidence                                                                                                             |
-| ---------- | ----: | -------------------------------------------------------------------------------------------------------------------- |
-| Design     |   8.0 | Poster-like title composition, warm/cool planets, pixel type, coherent cockpit and phone layout                      |
-| Usability  |   7.5 | Clear choices, numbered steps, prediction guidance, visible focus; completion actions could sit closer to the result |
-| Creativity |   7.5 | Prediction and actual trajectories give the theme a functional role; controls remain familiar                        |
-| Content    |   7.5 | Specific questions, complete numerical feedback and honest simulation labeling                                       |
+| Criterion  | Score | Evidence                                                                                                                                                                           |
+| ---------- | ----: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Design     |   7.8 | `home-desktop.png`: monumental pixel lettering, planetary framing and restrained amber/teal. Mobile controls/results keep that language; completion screens are more conventional. |
+| Usability  |   7.8 | `daily-mobile.png` separates answering and predicting; `result-mobile.png` explains the miss and next action. Browser reports find no overflow, small targets or invisible focus.  |
+| Creativity |   7.6 | The annotated close, miss and perfect screenshots make the flight metaphor explain accuracy. Space styling and card navigation remain familiar.                                    |
+| Content    |   7.5 | Specific questions, useful flight logs and honest simulation disclosures. Repeated statistics can dilute the concise voice.                                                        |
 
-Weighted overall: **7.70/10**. Developer scores: Semantics/SEO 8, Animations/
-Transitions 7, Accessibility 8, WPO 7, Responsive 7.5, Markup/Meta-data 8.
+Weighted overall: **7.73/10**. The performance evidence available to this review
+is preserved in `browser-report-before-handoff.json`.
 
-Evidence: the PNGs in this directory; `final-browser-report.json`; `audit.txt`;
-and the local `.shots/verified/` keyboard, reduced-motion and hover captures.
+| Developer area | Score | Evidence                                                                                                                                                       |
+| -------------- | ----: | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Semantics/SEO  |   8.0 | Zero audit failures; distinct metadata, one H1 and a real 404.                                                                                                 |
+| Motion         |   7.3 | Native 360ms shared-title transition and content handoff in `navigation-motion.json`; enabled hover feedback. Mid-transition frames revealed overlapping text. |
+| Accessibility  |   8.0 | Zero axe violations; skip link first, visible focus, no hidden or moving reduced-motion content in the crawl.                                                  |
+| WPO            |   7.0 | Throttled LCP 1.54/2.52/2.48 seconds for home/Daily/Endless, zero CLS; 239KB gzipped JS. Daily narrowly misses 2.5 seconds.                                    |
+| Responsive     |   8.0 | Deliberately recomposed phone home/results, no overflow or undersized targets; mobile scroll 58–60 FPS.                                                        |
+| Metadata       |   8.0 | Audit passes, with Twitter cards, icons and successful OG-image responses.                                                                                     |
 
-The final response to review moves Endless restart actions before the detailed
-flight log. Serving the hero as an unoptimized WebP removed the two responsive
-width requests but regressed measured mobile LCP from 1.54 to 2.62 seconds, so
-that experiment was reverted. The optimized image remains. The action-order
-follow-up is verified separately; the independent score is retained unchanged.
+The highest-ranked fix was transition text overlap. The final timing correction
+lets old content leave in 90ms and begins incoming content after 110ms. Its
+updated frames and native timing evidence are retained; the critic's score is
+not changed without another review. The final performance repeat measured
+1.512/2.436/2.316 seconds with zero CLS, recorded separately in
+`final-browser-report.json`. Further opportunities are a shorter mobile
+completion log, less duplicated summary data, and more performance headroom.
 
-Further design opportunities identified by the critic are annotated prediction/
-actual endpoints and a more distinctive continuous transition between routes.
-Neither was established as a functional defect. Existing native navigation,
-short route arrivals, and game-flight choreography remain.
+Earlier independent scores were 7.12, 7.35, 7.70 and 7.73. Their concrete findings
+drove the phone crop, compact cockpit, scenery preload, completion hierarchy,
+replay action order, endpoint labels, result fold and navigation handoff. Scores
+were not averaged or promoted to a claimed 10/10.

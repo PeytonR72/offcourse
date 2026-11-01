@@ -152,3 +152,10 @@ flight computer, responsive mission cards and designed completion screens.
 Existing scoring, persistence, poll eligibility and release gates remain intact.
 Validation and independent Standards/Spec reviews are recorded in
 `docs/evidence/polish/QA.md`; retained screenshots accompany that report.
+
+The final feedback pass adds post-reveal endpoint annotations, readable close-
+guess labels and exact-match feedback. Fractional actual percentages remain
+precise. Final local verification: 187 unit tests and 28 focused browser checks
+pass; build, lint and typecheck pass. Independent Standards and Spec reviews have
+no remaining findings. This is still the illustrative demo and unlocks no new
+ticket or genuine-crowd release.

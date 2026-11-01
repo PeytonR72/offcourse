@@ -838,6 +838,42 @@ nav a[aria-current="page"]::after {
 .flight-deck .world-viewport {
   background: transparent;
 }
+.trajectory-annotations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  container-type: size;
+}
+.trajectory-map {
+  position: absolute;
+  width: min(100cqw, 250cqh);
+  height: min(40cqw, 100cqh);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.trajectory-label {
+  position: absolute;
+  left: calc(83.125% + 8px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 7px;
+  border: 1px solid #ffcf8b70;
+  border-radius: 4px;
+  background: #091321f0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px #0005;
+}
+.trajectory-label[data-tone="actual"],
+.trajectory-label[data-tone="perfect"] {
+  color: #a6dfcf;
+  border-color: #a6dfcf80;
+}
 .game-session .flight-deck [data-testid="rocket-world"] {
   flex: 1;
   display: grid;
@@ -1300,13 +1336,19 @@ nav a[aria-current="page"]::after {
   font-weight: 400;
   line-height: 1.1;
 }
-.result-summary p:nth-child(2),
+.result-summary .personal-answer,
 .result-summary p:last-child {
   grid-column: 1/-1;
   padding-block: 8px;
   background: transparent;
   border: 0;
   color: var(--muted);
+}
+.distance-rule {
+  grid-column: 1/-1;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
 }
 .distance-unit {
   white-space: nowrap;
@@ -1867,6 +1909,50 @@ input[type="range"]:disabled {
   .distance-earned strong {
     font-size: 42px;
   }
+  .result-summary {
+    margin-top: 8px;
+    gap: 6px;
+  }
+  .result-summary .distance-earned {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 8px 14px;
+  }
+  .result-summary .distance-earned strong {
+    font-size: 34px;
+  }
+  .result-summary .prediction-result,
+  .result-summary .actual-result {
+    order: 2;
+  }
+  .result-summary p.personal-answer,
+  .result-summary p.prediction-error {
+    order: 3;
+    grid-column: auto;
+    padding: 4px 0;
+    font-size: 12px;
+  }
+  .result-summary .prediction-error {
+    text-align: right;
+  }
+  .result-summary .distance-rule {
+    font-size: 12px;
+  }
+  .round-result .result-verdict {
+    float: right;
+    margin-bottom: 0;
+    font-size: 12px;
+    line-height: 24px;
+    letter-spacing: 0.06em;
+  }
+  .round-result h2 {
+    margin-top: 0;
+  }
+  .round-result h2 + p {
+    margin-top: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
   .game-session:has(> .flight-loading) {
     min-height: 850px;
   }
@@ -1914,7 +2000,43 @@ input[type="range"]:disabled {
     aspect-ratio: auto;
   }
 }
+::view-transition-group(.mission-transfer) {
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.2, 0.75, 0.25, 1);
+}
+::view-transition-old(.mission-transfer) {
+  display: none;
+}
+::view-transition-new(.mission-transfer) {
+  animation: none;
+}
+::view-transition-old(.route-depart) {
+  animation: route-depart 90ms ease-out both;
+}
+::view-transition-new(.route-arrive) {
+  animation: route-arrive 240ms cubic-bezier(0.2, 0.75, 0.25, 1) 110ms both;
+}
+::view-transition {
+  pointer-events: none;
+}
+@keyframes route-depart {
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+@keyframes route-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {
@@ -1922,7 +2044,8 @@ input[type="range"]:disabled {
     transition: none !important;
     animation: none !important;
   }
-  .route-arrival {
+  .route-arrival,
+  .round-card {
     transform: none !important;
   }
 }
@@ -1933,6 +2056,14 @@ input[type="range"]:disabled {
   transition: none !important;
   animation: none !important;
 }
-.experience-root[data-reduced-motion="true"] .route-arrival {
+.experience-root[data-reduced-motion="true"] .route-arrival,
+.experience-root[data-reduced-motion="true"] .round-card {
   transform: none !important;
+}
+:root:has(.experience-root[data-reduced-motion="true"])::view-transition-old(*),
+:root:has(.experience-root[data-reduced-motion="true"])::view-transition-new(*),
+:root:has(.experience-root[data-reduced-motion="true"])::view-transition-group(
+    *
+  ) {
+  animation: none !important;
 }

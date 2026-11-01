@@ -187,7 +187,7 @@ export function RoundPlayer({
         initial={false}
         animate={{ y: 0, scale: 1 }}
         transition={cardSpring}
-        className="round-card"
+        className="round-card round-result"
         aria-labelledby="result-title"
       >
         <FlightDeck run={run} />
@@ -213,10 +213,27 @@ export function RoundPlayer({
               <span>Distance: </span>
               <strong>{score.distance} ly</strong>
             </p>
-            <p>Your answer: {lock.answer.toUpperCase()}</p>
-            <p>Your prediction: {lock.guessPercentage}% YES</p>
-            <p>Actual YES: {distribution.yesPercentage}%</p>
-            <p>Error: {score.error} percentage points</p>
+            <small className="distance-rule">
+              {score.error === 0
+                ? "Perfect prediction. All 100 ly."
+                : run.mode === "endless" && !score.survived
+                  ? "Outside 10 points: no distance earned."
+                  : score.error >= 20
+                    ? "20+ points off earns 0 ly."
+                    : "100 ly, less 5 for each point off."}
+            </small>
+            <p className="personal-answer">
+              Your answer: {lock.answer.toUpperCase()}
+            </p>
+            <p className="prediction-result">
+              Your prediction: {lock.guessPercentage}% YES
+            </p>
+            <p className="actual-result">
+              Actual YES: {distribution.yesPercentage}%
+            </p>
+            <p className="prediction-error">
+              Error: {score.error} percentage points
+            </p>
           </div>
           {!onContinue ? (
             <p className="mt-6">{completionText}</p>

@@ -1,5 +1,6 @@
 import { preload } from "react-dom";
 import { FlightIcon } from "./flight-icon";
+import { MissionTitle } from "./mission-title";
 
 export function ModeIntro({ mode }: { mode: "daily" | "endless" }) {
   preload("/art/observatory-flight.webp", { as: "image" });
@@ -8,7 +9,9 @@ export function ModeIntro({ mode }: { mode: "daily" | "endless" }) {
     <>
       <div className="mode-heading">
         <FlightIcon kind={daily ? "sun" : "infinity"} />
-        <h1>{daily ? "Daily Expedition" : "Endless Voyage"}</h1>
+        <MissionTitle mode={mode}>
+          <h1>{daily ? "Daily Expedition" : "Endless Voyage"}</h1>
+        </MissionTitle>
       </div>
       <p className="game-intro">
         {daily
