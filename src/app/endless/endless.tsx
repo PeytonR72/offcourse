@@ -160,6 +160,22 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
             </div>
           </div>
           <div className="completion-details">
+            <div className="completion-actions">
+              <button
+                className="primary-button w-full"
+                onClick={(event) => {
+                  if (event.detail <= 1) restart();
+                }}
+              >
+                Restart voyage
+              </button>
+              <Link
+                href="/daily"
+                className="secondary-button mt-3 flex items-center justify-center"
+              >
+                Play Daily Expedition
+              </Link>
+            </div>
             {run.round.phase === "resolved" ? (
               <div className="completion-log space-y-2">
                 <p className="eyebrow">Last destination</p>
@@ -176,22 +192,6 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
                 <p>Last round distance: {run.round.result.score.distance} ly</p>
               </div>
             ) : null}
-            <div className="completion-actions">
-              <button
-                className="primary-button mt-6 w-full"
-                onClick={(event) => {
-                  if (event.detail <= 1) restart();
-                }}
-              >
-                Restart voyage
-              </button>
-              <Link
-                href="/daily"
-                className="secondary-button mt-3 flex items-center justify-center"
-              >
-                Play Daily Expedition
-              </Link>
-            </div>
           </div>
         </section>
       ) : (

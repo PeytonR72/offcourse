@@ -4,6 +4,7 @@ import AxeBuilder from "@axe-core/playwright";
 test("a narrow phone keeps aim, world, and launch together", async ({
   page,
 }) => {
+  await page.clock.install({ time: new Date("2026-11-01T12:00:00Z") });
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto("/daily");
   await page.getByRole("radio", { name: "YES", exact: true }).check();
@@ -34,6 +35,7 @@ test("turning reduced motion on stops the title-screen rocket", async ({
 test("mission controls and flight instruments fit the opening view", async ({
   page,
 }) => {
+  await page.clock.install({ time: new Date("2026-11-01T12:00:00Z") });
   await page.goto("/");
   const daily = page.getByRole("link", { name: /Launch Daily Expedition/ });
   const endless = page.getByRole("link", { name: /Launch Endless Voyage/ });

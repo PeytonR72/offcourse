@@ -85,6 +85,12 @@ Screenshots: [desktop home](home-desktop.png), [phone home](home-mobile.png),
 [phone completion](daily-complete-mobile.png), and
 [Endless result](endless-result-desktop.png).
 
+The fresh final independent [visual review](visual-review.md) estimates **7.70/10
+overall and 8.0/10 for Design**. It is not presented as a 10/10 result. Its final
+action-order finding was addressed. The duplicate-image experiment increased
+LCP, so the faster optimized image remains. Viewport tests use a fixed UTC date so the question text
+does not change between test runs; all four cases pass.
+
 Local development: `npm run dev`. Production build: `npm run build`.
 The authorized main-branch push automatically deploys the illustrative demo to
 <https://offcourse-five.vercel.app>.
