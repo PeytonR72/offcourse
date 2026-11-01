@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Endless } from "./endless";
 import { ModeIntro } from "../mode-intro";
 
@@ -15,6 +16,9 @@ export default function EndlessPage() {
       <div className="game-session">
         <Endless />
       </div>
+      <Link href="/#practice" className="back-link">
+        <span aria-hidden="true">←</span> Offcourse · Practice
+      </Link>
     </main>
   );
 }

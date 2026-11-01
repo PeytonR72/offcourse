@@ -12,15 +12,6 @@ export function UniverseView({
   const offsets = universeOffsets(travel);
   return (
     <g>
-      <rect width="640" height="256" fill={cssColor(region.sky)} />
-      <ellipse
-        cx="340"
-        cy="8"
-        rx="300"
-        ry="38"
-        fill={cssColor(region.haze)}
-        opacity="0.35"
-      />
       {[0, 1].map((layer) => (
         <g
           key={layer}

@@ -1,13 +1,11 @@
-import Link from "next/link";
+import { preload } from "react-dom";
 import { FlightIcon } from "./flight-icon";
 
 export function ModeIntro({ mode }: { mode: "daily" | "endless" }) {
+  preload("/art/observatory-flight.webp", { as: "image" });
   const daily = mode === "daily";
   return (
     <>
-      <Link href="/#practice" className="back-link">
-        <span aria-hidden="true">←</span> Offcourse · Practice
-      </Link>
       <div className="mode-heading">
         <FlightIcon kind={daily ? "sun" : "infinity"} />
         <h1>{daily ? "Daily Expedition" : "Endless Voyage"}</h1>
@@ -20,8 +18,7 @@ export function ModeIntro({ mode }: { mode: "daily" | "endless" }) {
       <div className="demo-disclosure">
         <span className="status-dot" />
         <p>
-          <strong>Illustrative results</strong>Percentages are simulated, not
-          real crowd votes.
+          <strong>Illustrative results</strong>Simulated, not real votes.
         </p>
       </div>
     </>

@@ -113,74 +113,100 @@ function DailyGame({ daily, repository, storage }: Loaded) {
       {!storage.persistent && <SessionStorageNotice />}
       <div className="flight-dashboard daily-dashboard">
         <p className="text-sm text-[#b4c2d1]">
-          {daily.dateKey} · UTC expedition
+          {daily.dateKey}
+          <span className="hud-detail"> · UTC expedition</span>
         </p>
         <p className="font-bold text-[#f5c879]">
           Total distance:{" "}
-          <span className="distance-unit">{run.totalDistance} ly</span> /{" "}
-          <span className="distance-unit">500 ly</span>
+          <span className="distance-unit">{run.totalDistance} ly</span>
+          <span className="hud-detail">
+            {" "}
+            / <span className="distance-unit">500 ly</span>
+          </span>
         </p>
       </div>
       {complete ? (
-        <section className="round-card" aria-labelledby="daily-summary">
-          <RocketWorld run={run} />
-          <h2
-            id="daily-summary"
-            ref={summaryHeading}
-            tabIndex={-1}
-            className="text-2xl font-bold"
-          >
-            Daily complete
-          </h2>
-          <p role="status" className="mt-3 text-xl font-bold text-[#f5c879]">
-            {run.totalDistance} light-years traveled
-          </p>
-          <p className="mt-3">
-            5 of 5 destinations explored. Every prediction counts, including
-            misses.
-          </p>
-          {summary && (
-            <>
-              <p className="mt-3 font-bold text-[#f5c879]">
-                Prediction accuracy: {summary.accuracy}%
+        <section
+          className="round-card mission-complete"
+          aria-labelledby="daily-summary"
+        >
+          <div className="completion-stage">
+            <RocketWorld run={run} caption="Expedition logged" />
+            <div className="completion-heading">
+              <p className="eyebrow">Five destinations. One expedition.</p>
+              <h2
+                id="daily-summary"
+                ref={summaryHeading}
+                tabIndex={-1}
+                className="text-2xl font-bold"
+              >
+                Daily complete
+              </h2>
+              <p role="status" className="completion-distance">
+                <strong>{run.totalDistance}</strong> light-years traveled
               </p>
-              <p className="mt-1 text-sm text-[#c4d1dd]">
-                Average error: {summary.averageError} percentage points.
-                Accuracy is 100 minus average error.
+              <p className="mt-3">
+                5 of 5 destinations explored. Every prediction counts, including
+                misses.
               </p>
-              <ShareSummary text={summary.text} />
-            </>
-          )}
-          <ol className="mt-5 space-y-4" aria-label="Daily round results">
-            {run.completedRounds.map(({ lock, distribution, score }, index) => (
-              <li key={lock.roundId}>
-                <p className="font-bold">
-                  {index + 1}. {lock.question.prompt}
-                </p>
-                <p className="mt-1 text-[#c4d1dd]">
-                  Predicted {lock.guessPercentage}% YES · Actual{" "}
-                  {distribution.yesPercentage}% · Error {score.error} points ·{" "}
-                  {score.distance} ly
-                </p>
-              </li>
-            ))}
-          </ol>
-          <p className="mt-6">
-            Already played today. Your next Daily Expedition unlocks at 00:00
-            UTC.
-          </p>
-          <Link
-            className="primary-button mt-6 flex items-center justify-center"
-            href="/"
-          >
-            Play practice
-          </Link>
-          <Link
-            className="secondary-button mt-3 flex items-center justify-center"
-            href="/endless"
-          >
-            Play Endless Voyage
-          </Link>
+              {summary && (
+                <>
+                  <p className="mt-3 font-bold text-[#f5c879]">
+                    Prediction accuracy: {summary.accuracy}%
+                  </p>
+                  <p className="mt-1 text-sm text-[#c4d1dd]">
+                    Average error: {summary.averageError} percentage points.
+                    Accuracy is 100 minus average error.
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="completion-details">
+            <div className="completion-actions">
+              <h3 className="font-bold">A journey worth sharing.</h3>
+              <p className="mt-2 text-sm text-[#c4d1dd]">
+                Take your flight log with you. A new expedition awaits tomorrow.
+              </p>
+              {summary && <ShareSummary text={summary.text} />}
+              <p className="mt-6 text-sm">
+                Already played today. Your next Daily Expedition unlocks at
+                00:00 UTC.
+              </p>
+              <div className="completion-links">
+                <Link className="primary-button" href="/endless">
+                  Play Endless Voyage
+                </Link>
+                <Link className="secondary-button" href="/">
+                  Play practice
+                </Link>
+              </div>
+            </div>
+            <div className="completion-log">
+              <h3 className="eyebrow">Your flight log</h3>
+              <ol aria-label="Daily round results">
+                {run.completedRounds.map(
+                  ({ lock, distribution, score }, index) => (
+                    <li key={lock.roundId}>
+                      <div>
+                        <p className="font-bold">
+                          {index + 1}. {lock.question.prompt}
+                        </p>
+                        <p className="mt-1 text-[#c4d1dd]">
+                          Predicted {lock.guessPercentage}% YES · Actual{" "}
+                          {distribution.yesPercentage}% · Error {score.error}{" "}
+                          points
+                        </p>
+                      </div>
+                      <strong className="log-distance">
+                        {score.distance} <span>ly</span>
+                      </strong>
+                    </li>
+                  )
+                )}
+              </ol>
+            </div>
+          </div>
         </section>
       ) : (
         <>
@@ -229,11 +255,14 @@ function DailyGame({ daily, repository, storage }: Loaded) {
         (your local time; resets 00:00 UTC). Everyone gets the same five
         questions each UTC day.
       </p>
-      <p className="mt-3 text-sm leading-relaxed text-[#b4c2d1]">
-        One daily attempt per browser when storage is available. Clearing
-        storage resets participation; records do not sync across devices. This
-        demo uses simulated percentages and records no public ranked score.
-      </p>
+      <details className="mission-notes">
+        <summary>About your daily flight</summary>
+        <p>
+          One daily attempt per browser when storage is available. Clearing
+          storage resets participation; records do not sync across devices. This
+          demo uses simulated percentages and records no public ranked score.
+        </p>
+      </details>
     </>
   );
 }

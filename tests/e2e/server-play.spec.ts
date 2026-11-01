@@ -30,7 +30,7 @@ test("real HTTP manifests hide targets; daily plays five rounds and resumes the 
   await expect(page.getByRole("slider")).toBeVisible();
   await expect(
     page.getByRole("slider", {
-      name: "What percentage of poll respondents chose YES?",
+      name: "Predict the YES vote",
     })
   ).toBeVisible();
   await expect(

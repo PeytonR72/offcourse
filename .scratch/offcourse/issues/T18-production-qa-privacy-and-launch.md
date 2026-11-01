@@ -143,3 +143,12 @@ controls, result hierarchy, preference controls, privacy/recovery pages and
 metadata were refreshed. No scoring, persistence, backend or poll eligibility
 rules changed. See `DESIGN.md` and `docs/evidence/redesign/QA.md` for the brief,
 independent review, test results and retained desktop/mobile evidence.
+
+## Second user-authorized polish — 2026-10-31
+
+The user requested a substantially more polished game and explicitly allowed
+visual/theme redesign. The observatory direction adds original scenery, a compact
+flight computer, responsive mission cards and designed completion screens.
+Existing scoring, persistence, poll eligibility and release gates remain intact.
+Validation and independent Standards/Spec reviews are recorded in
+`docs/evidence/polish/QA.md`; retained screenshots accompany that report.

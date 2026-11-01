@@ -116,7 +116,7 @@ test("chooses a personal answer and aims on the YES axis without revealing resul
   ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("radio", { name: "NO" }));
   const slider = screen.getByRole("slider", {
-    name: "What percentage of players chose YES?",
+    name: "Predict the YES vote",
   });
   fireEvent.change(slider, { target: { value: "0" } });
   expect(slider).toHaveValue("0");

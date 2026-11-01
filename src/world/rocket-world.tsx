@@ -50,10 +50,12 @@ export function RocketWorld({
   run,
   elapsed,
   paused = false,
+  caption,
 }: {
   run: Run;
   elapsed?: number;
   paused?: boolean;
+  caption?: string;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const fallbackRocket = useRef<SVGGElement>(null);
@@ -145,7 +147,11 @@ export function RocketWorld({
       role="img"
       aria-label={`${universe.region.name}. ${label}`}
     >
-      <div className="world-viewport relative aspect-[5/2]" aria-hidden="true">
+      <div
+        className="world-viewport relative aspect-[5/2]"
+        aria-hidden="true"
+        style={{ backgroundColor: `${cssColor(universe.region.sky)}40` }}
+      >
         <svg
           viewBox="0 0 640 256"
           className="absolute inset-0 size-full"
@@ -154,6 +160,13 @@ export function RocketWorld({
         >
           <FallbackContents visible={status !== "ready"}>
             <UniverseView universe={universe} travel={frame.x - 86} />
+            <circle
+              cx="532"
+              cy={targetY}
+              r="29"
+              fill={cssColor(universe.region.accent)}
+              opacity="0.08"
+            />
             <ellipse
               cx="532"
               cy={targetY}
@@ -168,6 +181,13 @@ export function RocketWorld({
               cy={targetY}
               r="23"
               fill={cssColor(universe.region.planet)}
+            />
+            <circle
+              cx="529"
+              cy={targetY - 3}
+              r="19"
+              fill={cssColor(universe.region.accent)}
+              opacity="0.18"
             />
             <circle
               cx="525"
@@ -233,7 +253,9 @@ export function RocketWorld({
         className="absolute top-2 left-3 rounded bg-[#101927]/90 px-1.5 py-0.5 text-xs text-[#f8efd9]"
         data-testid="universe-region"
       >
-        {universe.region.name}
+        {caption
+          ? `${caption} · ${universe.region.name}`
+          : universe.region.name}
       </span>
       <figcaption
         className="absolute right-3 bottom-2 left-3 flex justify-between gap-2 text-xs text-[#b4c2d1]"

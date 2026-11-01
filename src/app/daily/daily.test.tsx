@@ -75,6 +75,7 @@ test("daily play shows progress, finishes all five misses and blocks replay afte
   );
   expect(screen.getByText(/5 of 5 destinations explored/)).toBeVisible();
   expect(screen.getByText(/Already played/)).toBeVisible();
+  fireEvent.click(screen.getByText("View share text", { exact: true }));
   expect(
     screen.getByRole("textbox", { name: "Daily share text" })
   ).toHaveTextContent("Demo · Illustrative results");

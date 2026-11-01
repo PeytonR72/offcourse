@@ -7,6 +7,7 @@ export function ShareSummary({ text }: { text: string }) {
   const [busy, setBusy] = useState(false);
   const pending = useRef(false);
   const field = useRef<HTMLTextAreaElement>(null);
+  const preview = useRef<HTMLDetailsElement>(null);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(text);
@@ -15,6 +16,7 @@ export function ShareSummary({ text }: { text: string }) {
       setMessage(
         "Copy unavailable. Select the summary below and copy it manually."
       );
+      if (preview.current) preview.current.open = true;
       field.current?.focus();
       field.current?.select();
     }
@@ -66,16 +68,19 @@ export function ShareSummary({ text }: { text: string }) {
           Copy summary
         </button>
       </div>
-      <label className="block text-sm text-[#c4d1dd]">
-        Daily share text
-        <textarea
-          ref={field}
-          readOnly
-          value={text}
-          rows={6}
-          className="mt-2 block min-h-44 w-full rounded-lg border border-[#6d8399] bg-[#101927] p-3 text-base leading-relaxed"
-        />
-      </label>
+      <details ref={preview} className="share-preview">
+        <summary>View share text</summary>
+        <label className="block text-sm text-[#c4d1dd]">
+          Daily share text
+          <textarea
+            ref={field}
+            readOnly
+            value={text}
+            rows={4}
+            className="mt-2 block w-full rounded-lg border border-[#6d8399] bg-[#101927] p-3 text-sm leading-relaxed"
+          />
+        </label>
+      </details>
       <p aria-live="polite">{message}</p>
     </div>
   );

@@ -36,6 +36,7 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
       height: HEIGHT,
       preference: ["webgl"],
       background: 0x0d1928,
+      backgroundAlpha: 0,
       antialias: false,
       autoDensity: true,
       resolution: Math.min(window.devicePixelRatio || 1, 2),
@@ -55,7 +56,6 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
     if (accessibilityHook) accessibilityHook.hidden = true;
     const world = new Container();
     app.stage.addChild(world);
-    const sky = world.addChild(new Graphics());
     const far = world.addChild(new Graphics());
     const near = world.addChild(new Graphics());
     const debris = world.addChild(new Graphics());
@@ -104,10 +104,6 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         const { region } = universe;
         if (paintedUniverse !== universe) {
           paintedUniverse = universe;
-          sky.clear().rect(0, 0, WIDTH, HEIGHT).fill(region.sky);
-          sky
-            .ellipse(340, 8, 300, 38)
-            .fill({ color: region.haze, alpha: 0.35 });
           far.clear();
           near.clear();
           debris.clear();
@@ -173,9 +169,15 @@ export async function createPixiRenderer(): Promise<SceneRenderer> {
         destination.clear();
         // Neutral destination before reveal: no accuracy-dependent hints.
         destination
+          .circle(532, targetY, 29)
+          .fill({ color: region.accent, alpha: 0.08 });
+        destination
           .ellipse(532, targetY, 40, 13)
           .stroke({ color: region.accent, width: 2 });
         destination.circle(532, targetY, 23).fill(region.planet);
+        destination
+          .circle(529, targetY - 3, 19)
+          .fill({ color: region.accent, alpha: 0.18 });
         destination
           .circle(525, targetY - 7, 7)
           .fill({ color: region.accent, alpha: 0.6 });

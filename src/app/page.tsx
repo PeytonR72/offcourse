@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Practice } from "./practice";
 import { StarChart } from "./star-chart";
 import { FlightIcon } from "./flight-icon";
@@ -25,44 +26,69 @@ export default function Home() {
         }}
       />
       <section className="launchpad" aria-labelledby="home-title">
+        <Image
+          src="/art/observatory.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          loading="eager"
+          fetchPriority="high"
+          className="observatory-art"
+        />
+        <div className="launchpad-scrim" aria-hidden="true" />
         <div className="hero-copy">
-          <p className="hero-kicker">{site.tagline}</p>
+          <p className="hero-kicker">
+            <span /> A COSMIC GAME OF HUMAN INTUITION <span />
+          </p>
           <h1 id="home-title">Offcourse</h1>
           <p className="hero-description">{site.introduction}</p>
         </div>
         <StarChart />
+        <div className="mission-select-heading">
+          <span />
+          Choose your expedition
+          <span />
+        </div>
         <div className="mission-select">
           <Link href="/daily" className="mission-card mission-daily">
             <div className="mission-top">
-              <FlightIcon kind="sun" />
+              <span className="mission-emblem">
+                <FlightIcon kind="sun" />
+              </span>
               <span>THE DAILY FIVE</span>
-              <span className="mission-tag">A fresh start, every day</span>
+              <span className="mission-tag">New every day</span>
             </div>
             <h2>Daily Expedition</h2>
             <p>
-              Five questions. One shared journey.
-              <br />
-              How far will you go today?
+              Five questions. One shared journey. A new corner of the cosmos,
+              every day.
             </p>
             <div className="mission-launch">
               <span>Launch Daily Expedition</span>
               <FlightIcon kind="arrow" />
             </div>
             <div className="mission-facts">
-              <span>5 destinations</span>
+              <span className="destination-dots" aria-label="5 destinations">
+                <i />
+                <i />
+                <i />
+                <i />
+                <i />
+              </span>
               <span>Up to 500 light-years</span>
             </div>
           </Link>
           <Link href="/endless" className="mission-card mission-endless">
             <div className="mission-top">
-              <FlightIcon kind="infinity" />
+              <span className="mission-emblem">
+                <FlightIcon kind="infinity" />
+              </span>
               <span>GO THE DISTANCE</span>
             </div>
             <h2>Endless Voyage</h2>
             <p>
-              Keep your predictions within 10 points.
-              <br />
-              One miss, and it’s back to the stars.
+              Stay within 10 points to keep flying. One little ship. See how far
+              you can go.
             </p>
             <div className="mission-launch">
               <span>Launch Endless Voyage</span>

@@ -1,5 +1,9 @@
 # Offcourse: a little rocket, a lot of humanity
 
+The current direction is **Second polish pass: the observatory**, below. The
+earlier sections record the first redesign; the second pass supersedes its
+palette, dimensions, static hero, and flight-console composition.
+
 ## Brief and scope
 
 User-authorized visual revamp, 2026-10-31, following completed T01–T18.
@@ -117,3 +121,63 @@ simulated distributions until a separately authorized real-content release.
 - Earned distance is the dominant result, followed by the prediction/actual pair.
 - Reserve haptics capability space and contain loading margins to avoid hydration
   layout shifts. Unsupported haptics remain hidden and disabled.
+
+## Second polish pass: the observatory (2026-10-31)
+
+The user explicitly authorized further redesign after the first pass. This is a
+T18 visual refinement, preserving all rules, scope, and honest demo disclosures.
+
+Three directions were considered anew:
+
+| Territory | Direction and signature                                                                                                | Emotion / screenshot                                                         | Anchor                                               | Originality / fit / feasibility / portability |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------- |
+| Place     | A moon observatory launches a tiny ship into other people's opinions. A living rocket sits above two mission controls. | Quiet wonder; cream pixel lettering between immense apricot and mint planets | Offcourse's rocket and human intuition as navigation | 4 / 5 / 5 / 2                                 |
+| Material  | A brass-and-enamel analog mission desk with physical prediction dials                                                  | Tactile curiosity; instrument closeup                                        | Integer percentage aiming                            | 4 / 4 / 3 / 3                                 |
+| Formal    | An infinite route becomes the interface, connecting questions and destinations                                         | Discovery; a single unfolding route                                          | Endless survival streak                              | 4 / 4 / 3 / 2                                 |
+
+Choose the observatory: the existing rocket belongs in a richer world, and the
+same scenery can connect the title screen, actual flight, and recovery state.
+
+Idea: Your intuition is the navigation system of a tiny ship in an enormous cosmos.
+Metaphor: A cozy observatory and its flight computer.
+Signature: The familiar expressive rocket drifts above the mission controls, then
+becomes the pilot's own live trajectory inside a compact flight station.
+Emotion: Wonder, warmth, and an immediate invitation to play.
+Motion verb: Drift, then settle; existing Motion and Pixi clocks only.
+Screenshot: An ivory pixel wordmark between huge peach and mint planets, with a
+small warm rocket and two distinct mission controls.
+
+Palette: ground #091321; instrument #142235; ink #fff1d6; muted #acbdce;
+ignition #ffcf8b; destination #a6dfcf. Retain self-hosted Silkscreen and DM Sans.
+Controls use 6px radii; major surfaces 12px; circular instrument accents only.
+Desktop mission selection is 800px wide, the cockpit 1104px with two columns.
+Phone has a compact vertical station, 44px controls, and a separate scenic crop.
+
+    title screen: [navigation + preferences]
+                   [invitation / OFFCOURSE / explanation]
+        moon       [rocket and dotted route]        ringed planet
+                   [daily mission] [endless mission]
+                   [illustrative results / help]
+    flight station: [mission / disclosure / run instruments]
+                    [world + heading | question + answer + aim + launch]
+    phone:          [world]
+                    [question / answer / aim / launch]
+
+The generated observatory art is original, made with the built-in image-generation
+tool, encoded as WebP at public/art/observatory.webp (127,460 bytes). It contains no
+text, UI, or rocket; live DOM type and the existing rocket stay independently
+readable. The final prompt is preserved in public/art/README.md.
+
+Genericness correction: replace the isolated vector planets with an authored
+world; use real navigation instruments rather than feature cards. No artificial
+metrics, badges, scores, or players. The desktop cockpit solves the old long-form
+scroll problem. The same honest simulated-data notice is visible before play.
+The hero drift pauses offscreen and responds to the existing reduced-motion
+preference. Navigation stays native and instantaneous; no loading theatre.
+
+Final refinement: complete expeditions use a scenic stage, a dominant earned
+score, and a compact flight log. Daily emphasizes distance; Endless emphasizes
+streak and longest streak. Share text is a native disclosure that opens
+automatically if manual copying is needed. Game routes preload the scenery from
+their server-rendered introduction. The redundant caption beneath the title-screen
+rocket was the final decorative cut.

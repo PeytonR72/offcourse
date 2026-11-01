@@ -77,6 +77,7 @@ for (const distance of [0, 500]) {
       page.getByText("Illustrative results", { exact: true })
     ).toBeVisible();
     await expect(page.getByText(/Already played today/)).toBeVisible();
+    await page.getByText("View share text", { exact: true }).click();
     const shareText = await page
       .getByRole("textbox", { name: "Daily share text" })
       .inputValue();
@@ -85,6 +86,7 @@ for (const distance of [0, 500]) {
     expect(shareText).toContain("accuracy");
     expect(shareText).toContain("Demo · Illustrative results");
     if (distance === 500) expect(shareText).toContain("100% accuracy");
+    await page.getByText("View share text", { exact: true }).click();
     await page.getByRole("button", { name: "Share daily summary" }).click();
     await expect(
       page.getByText("Summary shared.", { exact: true })
@@ -106,6 +108,7 @@ for (const distance of [0, 500]) {
       fullPage: true,
     });
     await page.reload();
+    await page.getByText("View share text", { exact: true }).click();
     await expect(
       page.getByRole("textbox", { name: "Daily share text" })
     ).toHaveValue(shareText);

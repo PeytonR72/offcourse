@@ -71,9 +71,11 @@ test("unlocked inputs survive reload without requesting an answer", async () => 
   expect(screen.getByText("Licensed poll results")).toBeInTheDocument();
   expect(
     screen.getByRole("slider", {
-      name: "What percentage of poll respondents chose YES?",
+      name: "Predict the YES vote",
     })
-  ).toBeInTheDocument();
+  ).toHaveAccessibleDescription(
+    expect.stringContaining("What percentage of poll respondents chose YES?")
+  );
   expect(screen.queryByText(/Sample:/)).not.toBeInTheDocument();
   expect(screen.queryByText(/Illustrative results/)).not.toBeInTheDocument();
   expect(screen.queryByText("Demo flight")).not.toBeInTheDocument();
@@ -212,7 +214,7 @@ test("first-party polls are identified without inventing a sample count before r
   await screen.findByText("Offcourse poll results");
   expect(
     screen.getByRole("slider", {
-      name: "What percentage of poll respondents chose YES?",
+      name: "Predict the YES vote",
     })
   ).toBeInTheDocument();
   expect(screen.queryByText(/Sample:/)).not.toBeInTheDocument();

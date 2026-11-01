@@ -128,48 +128,71 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
         <p className="text-[#b4c2d1]">Best distance: {best.distance} ly</p>
       </div>
       {complete ? (
-        <section aria-labelledby="endless-summary" className="round-card">
-          <RocketWorld run={run} />
-          <h2
-            id="endless-summary"
-            ref={summaryHeading}
-            tabIndex={-1}
-            className="text-2xl font-bold"
-          >
-            {progress.status === "lost" ? "Voyage ended" : "Voyage complete"}
-          </h2>
-          <p role="status" className="mt-3">
-            {progress.status === "lost"
-              ? "Your prediction missed by more than 10 percentage points. The losing round earns 0 ly."
-              : "Every eligible demo question explored. You reached the end of the question pool — no destination missed."}
-          </p>
-          {run.round.phase === "resolved" ? (
-            <div className="mt-5 space-y-2">
-              <p className="font-bold">
-                {run.round.result.lock.question.prompt}
+        <section
+          aria-labelledby="endless-summary"
+          className="round-card mission-complete"
+        >
+          <div className="completion-stage">
+            <RocketWorld run={run} caption="Voyage logged" />
+            <div className="completion-heading">
+              <p className="eyebrow">Every guess takes you somewhere.</p>
+              <h2
+                id="endless-summary"
+                ref={summaryHeading}
+                tabIndex={-1}
+                className="text-2xl font-bold"
+              >
+                {progress.status === "lost"
+                  ? "Voyage ended"
+                  : "Voyage complete"}
+              </h2>
+              <p className="completion-distance">
+                <strong>{progress.streak}</strong>{" "}
+                {progress.streak === 1 ? "destination" : "destinations"} reached
               </p>
-              <p>
-                Your prediction: {run.round.result.lock.guessPercentage}% YES
+              <p className="completion-streak">Longest streak: {best.streak}</p>
+              <p className="mt-3">{progress.distance} light-years traveled</p>
+              <p role="status" className="mt-3">
+                {progress.status === "lost"
+                  ? "Your prediction missed by more than 10 percentage points. The losing round earns 0 ly."
+                  : "Every eligible demo question explored. You reached the end of the question pool — no destination missed."}
               </p>
-              <p>Actual YES: {run.round.result.distribution.yesPercentage}%</p>
-              <p>Error: {run.round.result.score.error} percentage points</p>
-              <p>Last round distance: {run.round.result.score.distance} ly</p>
             </div>
-          ) : null}
-          <button
-            className="primary-button mt-6 w-full"
-            onClick={(event) => {
-              if (event.detail <= 1) restart();
-            }}
-          >
-            Restart voyage
-          </button>
-          <Link
-            href="/daily"
-            className="secondary-button mt-3 flex items-center justify-center"
-          >
-            Play Daily Expedition
-          </Link>
+          </div>
+          <div className="completion-details">
+            {run.round.phase === "resolved" ? (
+              <div className="completion-log space-y-2">
+                <p className="eyebrow">Last destination</p>
+                <p className="font-bold">
+                  {run.round.result.lock.question.prompt}
+                </p>
+                <p>
+                  Your prediction: {run.round.result.lock.guessPercentage}% YES
+                </p>
+                <p>
+                  Actual YES: {run.round.result.distribution.yesPercentage}%
+                </p>
+                <p>Error: {run.round.result.score.error} percentage points</p>
+                <p>Last round distance: {run.round.result.score.distance} ly</p>
+              </div>
+            ) : null}
+            <div className="completion-actions">
+              <button
+                className="primary-button mt-6 w-full"
+                onClick={(event) => {
+                  if (event.detail <= 1) restart();
+                }}
+              >
+                Restart voyage
+              </button>
+              <Link
+                href="/daily"
+                className="secondary-button mt-3 flex items-center justify-center"
+              >
+                Play Daily Expedition
+              </Link>
+            </div>
+          </div>
         </section>
       ) : (
         <RoundPlayer
@@ -190,12 +213,15 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
         Questions never repeat within a run. Explore until you miss or complete
         the available demo pool.
       </p>
-      <p className="mt-3 text-sm leading-relaxed text-[#b4c2d1]">
-        Progress and best records are saved on this browser when storage is
-        available. Clearing storage resets them; records do not sync across
-        devices. Simulated percentages are for demo play only, with no public
-        ranked score.
-      </p>
+      <details className="mission-notes">
+        <summary>About your voyage &amp; records</summary>
+        <p>
+          Progress and best records are saved on this browser when storage is
+          available. Clearing storage resets them; records do not sync across
+          devices. Simulated percentages are for demo play only, with no public
+          ranked score.
+        </p>
+      </details>
     </>
   );
 }
