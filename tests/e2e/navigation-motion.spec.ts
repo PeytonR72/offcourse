@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { preference as openPreference } from "./preferences";
 
 for (const preference of [
   "normal",
@@ -47,7 +48,7 @@ for (const preference of [
       await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     if (preference === "in-app") {
-      await page.getByRole("button", { name: "Reduce motion off" }).click();
+      await (await openPreference(page, "Reduce motion off")).click();
     }
     await page.getByRole("link", { name: /Launch Daily Expedition/ }).click();
     await expect(

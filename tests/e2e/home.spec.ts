@@ -41,10 +41,12 @@ test("practice can be played with keyboard controls", async ({
   const lock = page.getByRole("button", { name: "Lock prediction" });
   await expect(lock).toBeDisabled();
   await expect(page.getByText(/Actual YES:/)).toHaveCount(0);
-  const preferences = page
-    .getByRole("group", { name: "Flight preferences" })
-    .getByRole("button");
-  await expect(preferences.first()).toBeEnabled();
+  await expect(
+    page.getByRole("button", {
+      name: /^Sound (on|off)$/,
+      includeHidden: true,
+    })
+  ).toBeEnabled();
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Skip to content" })

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { preference } from "./preferences";
 import AxeBuilder from "@axe-core/playwright";
 
 test("a narrow phone shows the reward explanation and Continue together", async ({
@@ -41,7 +42,7 @@ test("turning reduced motion on stops the title-screen rocket", async ({
   await page.goto("/");
   const rocket = page.locator(".star-chart [data-rocket-body]");
   await page.waitForTimeout(1200);
-  await page.getByRole("button", { name: "Reduce motion off" }).click();
+  await (await preference(page, "Reduce motion off")).click();
   await page.waitForTimeout(100);
   const still = await rocket.boundingBox();
   for (let sample = 0; sample < 6; sample++) {

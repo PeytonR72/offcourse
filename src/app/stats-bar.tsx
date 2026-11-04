@@ -29,17 +29,19 @@ export function Stat({
   unit?: string;
   primary?: boolean;
   record?: boolean;
-  statRef?: Ref<HTMLParagraphElement>;
+  statRef?: Ref<HTMLSpanElement>;
 }) {
   return (
     <p
-      ref={statRef}
-      tabIndex={statRef ? -1 : undefined}
       className="stat"
       data-primary={primary || undefined}
       data-record={record || undefined}
     >
-      <span className="sr-only">
+      <span
+        ref={statRef}
+        tabIndex={statRef ? -1 : undefined}
+        className="sr-only"
+      >
         {label}: {value}
         {unit && ` ${unit}`}
       </span>

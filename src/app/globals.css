@@ -2576,14 +2576,58 @@ nav a[aria-current="page"]::after {
     border-left: 0;
   }
   .daily-stats {
+    grid-template-columns: 1fr 1.3fr;
     grid-auto-flow: row;
-    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .daily-stats .round-meter .stat-label {
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .daily-stats .distance-meter-heading {
+    margin-bottom: 6px;
+  }
+  .daily-stats .distance-meter-heading .stat-label {
+    display: none;
+  }
+  .daily-stats .distance-meter-heading .stat-value {
+    font-size: 15px;
+  }
+  .stats-meta {
+    display: none;
+  }
+  .stats-bar {
+    margin-top: 12px;
+  }
+  .answer-fieldset {
+    margin-top: 12px;
+    padding-bottom: 12px;
+  }
+  .answer-choices {
+    margin-top: 8px;
+  }
+  .answer-option {
+    min-height: 44px;
+  }
+  .prediction-label {
+    margin-top: 12px;
+  }
+  .aim-help {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+  .aim-slider {
+    margin-top: 2px;
+    padding-bottom: 20px;
+  }
+  .aim-ticks {
+    inset-block-start: 32px;
+  }
+  .aim-ticks span {
+    padding-top: 6px;
   }
   .stat-value {
     font-size: 19px;
-  }
-  .stats-meta {
-    margin-top: 12px;
   }
   .answer-choices {
     gap: 8px;

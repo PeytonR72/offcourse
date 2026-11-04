@@ -67,7 +67,7 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
   const [error, setError] = useState<string>();
   const failed = useRef(false);
   const summaryHeading = useRef<HTMLHeadingElement>(null);
-  const progressHeading = useRef<HTMLParagraphElement>(null);
+  const progressHeading = useRef<HTMLSpanElement>(null);
   const update = useCallback(
     (change: (current: Playback) => Playback) => {
       if (failed.current) return;

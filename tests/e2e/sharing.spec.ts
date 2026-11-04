@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { preference } from "./preferences";
 
 for (const route of ["/daily", "/endless"]) {
   test(`${route} can play with blocked storage and preferences remain usable`, async ({
@@ -16,9 +17,7 @@ for (const route of ["/daily", "/endless"]) {
     await expect(
       page.getByText(/Progress and records last only/)
     ).toBeVisible();
-    await page
-      .getByRole("button", { name: /^Sound (on|off)$/, exact: true })
-      .click();
+    await (await preference(page, /^Sound (on|off)$/)).click();
     await expect(
       page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
     ).toHaveAttribute("aria-pressed", "true");
