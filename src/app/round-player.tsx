@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { QuestionSnapshot } from "../domain/questions";
 import { transitionRun, type PersonalAnswer, type Run } from "../domain/run";
 import { FlightDeck } from "./flight-deck";
@@ -140,7 +140,7 @@ export function RoundPlayer({
   }, [round.phase, run.completedRounds.length]);
   const pauseControl = (
     <button
-      className="secondary-button pause-button mt-3 w-full"
+      className="secondary-button pause-button w-full"
       onClick={(event) => {
         // Lock changes the layout; its second click can land on Pause.
         if (event.detail > 1) return;
@@ -148,6 +148,7 @@ export function RoundPlayer({
         setPaused(true);
       }}
     >
+      <PauseIcon />
       Pause
     </button>
   );
@@ -323,6 +324,8 @@ export function RoundPlayer({
         ? transitionRun(chosen, { type: "aim", percentage: 50 })
         : chosen;
     });
+  const chosen = round.phase === "aiming" ? round.answer : null;
+  const guess = round.phase === "aiming" ? (round.guessPercentage ?? 50) : 50;
   return (
     <motion.section
       initial={false}
@@ -342,37 +345,36 @@ export function RoundPlayer({
         >
           {round.question.prompt}
         </h2>
-        <fieldset className="mt-6">
+        <fieldset className="answer-fieldset">
           <legend>
-            <span className="control-step">1</span> Your own answer
+            <span className="control-step" aria-hidden="true">
+              1
+            </span>{" "}
+            Your own answer
           </legend>
-          <div className="mt-2 flex gap-3">
+          <div className="answer-choices">
             {(["yes", "no"] as const).map((answer) => (
               <label key={answer} className="answer-option">
                 <input
                   type="radio"
                   name="answer"
                   value={answer}
-                  checked={round.phase === "aiming" && round.answer === answer}
+                  checked={chosen === answer}
                   onChange={() => choose(answer)}
                 />
+                <span className="answer-dot" aria-hidden="true" />
                 {answer.toUpperCase()}
               </label>
             ))}
           </div>
         </fieldset>
-        <div className="aim-heading">
-          <label htmlFor="prediction" className="prediction-label font-bold">
-            <span className="control-step" aria-hidden="true">
-              2
-            </span>{" "}
-            Predict the YES vote
-          </label>
-          <output htmlFor="prediction">
-            {round.phase === "aiming" ? round.guessPercentage : 50}% YES
-          </output>
-        </div>
-        <p id="aim-help" className="mt-2 text-sm text-[#b4c2d1]">
+        <label htmlFor="prediction" className="prediction-label">
+          <span className="control-step" aria-hidden="true">
+            2
+          </span>{" "}
+          Predict the YES vote
+        </label>
+        <p id="aim-help" className="aim-help">
           Always predict YES, even if your own answer is NO.
           <span className="sr-only">
             {" "}
@@ -381,31 +383,44 @@ export function RoundPlayer({
               : "What percentage of poll respondents chose YES?"}
           </span>
         </p>
-        <input
-          id="prediction"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-          value={round.phase === "aiming" ? (round.guessPercentage ?? 50) : 50}
-          disabled={round.phase !== "aiming"}
-          aria-describedby="aim-help"
-          className="mt-2 min-h-12 w-full accent-[#f5c879]"
-          onChange={(event) =>
-            setRun((current) =>
-              transitionRun(current, {
-                type: "aim",
-                percentage: Number(event.target.value),
-              })
-            )
-          }
-        />
+        <div className="aim-readout">
+          <span className="answer-chip" data-empty={chosen === null}>
+            Your answer <strong>{chosen ? chosen.toUpperCase() : "—"}</strong>
+          </span>
+          <output htmlFor="prediction" className="prediction-readout">
+            <span>You predict</span> {guess}% YES
+          </output>
+        </div>
         <div
-          className="flex justify-between text-sm text-[#b4c2d1]"
-          aria-hidden="true"
+          className="aim-slider"
+          data-disabled={round.phase !== "aiming"}
+          style={{ "--value": guess } as CSSProperties}
         >
-          <span>0% YES</span>
-          <span>100% YES</span>
+          <input
+            id="prediction"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value={guess}
+            disabled={round.phase !== "aiming"}
+            aria-describedby="aim-help"
+            onChange={(event) =>
+              setRun((current) =>
+                transitionRun(current, {
+                  type: "aim",
+                  percentage: Number(event.target.value),
+                })
+              )
+            }
+          />
+          <div className="aim-ticks" aria-hidden="true">
+            {[0, 25, 50, 75, 100].map((tick) => (
+              <span key={tick} style={{ "--tick": tick } as CSSProperties}>
+                {tick}%
+              </span>
+            ))}
+          </div>
         </div>
         <button
           aria-label="Lock prediction"
@@ -432,7 +447,6 @@ export function RoundPlayer({
         >
           <FlightIcon />
           Lock prediction
-          <span aria-hidden="true">↗</span>
         </button>
         <p id="launch-help" className="launch-hint">
           {round.phase === "aiming"
@@ -449,5 +463,14 @@ export function RoundPlayer({
         </details>
       </div>
     </motion.section>
+  );
+}
+
+function PauseIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+      <rect x="3" y="2" width="3.5" height="12" rx="1" fill="currentColor" />
+      <rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="currentColor" />
+    </svg>
   );
 }

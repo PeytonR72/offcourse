@@ -303,7 +303,7 @@ export function ServerPlay({ mode }: { mode: RunMode }) {
         }
       />
       {playback.run.round.phase === "resolved" && (
-        <p className="mt-4 text-[#b4c2d1]">
+        <p className="mt-4 text-[var(--muted)]">
           Sample: {playback.run.round.result.distribution.sampleSize} ·{" "}
           {playback.run.round.result.distribution.sourceAttribution}
         </p>

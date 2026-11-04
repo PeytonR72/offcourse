@@ -11,6 +11,7 @@ import {
 import { createEndlessRepository } from "../../domain/endless-repository";
 import { RocketWorld } from "../../world/rocket-world";
 import { RoundPlayer, type Playback } from "../round-player";
+import { Stat, StatsBar } from "../stats-bar";
 import { ProgressNotice, SessionStorageNotice } from "../progress-notice";
 import type { createBrowserStorage } from "../../domain/browser-storage";
 import { useProgressStorage } from "../progress-storage";
@@ -117,16 +118,17 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
   return (
     <>
       {!storage.persistent && <SessionStorageNotice />}
-      <div className="flight-dashboard endless-dashboard">
-        <p ref={progressHeading} tabIndex={-1} className="text-xl font-bold">
-          Current streak: {progress.streak}
-        </p>
-        <p>Run distance: {progress.distance} ly</p>
-        <p className="text-2xl font-bold text-[#f5c879]">
-          Best streak: {best.streak}
-        </p>
-        <p className="text-[#b4c2d1]">Best distance: {best.distance} ly</p>
-      </div>
+      <StatsBar className="endless-stats">
+        <Stat
+          label="Current streak"
+          value={progress.streak}
+          primary
+          statRef={progressHeading}
+        />
+        <Stat label="Run distance" value={progress.distance} unit="ly" />
+        <Stat label="Best streak" value={best.streak} record />
+        <Stat label="Best distance" value={best.distance} unit="ly" record />
+      </StatsBar>
       {complete ? (
         <section
           aria-labelledby="endless-summary"
@@ -177,9 +179,9 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
               </Link>
             </div>
             {run.round.phase === "resolved" ? (
-              <div className="completion-log space-y-2">
-                <p className="eyebrow">Last destination</p>
-                <p className="font-bold">
+              <div className="completion-log last-destination">
+                <h3 className="eyebrow">Last destination</h3>
+                <p className="log-prompt">
                   {run.round.result.lock.question.prompt}
                 </p>
                 <p>
@@ -209,7 +211,7 @@ function EndlessGame({ initial, repository, storage }: Loaded) {
           }
         />
       )}
-      <p className="mt-6 text-sm leading-relaxed text-[#b4c2d1]">
+      <p className="mission-footnote">
         Questions never repeat within a run. Explore until you miss or complete
         the available demo pool.
       </p>

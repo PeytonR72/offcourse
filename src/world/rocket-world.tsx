@@ -295,7 +295,7 @@ export function RocketWorld({
         )}
       </div>
       <span
-        className="absolute top-2 left-3 rounded bg-[#101927]/90 px-1.5 py-0.5 text-xs text-[#f8efd9]"
+        className="world-chip absolute top-2 left-3"
         data-testid="universe-region"
       >
         {caption
@@ -303,12 +303,12 @@ export function RocketWorld({
           : universe.region.name}
       </span>
       <figcaption
-        className="absolute right-3 bottom-2 left-3 flex justify-between gap-2 text-xs text-[#b4c2d1]"
+        className="world-caption absolute right-3 bottom-2 left-3 flex justify-between gap-2"
         aria-hidden="true"
       >
         <span>
           {actual === null
-            ? "Aim · always % YES"
+            ? `Aim · ${prediction}% YES`
             : error === 0
               ? "Perfect match"
               : `${error} ${error === 1 ? "point" : "points"} ${prediction > actual ? "above" : "below"} actual`}

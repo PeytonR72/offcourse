@@ -15,12 +15,12 @@ export default function PrivacyPage() {
         Back to demo practice
       </Link>
       <h1 className="mt-4 text-4xl font-bold">Privacy &amp; storage</h1>
-      <p className="mt-4 leading-relaxed text-[#c4d1dd]">
+      <p className="mt-4 leading-relaxed text-[var(--muted)]">
         Offcourse is an account-free demo. Illustrative results are simulated,
         not real crowd votes. Records do not sync across devices.
       </p>
       <h2 className="mt-8 text-2xl font-bold">On this browser</h2>
-      <p className="mt-3 leading-relaxed text-[#c4d1dd]">
+      <p className="mt-3 leading-relaxed text-[var(--muted)]">
         Local storage saves daily attempts, endless progress and bests, your
         answers and predictions, and sound, motion and haptics preferences. The
         optional server-play preview also saves a random installation key and
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
         browser fingerprint. Practice progress lasts only while the page is
         open.
       </p>
-      <p className="mt-3 leading-relaxed text-[#c4d1dd]">
+      <p className="mt-3 leading-relaxed text-[var(--muted)]">
         Clearing this site’s browser data resets local records, preferences and
         the installation key. Use your browser’s site settings to clear data for
         this address. This does not delete any server records. If storage is
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
       <h2 className="mt-8 text-2xl font-bold">
         Optional server play and polls
       </h2>
-      <p className="mt-3 leading-relaxed text-[#c4d1dd]">
+      <p className="mt-3 leading-relaxed text-[var(--muted)]">
         When enabled, server play sends the installation key, personal answer
         and locked prediction to validate scores and prevent duplicate credit.
         The server stores a keyed hash of the installation key, run and question
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
         aggregate percentages and sample sizes.
       </p>
       <h2 className="mt-8 text-2xl font-bold">Hosting and diagnostics</h2>
-      <p className="mt-3 leading-relaxed text-[#c4d1dd]">
+      <p className="mt-3 leading-relaxed text-[var(--muted)]">
         No advertising trackers, session replay or browser fingerprinting are
         added by the game. Vercel hosts the site and may process connection
         data, including IP addresses and request metadata, in its infrastructure

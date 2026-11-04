@@ -12,6 +12,7 @@ import { ProgressNotice, SessionStorageNotice } from "../progress-notice";
 import type { createBrowserStorage } from "../../domain/browser-storage";
 import { useProgressStorage } from "../progress-storage";
 import { RocketWorld } from "../../world/rocket-world";
+import { DistanceMeter, RoundMeter, StatsBar } from "../stats-bar";
 
 type Repository = ReturnType<typeof createDailyRepository>;
 type Loaded = {
@@ -111,20 +112,24 @@ function DailyGame({ daily, repository, storage }: Loaded) {
   return (
     <>
       {!storage.persistent && <SessionStorageNotice />}
-      <div className="flight-dashboard daily-dashboard">
-        <p className="text-sm text-[#b4c2d1]">
-          {daily.dateKey}
-          <span className="hud-detail"> · UTC expedition</span>
-        </p>
-        <p className="font-bold text-[#f5c879]">
-          Total distance:{" "}
-          <span className="distance-unit">{run.totalDistance} ly</span>
-          <span className="hud-detail">
-            {" "}
-            / <span className="distance-unit">500 ly</span>
-          </span>
-        </p>
-      </div>
+      <p className="stats-meta">
+        {daily.dateKey}
+        <span className="hud-detail"> · UTC expedition</span>
+      </p>
+      {!complete && (
+        <StatsBar className="daily-stats">
+          <RoundMeter
+            current={Math.min(
+              run.completedRounds.length +
+                (run.round.phase === "resolved" ? 0 : 1),
+              5
+            )}
+            completed={run.completedRounds.length}
+            total={5}
+          />
+          <DistanceMeter distance={run.totalDistance} max={500} />
+        </StatsBar>
+      )}
       {complete ? (
         <section
           className="round-card mission-complete"
@@ -145,16 +150,21 @@ function DailyGame({ daily, repository, storage }: Loaded) {
               <p role="status" className="completion-distance">
                 <strong>{run.totalDistance}</strong> light-years traveled
               </p>
+              <DistanceMeter
+                distance={run.totalDistance}
+                max={500}
+                showValue={false}
+              />
               <p className="mt-3">
                 5 of 5 destinations explored. Every prediction counts, including
                 misses.
               </p>
               {summary && (
                 <>
-                  <p className="mt-3 font-bold text-[#f5c879]">
-                    Prediction accuracy: {summary.accuracy}%
+                  <p className="completion-accuracy">
+                    Prediction accuracy: <strong>{summary.accuracy}%</strong>
                   </p>
-                  <p className="mt-1 text-sm text-[#c4d1dd]">
+                  <p className="mt-1 text-sm text-[var(--muted)]">
                     Average error: {summary.averageError} percentage points.
                     Accuracy is 100 minus average error.
                   </p>
@@ -165,7 +175,7 @@ function DailyGame({ daily, repository, storage }: Loaded) {
           <div className="completion-details">
             <div className="completion-actions">
               <h3 className="font-bold">A journey worth sharing.</h3>
-              <p className="mt-2 text-sm text-[#c4d1dd]">
+              <p className="mt-2 text-sm text-[var(--muted)]">
                 Take your flight log with you. A new expedition awaits tomorrow.
               </p>
               {summary && <ShareSummary text={summary.text} />}
@@ -189,10 +199,10 @@ function DailyGame({ daily, repository, storage }: Loaded) {
                   ({ lock, distribution, score }, index) => (
                     <li key={lock.roundId}>
                       <div>
-                        <p className="font-bold">
+                        <p className="log-prompt">
                           {index + 1}. {lock.question.prompt}
                         </p>
-                        <p className="mt-1 text-[#c4d1dd]">
+                        <p className="log-detail">
                           Predicted {lock.guessPercentage}% YES · Actual{" "}
                           {distribution.yesPercentage}% · Error {score.error}{" "}
                           points
@@ -210,25 +220,6 @@ function DailyGame({ daily, repository, storage }: Loaded) {
         </section>
       ) : (
         <>
-          <div className="round-progress">
-            <p>
-              Round{" "}
-              {Math.min(
-                run.completedRounds.length +
-                  (run.round.phase === "resolved" ? 0 : 1),
-                5
-              )}{" "}
-              of 5
-            </p>
-            <div className="round-progress-track" aria-hidden="true">
-              {Array.from({ length: 5 }, (_, index) => (
-                <span
-                  key={index}
-                  data-complete={index < run.completedRounds.length}
-                />
-              ))}
-            </div>
-          </div>
           <RoundPlayer
             playback={playback}
             update={update}
@@ -244,7 +235,7 @@ function DailyGame({ daily, repository, storage }: Loaded) {
           />
         </>
       )}
-      <p className="mt-6 text-sm leading-relaxed text-[#b4c2d1]">
+      <p className="mission-footnote">
         Next expedition:{" "}
         <time dateTime={reset.toISOString()}>
           {reset.toLocaleString(undefined, {

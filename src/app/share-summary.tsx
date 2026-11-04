@@ -70,14 +70,14 @@ export function ShareSummary({ text }: { text: string }) {
       </div>
       <details ref={preview} className="share-preview">
         <summary>View share text</summary>
-        <label className="block text-sm text-[#c4d1dd]">
+        <label className="block text-sm text-[var(--muted)]">
           Daily share text
           <textarea
             ref={field}
             readOnly
             value={text}
-            rows={4}
-            className="mt-2 block w-full rounded-lg border border-[#6d8399] bg-[#101927] p-3 text-sm leading-relaxed"
+            rows={text.split("\n").length}
+            className="share-text"
           />
         </label>
       </details>

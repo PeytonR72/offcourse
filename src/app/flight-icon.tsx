@@ -2,7 +2,16 @@ export function FlightIcon({
   kind = "orbit",
   className = "",
 }: {
-  kind?: "orbit" | "arrow" | "sun" | "infinity" | "sound" | "motion";
+  kind?:
+    | "orbit"
+    | "arrow"
+    | "sun"
+    | "infinity"
+    | "sound"
+    | "motion"
+    | "haptics"
+    | "settings"
+    | "info";
   className?: string;
 }) {
   return (
@@ -45,6 +54,21 @@ export function FlightIcon({
         <>
           <path d="m11 4-5 4H2v8h4l5 4V4Z" />
           <path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" />
+        </>
+      )}
+      {kind === "haptics" && (
+        <>
+          <rect x="8" y="3" width="8" height="18" rx="2" />
+          <path d="M4 8v8M20 8v8M11 18h2" />
+        </>
+      )}
+      {kind === "settings" && (
+        <path d="M4 7h10m4 0h2M4 17h2m4 0h10M16 4.5v5M8 14.5v5" />
+      )}
+      {kind === "info" && (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 11v5m0-8.5v.5" />
         </>
       )}
       {kind === "motion" && (

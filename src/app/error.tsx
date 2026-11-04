@@ -18,7 +18,7 @@ export default function ErrorPage({
       <h1 ref={heading} tabIndex={-1} className="text-4xl font-bold">
         Flight interrupted
       </h1>
-      <p className="mt-4 leading-relaxed text-[#c4d1dd]">
+      <p className="mt-4 leading-relaxed text-[var(--muted)]">
         The flight view could not load. Try again to recover saved progress, or
         open demo practice. An unsaved practice round may need to restart.
       </p>

@@ -199,3 +199,37 @@ The pattern follows the installed Next.js 16.4.3
 
 Phone results use a compact horizontal reward, an adjacent scoring explanation,
 paired prediction/actual values and a fully visible Continue button at 360×800.
+
+## Third polish pass: readable instruments (2026-11-04)
+
+User-authorized refinement from the Nov 4 critique. The observatory world, rules,
+copy, and disclosures are preserved; this pass tightens the system around them.
+
+- Type: Silkscreen is display only (wordmark, home hero, big earned/final
+  scores, 404). Every page and section title is DM Sans 700. Readouts, stats,
+  flight-log distances, and step numbers are DM Sans with tabular numerals.
+- Choices: YES/NO are game keys. The chosen key fills with a warm gold tint and
+  a filled gold dot; there is no empty form-radio look.
+- Aim: the slider fills to a 30px thumb, carries ticks at 0/25/50/75/100, and
+  sits under a readout row that keeps "Your answer" (chip) separate from
+  "You predict X% YES".
+- Disabled: dashed border, desaturated `--off` fill, muted ink, no lift. The
+  disabled slider has no fill and a hollow dashed thumb.
+- Stats bar: one pattern for every mission (label above value). The run's
+  headline metric is gold; everything else is cream; records carry a small
+  diamond. Daily shows a segmented "Round N of 5" meter and a distance bar with
+  the ship riding on it; the completed card owns the final number.
+- Completed card (≥900px): scene, score, and actions on the left; the flight
+  log fills a full-height right column.
+- Header: preferences are real switches (track + knob). Under 760px, the
+  header is brand + Daily + Endless + a menu holding How to play and switches.
+- Focus rings appear for keyboard focus only; scripted heading focus is silent.
+- Text under 14px uses `--muted` (#c0cdd9) or brighter; quiet footnotes use
+  `--quiet` only at 13px+ and only for non-essential text.
+
+Rocket v2: the ship is redrawn on the same 64×40 atlas cells as editable
+character grids in `src/world/rocket-art.ts`: a shaded cream fuselage with
+coral livery stripes, a steel-ringed visor porthole with gloss, swept coral
+fins, a steel nozzle, and five readable faces (idle, determined, happy, scared,
+tumble). Flames are four three-tone frames. Regenerate the committed atlas with
+`node --experimental-strip-types scripts/build-rocket-art.mjs`.

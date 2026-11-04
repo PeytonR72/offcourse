@@ -18,12 +18,12 @@ export function ModeIntro({ mode }: { mode: "daily" | "endless" }) {
           ? "Five questions. Up to 500 light-years. Every round counts, even when you miss."
           : "Stay within 10 percentage points, including exactly 10, to keep flying. One miss ends your voyage."}
       </p>
-      <div className="demo-disclosure">
-        <span className="status-dot" />
-        <p>
-          <strong>Illustrative results</strong>Simulated, not real votes.
-        </p>
-      </div>
+      <p className="demo-disclosure">
+        <FlightIcon kind="info" />
+        <span>
+          <strong>Illustrative results</strong> · Simulated, not real votes.
+        </span>
+      </p>
     </>
   );
 }

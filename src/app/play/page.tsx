@@ -26,7 +26,7 @@ export default async function PlayPage({
       <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
         {mode === "daily" ? "Daily Expedition" : "Endless Voyage"}
       </h1>
-      <p className="mt-4 text-[#b4c2d1]">
+      <p className="mt-4 text-[var(--muted)]">
         Server-backed play preview. New expeditions open when seven daily
         expeditions and at least 100 qualified endless questions are ready. A
         random browser installation key tracks participation; records do not
