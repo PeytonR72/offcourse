@@ -2594,10 +2594,11 @@ nav a[aria-current="page"]::after {
     font-size: 15px;
   }
   .stats-meta {
-    display: none;
+    margin-top: 8px;
+    font-size: 12px;
   }
-  .stats-bar {
-    margin-top: 12px;
+  .stats-meta + .stats-bar {
+    margin-top: 4px;
   }
   .answer-fieldset {
     margin-top: 12px;

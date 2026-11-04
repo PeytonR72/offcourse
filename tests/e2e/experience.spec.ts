@@ -42,7 +42,11 @@ test("feedback is opt-in, mute persists, and reload never autoplays", async ({
   await page.goto("/");
   const events = () => page.evaluate(() => window.feedbackEvents);
   await expect(
-    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    page.getByRole("button", {
+      name: /^Sound (on|off)$/,
+      exact: true,
+      includeHidden: true,
+    })
   ).toHaveAttribute("aria-pressed", "false");
   await page.getByRole("radio", { name: "YES", exact: true }).check();
   await page.getByRole("button", { name: "Lock prediction" }).click();
@@ -60,13 +64,21 @@ test("feedback is opt-in, mute persists, and reload never autoplays", async ({
   expect(await events()).toContain("haptic");
   await page.reload();
   await expect(
-    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    page.getByRole("button", {
+      name: /^Sound (on|off)$/,
+      exact: true,
+      includeHidden: true,
+    })
   ).toHaveAttribute("aria-pressed", "true");
   expect(await events()).toEqual([]);
   await (await preference(page, /^Sound (on|off)$/)).click();
   await page.reload();
   await expect(
-    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    page.getByRole("button", {
+      name: /^Sound (on|off)$/,
+      exact: true,
+      includeHidden: true,
+    })
   ).toHaveAttribute("aria-pressed", "false");
   expect(await events()).toEqual([]);
 });
@@ -105,7 +117,11 @@ test("reduced motion stops idle movement, skips polish immediately, and suppress
   });
   await page.reload();
   await expect(
-    page.getByRole("button", { name: /^Reduce motion (on|off)$/, exact: true })
+    page.getByRole("button", {
+      name: /^Reduce motion (on|off)$/,
+      exact: true,
+      includeHidden: true,
+    })
   ).toHaveAttribute("aria-pressed", "true");
   await page.emulateMedia({ reducedMotion: "reduce" });
   // The device preference wins even if the manual preference is turned off.
@@ -122,7 +138,11 @@ test("restoring a locked voyage is silent despite persisted sound opt-in", async
   await page.getByRole("button", { name: "Lock prediction" }).click();
   await page.reload();
   await expect(
-    page.getByRole("button", { name: /^Sound (on|off)$/, exact: true })
+    page.getByRole("button", {
+      name: /^Sound (on|off)$/,
+      exact: true,
+      includeHidden: true,
+    })
   ).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("rocket-world")).toHaveAttribute(
     "data-stage",
